@@ -111,6 +111,8 @@ impl RenderOnce for PreferenceThemeSwatches {
                 named.map_or(host, |entry| entry.tokens)
             };
             let radius = host.spacing_2;
+            // Only the column meets the window's rounded inner corners.
+            let column_radius = (radius - metrics.stroke_hairline).max(0.);
             let id = part_id(&self.id, option.value.clone());
             let focus = kept_focus(part_id(&id, "focus"), window, cx);
             let visible = focus_visible(&focus, window, cx);
@@ -119,7 +121,6 @@ impl RenderOnce for PreferenceThemeSwatches {
             let preview = div()
                 .flex()
                 .flex_none()
-                .overflow_hidden()
                 .w(px(size * 1.5))
                 .h(px(size))
                 .border(px(metrics.stroke_hairline))
@@ -131,6 +132,8 @@ impl RenderOnce for PreferenceThemeSwatches {
                         .flex_none()
                         .w(relative(0.3))
                         .h_full()
+                        .rounded_tl(px(column_radius))
+                        .rounded_bl(px(column_radius))
                         .border_r(px(metrics.stroke_hairline))
                         .border_color(palette.color_border_strong.hsla())
                         .bg(palette.color_surface_column.hsla()),
@@ -167,18 +170,18 @@ impl RenderOnce for PreferenceThemeSwatches {
                 .when(chosen, |button| {
                     button.shadow(vec![
                         BoxShadow {
-                            color: host.color_surface.hsla(),
-                            offset: point(px(0.), px(0.)),
-                            blur_radius: px(0.),
-                            spread_radius: px(host.stroke_hairline),
-                        },
-                        BoxShadow {
                             color: host
                                 .control_color_outlined_border_normal
                                 .resolve(Tint::Primary.ramp(host)),
                             offset: point(px(0.), px(0.)),
                             blur_radius: px(0.),
                             spread_radius: px(host.stroke_hairline + host.stroke_control),
+                        },
+                        BoxShadow {
+                            color: host.color_surface.hsla(),
+                            offset: point(px(0.), px(0.)),
+                            blur_radius: px(0.),
+                            spread_radius: px(host.stroke_hairline),
                         },
                     ])
                 })

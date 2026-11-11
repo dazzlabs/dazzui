@@ -49,7 +49,7 @@ yeslogic-fontconfig-sys = { version = "6", features = ["dlopen"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 unicode-script = "0.5"
-windows = { version = "0.61", features = ["Win32_Globalization", "Win32_Graphics_DirectWrite"] }
+windows = { version = "0.61", features = ["Win32_Globalization", "Win32_Graphics_DirectWrite", "Win32_UI_WindowsAndMessaging"] }
 
 [dev-dependencies]
 gpui = { version = "0.2.2", features = ["test-support"] }

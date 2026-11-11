@@ -23,13 +23,13 @@ use std::rc::Rc;
 use unicode_segmentation::UnicodeSegmentation;
 
 use gpui::{
-    Action, App, Bounds, ClipboardItem, ContentMask, Context, CursorStyle, DispatchPhase, Element,
-    ElementId, ElementInputHandler, Entity, EntityInputHandler, FocusHandle, Focusable,
-    GlobalElementId, Hsla, InspectorElementId, InteractiveElement, IntoElement, KeyBinding,
-    LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, ParentElement, Pixels,
-    Point, RenderOnce, ScrollWheelEvent, SharedString, Style, Styled, Subscription, TextAlign,
-    TextRun, TextStyle, UTF16Selection, UnderlineStyle, Window, WrappedLine, actions, div, fill,
-    point, prelude::FluentBuilder, px, relative, size,
+    Action, App, AvailableSpace, Bounds, ClipboardItem, ContentMask, Context, CursorStyle,
+    DispatchPhase, Element, ElementId, ElementInputHandler, Entity, EntityInputHandler,
+    FocusHandle, Focusable, GlobalElementId, Hsla, InspectorElementId, InteractiveElement,
+    IntoElement, KeyBinding, LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent,
+    ParentElement, Pixels, Point, RenderOnce, ScrollWheelEvent, SharedString, Style, Styled,
+    Subscription, TextAlign, TextRun, TextStyle, UTF16Selection, UnderlineStyle, Window,
+    WrappedLine, actions, div, fill, point, prelude::FluentBuilder, px, relative, size,
 };
 
 use crate::foundation::scope::scoped;
@@ -1586,6 +1586,7 @@ pub struct TextInput {
     placeholder: SharedString,
     multiline: bool,
     rows: usize,
+    auto_height: bool,
     masked: bool,
     read_only: bool,
     disabled: bool,
@@ -1613,6 +1614,7 @@ impl TextInput {
             placeholder: SharedString::default(),
             multiline: false,
             rows: 1,
+            auto_height: false,
             masked: false,
             read_only: false,
             disabled: false,
@@ -1664,6 +1666,13 @@ impl TextInput {
     /// The visible rows of a multiline viewport. Extra lines scroll inside it.
     pub fn rows(mut self, rows: usize) -> Self {
         self.rows = rows.max(1);
+        self
+    }
+
+    /// Grow a multiline input to its wrapped content, with `rows` as its
+    /// minimum height. Useful for selectable paragraphs without an inner viewport.
+    pub fn auto_height(mut self, auto_height: bool) -> Self {
+        self.auto_height = auto_height;
         self
     }
 
@@ -1841,6 +1850,7 @@ impl RenderOnce for TextInput {
         let body = TextBody {
             input: state.clone(),
             rows: if multiline { self.rows } else { 1 },
+            auto_height: multiline && self.auto_height,
             centered: self.centered && !multiline,
             placeholder_color: self.placeholder_color,
             selection_color: self.selection_color,
@@ -1942,6 +1952,7 @@ impl RenderOnce for TextInput {
 struct TextBody {
     input: Entity<InputState>,
     rows: usize,
+    auto_height: bool,
     centered: bool,
     placeholder_color: Option<Hsla>,
     selection_color: Option<Hsla>,
@@ -2078,6 +2089,37 @@ impl Element for TextBody {
         let line_height = editor_line_height(window);
         let mut style = Style::default();
         style.size.width = relative(1.).into();
+
+        if self.auto_height {
+            let input = self.input.clone();
+            let layout_style = text_style.clone();
+            let placeholder_color = self.placeholder_color.unwrap_or(text_style.color);
+            let minimum_height = line_height * self.rows as f32;
+            let layout =
+                window.request_measured_layout(style, move |known, available, window, cx| {
+                    let width = known.width.or(match available.width {
+                        AvailableSpace::Definite(width) => Some(width),
+                        _ => None,
+                    });
+                    let (lines, _) = shape(
+                        input.read(cx),
+                        &layout_style,
+                        placeholder_color,
+                        width,
+                        window,
+                    );
+                    let mut content_size = size(px(0.), px(0.));
+                    for line in &lines {
+                        let row = line.size(line_height);
+                        content_size.width = content_size.width.max(row.width);
+                        content_size.height += row.height;
+                    }
+                    content_size.width = width.unwrap_or(content_size.width);
+                    content_size.height = minimum_height.max(content_size.height);
+                    content_size
+                });
+            return (layout, text_style);
+        }
 
         if self.rows <= 1 && !self.input.read(cx).multiline {
             // A single-line input's inner editor uses normal leading. Font

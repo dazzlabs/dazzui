@@ -34,6 +34,34 @@ struct FontInfo {
     is_system_font: bool,
 }
 
+impl FontInfo {
+    fn apply_typography(
+        &self,
+        layout: &IDWriteTextLayout1,
+        range: DWRITE_TEXT_RANGE,
+    ) -> Result<()> {
+        unsafe {
+            layout.SetTypography(&self.features, range)?;
+            layout.SetPairKerning(self.pair_kerning, range)?;
+            // Legacy weight matching rounds to a named instance, even for
+            // variable fonts. Apply the numeric weight to the shaping run.
+            if let Ok(face) = self.font_face.cast::<IDWriteFontFace5>()
+                && face.HasVariations().as_bool()
+                && let Ok(layout) = layout.cast::<IDWriteTextLayout4>()
+            {
+                layout.SetFontAxisValues(
+                    &[DWRITE_FONT_AXIS_VALUE {
+                        axisTag: DWRITE_FONT_AXIS_TAG_WEIGHT,
+                        value: self.requested_weight.0,
+                    }],
+                    range,
+                )?;
+            }
+        }
+        Ok(())
+    }
+}
+
 pub(crate) struct DirectWriteTextSystem(RwLock<DirectWriteState>);
 
 struct DirectWriteComponent {
@@ -610,8 +638,7 @@ impl DirectWriteState {
                     startPosition: utf16_offset,
                     length: current_text_utf16_length,
                 };
-                layout.SetTypography(&font_info.features, text_range)?;
-                layout.SetPairKerning(font_info.pair_kerning, text_range)?;
+                font_info.apply_typography(&layout, text_range)?;
                 utf16_offset += current_text_utf16_length;
 
                 layout
@@ -651,8 +678,7 @@ impl DirectWriteState {
                 text_layout.SetFontSize(font_size.0, text_range)?;
                 text_layout.SetFontStyle(font_info.requested_style.into(), text_range)?;
                 text_layout.SetFontWeight(font_info.requested_weight.into(), text_range)?;
-                text_layout.SetTypography(&font_info.features, text_range)?;
-                text_layout.SetPairKerning(font_info.pair_kerning, text_range)?;
+                font_info.apply_typography(&text_layout, text_range)?;
             }
 
             let mut runs = Vec::new();

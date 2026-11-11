@@ -128,13 +128,9 @@ impl Face {
         if self == Face::Mono {
             return mac_code_family();
         }
-        #[cfg(target_os = "windows")]
-        if self == Face::Mono {
-            return crate::platform_fonts::code_family();
-        }
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "windows"))]
         return crate::platform_fonts::family(self == Face::Mono);
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(any(target_os = "linux", target_os = "windows")))]
         match self {
             Face::Text | Face::Display => ".SystemUIFont",
             Face::Mono => MONO_FAMILY,
@@ -159,8 +155,6 @@ fn mac_code_family() -> &'static str {
             .unwrap_or(MONO_FAMILY)
     })
 }
-#[cfg(target_os = "windows")]
-const MONO_FAMILY: &str = "Consolas";
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
 const MONO_FAMILY: &str = "monospace";
 

@@ -11,9 +11,7 @@
 //! give out global window coordinates.
 
 use gpui::Window;
-use nativeapi::menu::{
-    ListenerId, Menu, MenuEvent, MenuItem, MenuItemId, MenuItemState, MenuItemType,
-};
+use nativeapi::menu::{ListenerId, Menu, MenuEvent, MenuItem, MenuItemState, MenuItemType};
 
 use crate::components::native_menu::{EventQueue, NativeMenuEntry, NativeMenuEvent};
 
@@ -95,11 +93,10 @@ pub(crate) fn rows_of(entries: &[NativeMenuEntry]) -> Vec<Row> {
 /// The menu those rows become. Headings present disabled; a row with a
 /// check state presents as a checkbox even when unchecked, so the column
 /// stays aligned. `None` when the OS refused to build it.
-pub(crate) fn build_menu(rows: &[Row]) -> Option<(Menu, Vec<MenuItem>, Vec<MenuItemId>)> {
+pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> {
     let menu = Menu::new()?;
     let mut items = Vec::new();
-    let mut ids = Vec::new();
-    for row in rows {
+    for (index, row) in rows.iter().enumerate() {
         let item_type = if row.checked.is_some() {
             MenuItemType::Checkbox
         } else {
@@ -114,26 +111,27 @@ pub(crate) fn build_menu(rows: &[Row]) -> Option<(Menu, Vec<MenuItem>, Vec<MenuI
                 MenuItemState::Unchecked
             });
         }
-        ids.push(item.id());
+        // Nativeapi emits the choice on the item. The menu itself reports
+        // when tracking ends.
+        let events = events.clone();
+        item.add_listener(move |event| {
+            if matches!(event, MenuEvent::ItemClicked { .. }) {
+                events.push(NativeMenuEvent::Clicked(index));
+            }
+        });
         menu.add_item(Some(&item));
         items.push(item);
     }
-    Some((menu, items, ids))
-}
-
-/// One listener for the menu's own events: a choice becomes the row's index,
-/// a close becomes the dismissal.
-pub(crate) fn install_listener(menu: &Menu, events: &EventQueue, ids: &[MenuItemId]) -> ListenerId {
-    let ids = ids.to_vec();
     let events = events.clone();
-    menu.add_listener(move |event| match event {
-        MenuEvent::ItemClicked { item_id } => {
-            if let Some(index) = ids.iter().position(|id| *id == *item_id) {
-                events.push(NativeMenuEvent::Clicked(index));
-            }
+    let listener = menu.add_listener(move |event| {
+        if matches!(event, MenuEvent::Closed { .. }) {
+            events.push(NativeMenuEvent::Dismissed);
         }
-        MenuEvent::Closed { .. } => events.push(NativeMenuEvent::Dismissed),
-        _ => {}
+    });
+    Some(LiveMenu {
+        menu,
+        _items: items,
+        listener,
     })
 }
 
@@ -168,7 +166,7 @@ mod windowed {
     use nativeapi::positioning_strategy::PositioningStrategy;
     use nativeapi::window::Window as NativeWindow;
 
-    use super::{LiveMenu, build_menu, install_listener, rows_of};
+    use super::{LiveMenu, build_menu, rows_of};
     use crate::components::native_menu::{EventQueue, NativeMenuBackend, NativeMenuRequest};
 
     pub struct PlatformBackend {
@@ -192,6 +190,28 @@ mod windowed {
         unsafe { NativeWindow::with_native_window(ptr as *mut std::ffi::c_void) }
     }
 
+    #[cfg(target_os = "windows")]
+    fn restore_menu_focus(window: &NativeWindow) {
+        use windows::Win32::UI::WindowsAndMessaging::{
+            GetForegroundWindow, GetWindowThreadProcessId, IsWindowVisible,
+        };
+
+        // Nativeapi tracks the popup on a hidden HWND. Give the keyboard
+        // back to the owner if that host is still in front when tracking
+        // ends. Clicking into a different window should keep it in front.
+        let mut pid = 0;
+        let host_is_foreground = unsafe {
+            let foreground = GetForegroundWindow();
+            !foreground.0.is_null()
+                && GetWindowThreadProcessId(foreground, Some(&mut pid)) != 0
+                && pid == std::process::id()
+                && !IsWindowVisible(foreground).as_bool()
+        };
+        if host_is_foreground && window.is_visible() && !window.is_focused() {
+            window.focus();
+        }
+    }
+
     impl NativeMenuBackend for PlatformBackend {
         fn supported(&self) -> bool {
             Menu::is_backend_supported(MenuBackend::Native)
@@ -202,10 +222,9 @@ mod windowed {
             let Some(window) = native_window(request.window_ptr) else {
                 return false;
             };
-            let Some((menu, items, ids)) = build_menu(&rows_of(&request.entries)) else {
+            let Some(live) = build_menu(&rows_of(&request.entries), events) else {
                 return false;
             };
-            let listener = install_listener(&menu, events, &ids);
             let anchor = request.anchor;
             let x = if request.align_end {
                 anchor.right()
@@ -231,13 +250,11 @@ mod windowed {
             } else {
                 Placement::BottomStart
             };
-            let presented = menu.open(&strategy, placement);
+            let presented = live.menu.open(&strategy, placement);
             if presented {
-                *self.live.borrow_mut() = Some(LiveMenu {
-                    menu,
-                    _items: items,
-                    listener,
-                });
+                #[cfg(target_os = "windows")]
+                restore_menu_focus(&window);
+                *self.live.borrow_mut() = Some(live);
             }
             presented
         }
@@ -275,7 +292,7 @@ mod linux {
     use nativeapi::placement::Placement;
     use nativeapi::positioning_strategy::PositioningStrategy;
 
-    use super::{LiveMenu, build_menu, install_listener, rows_of};
+    use super::{LiveMenu, build_menu, rows_of};
     use crate::components::native_menu::{EventQueue, NativeMenuBackend, NativeMenuRequest};
 
     type gboolean = i32;
@@ -388,19 +405,14 @@ mod linux {
     /// exist to anchor against, and a click-opened menu's pointer is on its
     /// trigger anyway.
     fn present(rows: Vec<super::Row>, align_end: bool, events: EventQueue) -> Option<LiveMenu> {
-        let (menu, items, ids) = build_menu(&rows)?;
-        let listener = install_listener(&menu, &events, &ids);
+        let live = build_menu(&rows, &events)?;
         let strategy = PositioningStrategy::cursor_position()?;
         let placement = if align_end {
             Placement::BottomEnd
         } else {
             Placement::BottomStart
         };
-        menu.open(&strategy, placement).then_some(LiveMenu {
-            menu,
-            _items: items,
-            listener,
-        })
+        live.menu.open(&strategy, placement).then_some(live)
     }
 
     impl NativeMenuBackend for PlatformBackend {

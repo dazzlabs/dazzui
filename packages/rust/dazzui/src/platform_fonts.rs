@@ -112,38 +112,49 @@ fn generic_families(monospace: bool) -> &'static [&'static str] {
 }
 
 #[cfg(target_os = "windows")]
-pub(crate) fn code_family() -> &'static str {
-    static FAMILY: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
-    FAMILY.get_or_init(|| {
-        use windows::{
-            Win32::Graphics::DirectWrite::*,
-            core::{BOOL, HSTRING},
-        };
-        unsafe {
-            let selected = (|| -> windows::core::Result<_> {
-                let factory: IDWriteFactory5 = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED)?;
-                let mut collection = None;
-                factory.GetSystemFontCollection(false, &mut collection, true)?;
-                let collection = collection.unwrap();
-                let candidates = crate::tokens::Face::Mono
-                    .families()
-                    .iter()
-                    .copied()
-                    .filter(|name| !matches!(*name, "ui-monospace" | "monospace"))
-                    .chain(generic_families(true).iter().copied());
-                for name in candidates {
-                    let mut index = 0;
-                    let mut exists = BOOL(0);
-                    collection.FindFamilyName(&HSTRING::from(name), &mut index, &mut exists)?;
-                    if exists.as_bool() {
-                        return Ok(name);
-                    }
-                }
-                Ok("Consolas")
-            })();
-            selected.unwrap_or("Consolas")
-        }
+pub(crate) fn family(monospace: bool) -> &'static str {
+    static UI: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+    static CODE: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+    if monospace {
+        return CODE.get_or_init(|| {
+            let candidates = crate::tokens::Face::Mono
+                .families()
+                .iter()
+                .copied()
+                .filter(|name| !matches!(*name, "ui-monospace" | "monospace"))
+                .chain(generic_families(true).iter().copied());
+            installed_family(candidates).unwrap_or("Consolas")
+        });
+    }
+    UI.get_or_init(|| {
+        // The icon-title font can be a locale-specific face. Segoe supplies
+        // the UI weights, and shaping resolves scripts it does not cover.
+        installed_family(["Segoe UI Variable Text", "Segoe UI"]).unwrap_or(".SystemUIFont")
     })
+}
+
+#[cfg(target_os = "windows")]
+fn installed_family(candidates: impl IntoIterator<Item = &'static str>) -> Option<&'static str> {
+    use windows::{
+        Win32::Graphics::DirectWrite::*,
+        core::{BOOL, HSTRING},
+    };
+    unsafe {
+        let factory: IDWriteFactory5 = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED).ok()?;
+        let mut collection = None;
+        factory
+            .GetSystemFontCollection(false, &mut collection, true)
+            .ok()?;
+        let collection = collection?;
+        candidates.into_iter().find(|name| {
+            let mut index = 0;
+            let mut exists = BOOL(0);
+            collection
+                .FindFamilyName(&HSTRING::from(*name), &mut index, &mut exists)
+                .is_ok()
+                && exists.as_bool()
+        })
+    }
 }
 
 #[cfg(target_os = "windows")]
