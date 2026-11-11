@@ -174,6 +174,7 @@ private struct Toolbar: View {
     }
     .padding(.horizontal, vars.spacing4)
     .frame(height: vars.frameTitlebarSize)
+    .background(vars.colorSurfaceChrome)
     .overlay(alignment: .bottom) {
       Rectangle().fill(vars.colorBorder).frame(height: hairline)
     }

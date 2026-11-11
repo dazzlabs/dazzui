@@ -33,6 +33,7 @@
 .gk-toolbar {
   height: var(--frame-titlebar-size);
   padding-inline: var(--spacing-4);
+  background-color: var(--color-surface-chrome);
   border-block-end: var(--stroke-hairline) solid var(--color-border);
 }
 

@@ -183,6 +183,7 @@ impl Render for Shell {
             .gap(px(t.spacing_2))
             .h(px(t.frame_titlebar_size))
             .px(px(t.spacing_4))
+            .bg(t.color_surface_chrome.hsla())
             .border_b(px(t.stroke_hairline))
             .border_color(t.color_border.hsla())
             .child(

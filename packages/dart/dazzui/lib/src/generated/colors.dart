@@ -43,22 +43,19 @@ abstract final class Colors {
     },
   );
 
-  static const ColorSwatch<int> ink = ColorSwatch<int>(
-    0xff111c2e,
-    <int, Color>{
-      50: Color(0xFFF6FAE2),
-      100: Color(0xFFF1F7D2),
-      200: Color(0xFFE6F77A),
-      300: Color(0xFFD6FF3F),
-      400: Color(0xFF8FA06A),
-      500: Color(0xFF3D5470),
-      600: Color(0xFF111C2E),
-      700: Color(0xFF1C2A41),
-      800: Color(0xFF263449),
-      900: Color(0xFF0B1420),
-      950: Color(0xFF060B12),
-    },
-  );
+  static const ColorSwatch<int> ink = ColorSwatch<int>(0xff111c2e, <int, Color>{
+    50: Color(0xFFF6FAE2),
+    100: Color(0xFFF1F7D2),
+    200: Color(0xFFE6F77A),
+    300: Color(0xFFD6FF3F),
+    400: Color(0xFF8FA06A),
+    500: Color(0xFF3D5470),
+    600: Color(0xFF111C2E),
+    700: Color(0xFF1C2A41),
+    800: Color(0xFF263449),
+    900: Color(0xFF0B1420),
+    950: Color(0xFF060B12),
+  });
 
   static const ColorSwatch<int> acid = ColorSwatch<int>(
     0xffc2ea2c,
@@ -94,22 +91,19 @@ abstract final class Colors {
     },
   );
 
-  static const ColorSwatch<int> red = ColorSwatch<int>(
-    0xffd64040,
-    <int, Color>{
-      50: Color(0xFFFDF2F2),
-      100: Color(0xFFF9E2E2),
-      200: Color(0xFFF2C1C1),
-      300: Color(0xFFEBA1A1),
-      400: Color(0xFFE48181),
-      500: Color(0xFFDD6060),
-      600: Color(0xFFD64040),
-      700: Color(0xFFC4342F),
-      800: Color(0xFF7E1F1C),
-      900: Color(0xFF4B1210),
-      950: Color(0xFF310B0A),
-    },
-  );
+  static const ColorSwatch<int> red = ColorSwatch<int>(0xffd64040, <int, Color>{
+    50: Color(0xFFFDF2F2),
+    100: Color(0xFFF9E2E2),
+    200: Color(0xFFF2C1C1),
+    300: Color(0xFFEBA1A1),
+    400: Color(0xFFE48181),
+    500: Color(0xFFDD6060),
+    600: Color(0xFFD64040),
+    700: Color(0xFFC4342F),
+    800: Color(0xFF7E1F1C),
+    900: Color(0xFF4B1210),
+    950: Color(0xFF310B0A),
+  });
 
   static const ColorSwatch<int> green = ColorSwatch<int>(
     0xff1f9d5e,
@@ -196,22 +190,19 @@ abstract final class Colors {
     },
   );
 
-  static const ColorSwatch<int> sky = ColorSwatch<int>(
-    0xff0084d1,
-    <int, Color>{
-      50: Color(0xFFF0F9FF),
-      100: Color(0xFFDFF2FE),
-      200: Color(0xFFB8E6FE),
-      300: Color(0xFF74D4FF),
-      400: Color(0xFF00BCFF),
-      500: Color(0xFF00A6F4),
-      600: Color(0xFF0084D1),
-      700: Color(0xFF0069A8),
-      800: Color(0xFF00598A),
-      900: Color(0xFF024A70),
-      950: Color(0xFF052F4A),
-    },
-  );
+  static const ColorSwatch<int> sky = ColorSwatch<int>(0xff0084d1, <int, Color>{
+    50: Color(0xFFF0F9FF),
+    100: Color(0xFFDFF2FE),
+    200: Color(0xFFB8E6FE),
+    300: Color(0xFF74D4FF),
+    400: Color(0xFF00BCFF),
+    500: Color(0xFF00A6F4),
+    600: Color(0xFF0084D1),
+    700: Color(0xFF0069A8),
+    800: Color(0xFF00598A),
+    900: Color(0xFF024A70),
+    950: Color(0xFF052F4A),
+  });
 
   static const ColorSwatch<int> frost = ColorSwatch<int>(
     0xff0f7a92,
