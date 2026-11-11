@@ -248,6 +248,9 @@ impl NativeMenuBackend for UnsupportedBackend {
 pub(crate) struct NativeMenuState {
     live: Option<Live>,
     pending: bool,
+    /// Identifies the Windows popup scheduled outside the current GPUI update.
+    #[cfg(all(target_os = "windows", feature = "native-menus"))]
+    opening: Option<Rc<()>>,
     /// The last present was refused: that open falls back to the sheet.
     pub(crate) failed: bool,
     /// What a dismissal from the OS runs — the owner's `on_open_change`, or
@@ -277,7 +280,10 @@ impl NativeMenuState {
         self.pending = false;
         self.failed = false;
         self.on_dismiss = None;
-        self.live.take().is_some()
+        let opened = self.live.take().is_some();
+        #[cfg(all(target_os = "windows", feature = "native-menus"))]
+        let opened = self.opening.take().is_some() || opened;
+        opened
     }
 
     fn select_of(&self, index: usize) -> Option<Press> {
@@ -464,12 +470,77 @@ pub(crate) fn present_native_menu(
             .collect(),
     );
     let queue = EventQueue::new();
-    if !backend().present(&request, &queue) {
+    let backend = backend();
+
+    #[cfg(all(target_os = "windows", feature = "native-menus"))]
+    if DEBUG_BACKEND.with_borrow(|backend| backend.is_none()) {
+        let opening = Rc::new(());
+        native.update(cx, |state, _| {
+            state.pending = true;
+            state.opening = Some(opening.clone());
+        });
+        let native = native.clone();
+        let state = state.clone();
+        let window_handle = request.window;
+        cx.spawn(async move |cx: &mut AsyncApp| {
+            let current = |cx: &App| {
+                native
+                    .read(cx)
+                    .opening
+                    .as_ref()
+                    .is_some_and(|current| Rc::ptr_eq(current, &opening))
+            };
+            if !window_handle
+                .update(cx, |_, _, cx| current(cx) && state.read(cx).open)
+                .unwrap_or(false)
+            {
+                return;
+            }
+            // TrackPopupMenu pumps Windows messages, including GPUI tasks.
+            // Release the app borrow before entering it so those tasks can
+            // update the app, dismiss the menu, or shut down the window.
+            let presented = backend.present(&request, &queue);
+            let _ = window_handle.update(cx, |_, _, cx| {
+                if !current(cx) {
+                    return;
+                }
+                native.update(cx, |state, _| {
+                    state.pending = false;
+                    state.opening = None;
+                });
+                finish_present(
+                    presented,
+                    queue,
+                    selects,
+                    window_handle,
+                    &state,
+                    &native,
+                    cx,
+                );
+            });
+        })
+        .detach();
+        return;
+    }
+
+    let presented = backend.present(&request, &queue);
+    finish_present(presented, queue, selects, request.window, state, native, cx);
+}
+
+fn finish_present(
+    presented: bool,
+    queue: EventQueue,
+    selects: Rc<Vec<Option<Press>>>,
+    window_handle: AnyWindowHandle,
+    state: &Entity<PopupState>,
+    native: &Entity<NativeMenuState>,
+    cx: &mut App,
+) {
+    if !presented {
         native.update(cx, |state, _| state.failed = true);
         cx.refresh_windows();
         return;
     }
-    let window_handle = request.window;
     native.update(cx, |state, _| {
         state.failed = false;
         state.live = Some(Live {

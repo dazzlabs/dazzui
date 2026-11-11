@@ -323,7 +323,14 @@ impl Platform for WindowsPlatform {
 
     fn quit(&self) {
         self.foreground_executor()
-            .spawn(async { unsafe { PostQuitMessage(0) } })
+            .spawn(async {
+                unsafe {
+                    // A native menu may still be running its own message loop.
+                    // End it before posting Quit for the application loop.
+                    let _ = EndMenu();
+                    PostQuitMessage(0);
+                }
+            })
             .detach();
     }
 

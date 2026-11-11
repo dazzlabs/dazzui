@@ -147,6 +147,9 @@ pub(crate) struct LiveMenu {
 impl Drop for LiveMenu {
     fn drop(&mut self) {
         let _ = self.menu.remove_listener(self.listener);
+        // Win32 tracking is synchronous, and its backend can explicitly
+        // cancel a popup that is still being tracked.
+        #[cfg(not(target_os = "windows"))]
         let _ = self.menu.close();
     }
 }
@@ -157,6 +160,7 @@ impl Drop for LiveMenu {
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 mod windowed {
     use std::cell::RefCell;
+    use std::rc::Rc;
 
     use gpui::{Pixels, Point, point, px};
     use nativeapi::display_manager::DisplayManager;
@@ -170,7 +174,7 @@ mod windowed {
     use crate::components::native_menu::{EventQueue, NativeMenuBackend, NativeMenuRequest};
 
     pub struct PlatformBackend {
-        live: RefCell<Option<LiveMenu>>,
+        live: RefCell<Option<Rc<LiveMenu>>>,
     }
 
     impl Default for PlatformBackend {
@@ -250,17 +254,45 @@ mod windowed {
             } else {
                 Placement::BottomStart
             };
-            let presented = live.menu.open(&strategy, placement);
-            if presented {
-                #[cfg(target_os = "windows")]
-                restore_menu_focus(&window);
-                *self.live.borrow_mut() = Some(live);
+            let live = Rc::new(live);
+            #[cfg(target_os = "windows")]
+            {
+                // Keep a handle to the popup while Win32 tracks it. A nested
+                // GPUI update may close it while Open is still on the stack.
+                *self.live.borrow_mut() = Some(live.clone());
+                let presented = live.menu.open(&strategy, placement);
+                if !self
+                    .live
+                    .borrow()
+                    .as_ref()
+                    .is_some_and(|menu| Rc::ptr_eq(menu, &live))
+                {
+                    return false;
+                }
+                if presented {
+                    restore_menu_focus(&window);
+                } else {
+                    self.live.borrow_mut().take();
+                }
+                presented
             }
-            presented
+            #[cfg(target_os = "macos")]
+            {
+                let presented = live.menu.open(&strategy, placement);
+                if presented {
+                    *self.live.borrow_mut() = Some(live);
+                }
+                presented
+            }
         }
 
         fn close(&self) {
-            *self.live.borrow_mut() = None;
+            let live = self.live.borrow_mut().take();
+            #[cfg(target_os = "windows")]
+            if let Some(live) = &live {
+                let _ = live.menu.close();
+            }
+            drop(live);
         }
 
         fn pointer_position(&self, request: &NativeMenuRequest) -> Option<Point<Pixels>> {
