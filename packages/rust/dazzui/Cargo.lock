@@ -1328,6 +1328,7 @@ checksum = "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
 name = "dazzui"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "block",
  "chrono",
  "core-text",
@@ -1337,6 +1338,7 @@ dependencies = [
  "nativeapi",
  "objc",
  "raw-window-handle",
+ "resvg",
  "serde_json",
  "unicode-properties",
  "unicode-script",

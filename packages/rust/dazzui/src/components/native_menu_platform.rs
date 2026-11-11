@@ -11,6 +11,7 @@
 //! give out global window coordinates.
 
 use gpui::Window;
+use nativeapi::image::Image;
 use nativeapi::menu::{ListenerId, Menu, MenuEvent, MenuItem, MenuItemState, MenuItemType};
 
 use crate::components::native_menu::{EventQueue, NativeMenuEntry, NativeMenuEvent};
@@ -64,13 +65,14 @@ pub(crate) fn window_ptr(window: &Window) -> usize {
 }
 
 /// One row as the OS will wear it: the label with the hint appended for
-/// display — never an accelerator registered with the OS — and the state
-/// the row's checkbox column shows. A row holding `children` presents as a
-/// submenu; the nesting is the OS's own.
+/// display — never an accelerator registered with the OS — the state the
+/// row's checkbox column shows, and its icon, a base64 PNG. A row holding
+/// `children` presents as a submenu; the nesting is the OS's own.
 pub(crate) struct Row {
     label: String,
     enabled: bool,
     checked: Option<bool>,
+    icon: Option<String>,
     children: Vec<Row>,
 }
 
@@ -88,6 +90,7 @@ pub(crate) fn rows_of(entries: &[NativeMenuEntry]) -> Vec<Row> {
                     label,
                     enabled: entry.enabled && !entry.heading,
                     checked: entry.checked,
+                    icon: entry.icon_image.clone(),
                     children: rows(&entry.children),
                 }
             })
@@ -149,6 +152,12 @@ pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> 
                 items.extend(children);
             }
             menu.add_item(Some(&item));
+            // After the item joins the menu: the Win32 backend applies an
+            // icon only to an item that already has its parent menu. The
+            // item keeps the image; the handle here can go.
+            if let Some(icon) = row.icon.as_deref().and_then(Image::from_base64) {
+                item.set_icon(Some(&icon));
+            }
             items.push(item);
         }
         Some((menu, items, submenus))

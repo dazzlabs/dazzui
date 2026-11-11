@@ -43,6 +43,8 @@ struct FakeInner {
 #[derive(Clone)]
 struct Captured {
     rows: Vec<(String, bool, Option<bool>)>,
+    /// Each row's glyph, in the same walk.
+    icons: Vec<Option<String>>,
     anchor: Bounds<Pixels>,
     align_end: bool,
 }
@@ -109,13 +111,16 @@ impl NativeMenuBackend for Fake {
         // The rows as the OS wears them: the depth-first walk the click
         // dispatch reads, a submenu's rows following their branch.
         let mut rows = Vec::new();
+        let mut icons = Vec::new();
         for entry in &request.entries {
             entry.walk(&mut |row| {
                 rows.push((row.label.clone(), row.enabled, row.checked));
+                icons.push(row.icon.as_ref().map(|icon| icon.to_string()));
             });
         }
         inner.requests.push(Captured {
             rows,
+            icons,
             anchor: request.anchor,
             align_end: request.align_end,
         });
@@ -200,6 +205,7 @@ impl Render for Stage {
                         .items([
                             MenuItem::new("Rename")
                                 .icon(marker("menu-row"))
+                                .glyph("glyph/Edit20Regular")
                                 .shortcut_hint("cmd R")
                                 .on_select(push("rename")),
                             MenuItem::new("Delete")
@@ -390,6 +396,11 @@ fn a_native_menu_flattens_and_runs_the_choice_before_the_close(cx: &mut TestAppC
             ("Duplicate".to_string(), true, Some(false)),
         ],
         "labels, enabled and check state in order; icons and hints stay behind"
+    );
+    assert_eq!(
+        captured.icons,
+        vec![Some("glyph/Edit20Regular".to_string()), None, None],
+        "the glyph goes to the OS; the drawn icon element does not"
     );
     assert!(captured.align_end, "Menu's default Align::End asks for it");
     assert_eq!(

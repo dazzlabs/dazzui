@@ -16,6 +16,7 @@ use gpui::{
     Styled, Window, div, prelude::*, px, size,
 };
 
+use crate::components::icon::Icon;
 use crate::components::native_menu::{
     NativeMenuEntry, arm_native_menu, close_native_menu, native_mode_active, native_pointer,
     native_press, native_state_for, present_native_menu, set_on_dismiss, set_open,
@@ -32,6 +33,9 @@ use crate::theme::ActiveTheme;
 pub struct MenuItem {
     label: SharedString,
     icon: Option<AnyElement>,
+    /// The icon as a glyph's asset path — what the sheet draws when no
+    /// `icon` element is given, and what a native popup row rasterizes.
+    glyph: Option<SharedString>,
     shortcut: Option<AnyElement>,
     /// The plain-text form of the shortcut slot — what a native popup row
     /// wears for display. A hint, never an accelerator.
@@ -49,6 +53,7 @@ impl MenuItem {
         MenuItem {
             label: label.into(),
             icon: None,
+            glyph: None,
             shortcut: None,
             shortcut_hint: None,
             checked: None,
@@ -60,6 +65,15 @@ impl MenuItem {
 
     pub fn icon(mut self, icon: impl IntoElement) -> Self {
         self.icon = Some(icon.into_any_element());
+        self
+    }
+
+    /// The icon as a glyph — an asset path, as [`Icon::new`] takes. The
+    /// sheet draws it unless an `icon` element is also given, and a native
+    /// popup row wears it rasterized, which an element cannot be. Set both
+    /// to draw one thing and hand the OS the other.
+    pub fn glyph(mut self, path: impl Into<SharedString>) -> Self {
+        self.glyph = Some(path.into());
         self
     }
 
@@ -109,7 +123,7 @@ type ExtraKey = Rc<dyn Fn(&str, &mut Window, &mut App) -> bool>;
 
 /// The rows an OS popup wears: the items flattened, in order. Element slots
 /// — an icon, a `KeyCap` — do not survive the trip to a native row; the
-/// plain-text hint does. An item holding `submenu` rows hands the nesting
+/// glyph and the plain-text hint do. An item holding `submenu` rows hands the nesting
 /// to the OS.
 pub(crate) fn native_entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
     fn entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
@@ -119,6 +133,7 @@ pub(crate) fn native_entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
                 NativeMenuEntry::new(item.label.to_string())
                     .enabled(!item.disabled)
                     .checked(item.checked)
+                    .icon(item.glyph.clone())
                     .hint(item.shortcut_hint.as_ref().map(|hint| hint.to_string()))
                     .on_select(item.on_select.clone())
                     .children(entries(&item.children))
@@ -283,6 +298,9 @@ fn menu_sheet(
     let mut nested: HashMap<usize, Vec<MenuItem>> = HashMap::new();
     for (index, item) in items.into_iter().enumerate() {
         let branch = !item.children.is_empty();
+        let icon = item
+            .icon
+            .or_else(|| item.glyph.map(|glyph| Icon::new(glyph).into_any_element()));
         let hover = state.clone();
         let choose = choose.clone();
         let branches_for_hover = branches.clone();
@@ -330,7 +348,7 @@ fn menu_sheet(
             if item.checked.is_some() {
                 row = row.check(checked == Some(index));
             }
-            if let Some(icon) = item.icon {
+            if let Some(icon) = icon {
                 row = row.icon(icon);
             }
             if let Some(shortcut) = item.shortcut {
@@ -347,7 +365,7 @@ fn menu_sheet(
             if item.checked.is_some() {
                 row = row.check(checked == Some(index));
             }
-            if let Some(icon) = item.icon {
+            if let Some(icon) = icon {
                 row = row.icon(icon);
             }
             if let Some(shortcut) = item.shortcut {

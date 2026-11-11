@@ -21,8 +21,10 @@
 //! Shortcut strings stay hints — display text in the native row, never an
 //! accelerator registered with the OS. An item's element slots (its icon, a
 //! `KeyCap`) are dropped: gpui cannot rasterize an element into the bitmap a
-//! native row wears, so native rows carry the label, the check, the disabled
-//! state and the plain-text hint only.
+//! native row wears. A glyph it can: an item's glyph is rasterized to a PNG
+//! as the menu is presented, in the theme's content ink, and the row wears
+//! it beside the label, the check, the disabled state and the plain-text
+//! hint. AppKit presents it as a template image and inks it itself.
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -30,7 +32,8 @@ use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AnyWindowHandle, App, AsyncApp, Bounds, Entity, IntoElement, Pixels, Point, Task, Window,
+    AnyWindowHandle, App, AsyncApp, Bounds, Entity, IntoElement, Pixels, Point, SharedString, Task,
+    Window,
 };
 
 use crate::components::popup::{Anchor, OnOpenChange, PopupState, Press, part_id};
@@ -82,6 +85,11 @@ pub struct NativeMenuEntry {
     /// The plain-text form of the shortcut slot — a hint appended to the
     /// label for display, never an accelerator.
     pub hint: Option<String>,
+    /// The row's icon, a glyph's asset path.
+    pub icon: Option<SharedString>,
+    /// That glyph as the backend hands it to the OS: a PNG, base64, written
+    /// as the menu is presented when the `native-menus` feature is on.
+    pub icon_image: Option<String>,
     pub heading: bool,
     /// Run on the main thread when the row is chosen.
     pub on_select: Option<Press>,
@@ -96,6 +104,8 @@ impl NativeMenuEntry {
             enabled: true,
             checked: None,
             hint: None,
+            icon: None,
+            icon_image: None,
             heading: false,
             on_select: None,
             children: Vec::new(),
@@ -122,6 +132,11 @@ impl NativeMenuEntry {
 
     pub fn hint(mut self, hint: Option<String>) -> Self {
         self.hint = hint;
+        self
+    }
+
+    pub fn icon(mut self, icon: Option<SharedString>) -> Self {
+        self.icon = icon;
         self
     }
 
@@ -471,6 +486,16 @@ pub(crate) fn present_native_menu(
     if !state.read(cx).open {
         return;
     }
+    #[cfg(feature = "native-menus")]
+    let entries = {
+        let mut entries = entries;
+        let ink = crate::theme::ActiveTheme::theme(cx)
+            .color_content
+            .hsla()
+            .to_rgb();
+        icon_images(&mut entries, ink, cx);
+        entries
+    };
     let request = NativeMenuRequest {
         anchor: anchor.bounds().unwrap_or_default(),
         align_end,
@@ -673,6 +698,102 @@ pub(crate) fn native_pointer(window: &Window) -> Option<Point<Pixels>> {
     backend().pointer_position(&request)
 }
 
+/// The edge of the bitmap a glyph is rasterized to: twice the 16pt AppKit
+/// sets a menu image to, and the 32px nativeapi's Win32 backend draws.
+#[cfg(feature = "native-menus")]
+const ICON_EDGE: u32 = 32;
+
+/// Writes each entry's `icon_image` from its glyph, through the app's asset
+/// source — the one gpui draws the same glyph from.
+#[cfg(feature = "native-menus")]
+fn icon_images(entries: &mut [NativeMenuEntry], ink: gpui::Rgba, cx: &App) {
+    for entry in entries {
+        entry.icon_image = entry.icon.as_ref().and_then(|path| {
+            let svg = cx.asset_source().load(path).ok()??;
+            rasterize_glyph(&svg, ink)
+        });
+        icon_images(&mut entry.children, ink, cx);
+    }
+}
+
+/// A glyph's SVG as a native row wears it: a square PNG, base64, the glyph
+/// centred in it and inked like a drawn one — its coverage in `ink`,
+/// whatever fill the SVG names. `None` when the SVG does not parse.
+#[cfg(feature = "native-menus")]
+pub(crate) fn rasterize_glyph(svg: &[u8], ink: gpui::Rgba) -> Option<String> {
+    use base64::Engine as _;
+    use resvg::{tiny_skia, usvg};
+
+    let tree = usvg::Tree::from_data(svg, &usvg::Options::default()).ok()?;
+    let size = tree.size();
+    let edge = ICON_EDGE as f32;
+    let scale = edge / size.width().max(size.height());
+    let mut pixmap = tiny_skia::Pixmap::new(ICON_EDGE, ICON_EDGE)?;
+    let transform = tiny_skia::Transform::from_scale(scale, scale).post_translate(
+        (edge - size.width() * scale) / 2.,
+        (edge - size.height() * scale) / 2.,
+    );
+    resvg::render(&tree, transform, &mut pixmap.as_mut());
+    let [r, g, b] = [ink.r, ink.g, ink.b].map(|c| (c.clamp(0., 1.) * 255.).round() as u32);
+    for pixel in pixmap.pixels_mut() {
+        let a = pixel.alpha() as u32;
+        // Premultiplied, as the pixmap stores it.
+        let channel = |c: u32| ((c * a + 127) / 255) as u8;
+        *pixel = tiny_skia::PremultipliedColorU8::from_rgba(
+            channel(r),
+            channel(g),
+            channel(b),
+            a as u8,
+        )?;
+    }
+    let png = pixmap.encode_png().ok()?;
+    Some(base64::engine::general_purpose::STANDARD.encode(png))
+}
+
 #[cfg(feature = "native-menus")]
 #[path = "native_menu_platform.rs"]
 mod platform;
+
+#[cfg(all(test, feature = "native-menus"))]
+mod tests {
+    use base64::Engine as _;
+    use resvg::tiny_skia::Pixmap;
+
+    use super::{ICON_EDGE, rasterize_glyph};
+
+    /// A glyph whose left half is filled, in a fill the ink overrides.
+    const HALF: &[u8] = br#"<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="10" height="20" fill="red"/></svg>"#;
+
+    #[test]
+    fn a_glyph_rasterizes_to_a_square_png_in_the_ink() {
+        let ink = gpui::Rgba {
+            r: 0.,
+            g: 0.,
+            b: 1.,
+            a: 1.,
+        };
+        let png = base64::engine::general_purpose::STANDARD
+            .decode(rasterize_glyph(HALF, ink).expect("the svg parses"))
+            .unwrap();
+        let pixmap = Pixmap::decode_png(&png).unwrap();
+        assert_eq!((pixmap.width(), pixmap.height()), (ICON_EDGE, ICON_EDGE));
+        let at = |x: u32, y: u32| pixmap.pixel(x, y).unwrap().demultiply();
+        let covered = at(4, 16);
+        assert_eq!(
+            (
+                covered.red(),
+                covered.green(),
+                covered.blue(),
+                covered.alpha()
+            ),
+            (0, 0, 255, 255),
+            "covered pixels wear the ink, not the svg's fill"
+        );
+        assert_eq!(at(28, 16).alpha(), 0, "uncovered pixels stay clear");
+    }
+
+    #[test]
+    fn an_svg_that_does_not_parse_has_no_image() {
+        assert!(rasterize_glyph(b"not svg", gpui::Rgba::default()).is_none());
+    }
+}

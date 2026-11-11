@@ -38,6 +38,10 @@ icu_segmenter = "2.3"
 # with CMake (Linux needs the gtk3, x11 and xi dev packages installed).
 nativeapi = { version = "=0.5.2", optional = true }
 raw-window-handle = { version = "0.6", optional = true }
+# A native row's icon is the item's glyph rasterized to a PNG, base64, the
+# form nativeapi's Image takes. Both are already in gpui's graph.
+resvg = { version = "0.45", optional = true, default-features = false }
+base64 = { version = "0.22", optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-text = "21"
@@ -63,4 +67,4 @@ runtime-shaders = ["gpui/runtime_shaders"]
 # the OS popup through nativeapi when a `MenuPresentation::Native` scope is
 # in force. Off (and unsupported platforms) keep the drawn sheet. Verified on
 # macOS; Windows and Linux compile but are unverified here.
-native-menus = ["dep:nativeapi", "dep:raw-window-handle"]
+native-menus = ["dep:nativeapi", "dep:raw-window-handle", "dep:resvg", "dep:base64"]

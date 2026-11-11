@@ -16,7 +16,7 @@ use gpui::{AnyElement, App, IntoElement, ParentElement, Window, div};
 use serde_json::Value;
 
 use super::BuildFn;
-use crate::lib::scene::{Callback, Ctx, Node, text, truthy};
+use crate::lib::scene::{Callback, Ctx, Node, glyph_path, text, truthy};
 
 pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("Popover", popover);
@@ -83,6 +83,17 @@ fn tooltip(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .into_any_element()
 }
 
+/// The glyph an icon slot holds — a bare `$icon`, or an `<Icon icon={…} />`
+/// — as an asset path. `None` for anything else.
+fn icon_glyph(value: &Value) -> Option<gpui::SharedString> {
+    if value.get("$icon").is_some() {
+        return Some(glyph_path(value));
+    }
+    let glyph = value.get("props")?.get("icon")?;
+    (value.get("$el")?.as_str()? == "Icon" && glyph.get("$icon").is_some())
+        .then(|| glyph_path(glyph))
+}
+
 /// A story's `MenuItem[]`: each row's label, icon, shortcut, check state,
 /// whether it is disabled, what choosing it does, and the rows a branch
 /// opens beside it.
@@ -107,6 +118,10 @@ fn menu_items(
             }
             if let Some(icon) = item.get("icon") {
                 row = row.icon(node.draw_value(icon, format!("{part}.{index}.icon"), window, cx));
+                // The glyph beside the drawn icon, for a native row to wear.
+                if let Some(glyph) = icon_glyph(icon) {
+                    row = row.glyph(glyph);
+                }
             }
             if let Some(shortcut) = item.get("shortcut") {
                 row = row.shortcut(node.draw_value(
