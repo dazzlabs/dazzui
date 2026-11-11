@@ -42,16 +42,18 @@ impl Render for Harness {
                         .collapsible(SidebarCollapsible::Icon)
                         .child(
                             SidebarGroup::new()
-                                .child(SidebarGroupLabel::new().child("Library"))
-                                .child(probe(
-                                    SidebarGroupAction::new("add", "Add")
-                                        .child("+")
-                                        .on_click(move |_, _, cx| {
-                                            let _ = group.update(cx, |view, _| view.groups += 1);
-                                        })
-                                        .into_any_element(),
-                                    self.group.clone(),
-                                ))
+                                .child(
+                                    SidebarGroupLabel::new().child("Library").action(probe(
+                                        SidebarGroupAction::new("add", "Add")
+                                            .child("+")
+                                            .on_click(move |_, _, cx| {
+                                                let _ =
+                                                    group.update(cx, |view, _| view.groups += 1);
+                                            })
+                                            .into_any_element(),
+                                        self.group.clone(),
+                                    )),
+                                )
                                 .child(
                                     SidebarMenu::new()
                                         .child(
@@ -199,13 +201,12 @@ fn hover_popup_and_collapse_apply_independently(cx: &mut TestAppContext) {
     });
     cx.run_until_parked();
     assert!(action(&view, cx).is_none());
+    // The heading carrying it is gone with the glyph-only column.
     assert!(view.read_with(cx, |view, _| {
         view.group
             .borrow()
             .last()
-            .unwrap()
-            .decorated_surface
-            .is_none()
+            .is_none_or(|paint| paint.decorated_surface.is_none())
     }));
     cx.simulate_keystrokes("tab tab tab");
     cx.run_until_parked();

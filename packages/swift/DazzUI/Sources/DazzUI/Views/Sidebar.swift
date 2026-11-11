@@ -431,19 +431,21 @@ public struct SidebarGroup<Label: View, Action: View, Content: View>: View {
 
     VStack(alignment: .leading, spacing: 0) {
       if let label {
+        // A heading carrying a button is a row of two columns — the label
+        // taking what is left, the button a column of its own — both on the
+        // row's centre. The label's line reserves `sidebar.group-label-height`,
+        // the button's height, so a heading is as tall with one as without.
         HStack(spacing: 0) {
-          SectionLabel(faint: true) { label() }
-          Spacer(minLength: 0)
-        }
-        .padding(.vertical, vars.spacing1)
-        .padding(.horizontal, vars.spacing25)
-        // `.dz-sidebar__group-action`: on the label's trailing edge, a step
-        // down from the group's top.
-        .overlay(alignment: .topTrailing) {
+          HStack(spacing: 0) {
+            SectionLabel(faint: true) { label() }
+            Spacer(minLength: 0)
+          }
+          .padding(.vertical, vars.spacing1)
+          .padding(.horizontal, vars.spacing25)
+          .frame(minHeight: vars.sidebarGroupLabelHeight)
           if let action {
             action()
-              .padding(.top, vars.spacing1 - vars.spacing15)
-              .padding(.trailing, vars.spacing25)
+              .padding(.leading, vars.spacing1)
           }
         }
       }

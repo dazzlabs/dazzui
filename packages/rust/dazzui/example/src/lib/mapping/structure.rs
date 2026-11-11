@@ -22,7 +22,8 @@ use gpui::{AnyElement, App, IntoElement, ParentElement, SharedString, Window, di
 use serde_json::Value;
 
 use super::BuildFn;
-use crate::lib::scene::{Callback, Node, held, text};
+use crate::lib::scene::{Callback, Node, draw, held, text};
+use crate::lib::specimen;
 
 pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("Accordion", accordion);
@@ -291,8 +292,47 @@ macro_rules! container {
 
 container!(sidebar_header, SidebarHeader);
 container!(sidebar_content, SidebarContent);
-container!(sidebar_group, SidebarGroup);
 container!(sidebar_group_label, SidebarGroupLabel);
+
+/// A story's `SidebarGroup`. React sets a `SidebarGroupAction` beside the
+/// label, as the group's child; GPUI's heading carries it, so the action is
+/// drawn first and handed to the group's label.
+fn sidebar_group(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
+    let children = node.children();
+    let is = |child: &Value, name: &str| child["$el"].as_str() == Some(name);
+    let path = |index: usize| format!("{}/{index}", node.path);
+    let action_at = children
+        .iter()
+        .position(|child| is(child, "SidebarGroupAction"))
+        .filter(|_| children.iter().any(|child| is(child, "SidebarGroupLabel")));
+    let mut action =
+        action_at.map(|index| draw(&children[index], &node.ctx, &path(index), window, cx));
+    let mut group = SidebarGroup::new();
+    for (index, child) in children.iter().enumerate() {
+        if Some(index) == action_at {
+            continue;
+        }
+        let element = match action.take() {
+            Some(action) if is(child, "SidebarGroupLabel") => {
+                let label = Node {
+                    json: child,
+                    ctx: node.ctx.clone(),
+                    path: path(index),
+                };
+                let heading = SidebarGroupLabel::new()
+                    .children(label.kids(window, cx))
+                    .action(action);
+                specimen::wrap(child.get("$at"), heading, &label.path)
+            }
+            pending => {
+                action = pending;
+                draw(child, &node.ctx, &path(index), window, cx)
+            }
+        };
+        group = group.child(element);
+    }
+    group.into_any_element()
+}
 container!(sidebar_group_content, SidebarGroupContent);
 container!(sidebar_menu, SidebarMenu);
 container!(sidebar_menu_sub, SidebarMenuSub);

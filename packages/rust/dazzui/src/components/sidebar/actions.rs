@@ -11,7 +11,8 @@ struct ActionButton {
     size: Size,
 }
 
-/// An icon button on the trailing edge of a group's heading.
+/// An icon button on the trailing edge of a group's heading — handed to
+/// [`SidebarGroupLabel::action`], which gives it a column of its own.
 #[derive(IntoElement)]
 pub struct SidebarGroupAction {
     action: ActionButton,
@@ -68,13 +69,7 @@ impl RenderOnce for SidebarGroupAction {
         if icon_column(cx) {
             return div().into_any_element();
         }
-        let t = cx.theme();
-        let top = t.spacing_1;
-        let right = t.spacing_2_5;
-        self.action
-            .button
-            .decorate(move |button, _, _| button.absolute().top(px(top)).right(px(right)))
-            .into_any_element()
+        self.action.button.into_any_element()
     }
 }
 impl RenderOnce for SidebarMenuAction {

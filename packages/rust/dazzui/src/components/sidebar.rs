@@ -737,14 +737,27 @@ impl RenderOnce for SidebarGroup {
 
 /// A group's heading: a faint `SectionLabel` on the rows' own inset. Gone
 /// once only the glyphs show.
+///
+/// Its line reserves `sidebar.group-label-height` — a step of the control
+/// scale, the height of the button a heading can carry — so the label and
+/// that button share a centre. A heading with an [`action`](Self::action)
+/// is a row of two columns: the label taking what is left, wrapping before
+/// it reaches the button, and the button a column of its own.
 #[derive(IntoElement, Default)]
 pub struct SidebarGroupLabel {
     children: Vec<AnyElement>,
+    action: Option<AnyElement>,
 }
 
 impl SidebarGroupLabel {
     pub fn new() -> Self {
         SidebarGroupLabel::default()
+    }
+
+    /// The button on the heading's trailing edge — a [`SidebarGroupAction`].
+    pub fn action(mut self, action: impl IntoElement) -> Self {
+        self.action = Some(action.into_any_element());
+        self
     }
 }
 
@@ -761,15 +774,34 @@ impl RenderOnce for SidebarGroupLabel {
         if icon_column(cx) {
             return div().into_any_element();
         }
-        div()
+        let label = div()
             .flex()
             .flex_none()
             .items_center()
+            .min_h(px(t.sidebar_group_label_height))
             .py(px(t.spacing_1))
             .px(px(t.spacing_2_5))
             .type_style(t.label_small)
             .text_color(t.color_content_faint.hsla())
-            .children(self.children)
+            // A column, so the text is handed the label's width and wraps
+            // in it: a row's text item never shrinks below its full advance.
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .flex_1()
+                    .min_w_0()
+                    .children(self.children),
+            );
+        let Some(action) = self.action else {
+            return label.into_any_element();
+        };
+        div()
+            .flex()
+            .flex_none()
+            .items_center()
+            .child(label.flex_1().min_w_0())
+            .child(div().flex().flex_none().ml(px(t.spacing_1)).child(action))
             .into_any_element()
     }
 }

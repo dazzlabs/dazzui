@@ -1205,13 +1205,15 @@ private struct SidebarLabelNode: View {
   var body: some View {
     if sidebar.showsLabels {
       // `SidebarGroupLabel` is the faint section label, stretched to the
-      // group the way a flex row is.
+      // group the way a flex row is, on the line `sidebar.group-label-height`
+      // reserves.
       HStack(spacing: 0) {
         SectionLabel(faint: true) { Text(node.text) }
         Spacer(minLength: 0)
       }
       .padding(.vertical, theme.vars.spacing1)
       .padding(.horizontal, theme.vars.spacing25)
+      .frame(minHeight: theme.vars.sidebarGroupLabelHeight)
     }
   }
 }
