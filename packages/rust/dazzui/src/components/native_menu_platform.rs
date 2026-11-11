@@ -130,11 +130,11 @@ pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> 
             }
             // Nativeapi emits the choice on the item. The menu itself reports
             // when tracking ends.
-            let events = events.clone();
+            let queue = events.clone();
             let index_at = *index;
             item.add_listener(move |event| {
                 if matches!(event, MenuEvent::ItemClicked { .. }) {
-                    events.push(NativeMenuEvent::Clicked(index_at));
+                    queue.push(NativeMenuEvent::Clicked(index_at));
                 }
             });
             *index += 1;
