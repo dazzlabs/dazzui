@@ -65,63 +65,98 @@ pub(crate) fn window_ptr(window: &Window) -> usize {
 
 /// One row as the OS will wear it: the label with the hint appended for
 /// display — never an accelerator registered with the OS — and the state
-/// the row's checkbox column shows.
+/// the row's checkbox column shows. A row holding `children` presents as a
+/// submenu; the nesting is the OS's own.
 pub(crate) struct Row {
     label: String,
     enabled: bool,
     checked: Option<bool>,
+    children: Vec<Row>,
 }
 
 pub(crate) fn rows_of(entries: &[NativeMenuEntry]) -> Vec<Row> {
-    entries
-        .iter()
-        .map(|entry| {
-            let mut label = entry.label.clone();
-            if let Some(hint) = &entry.hint {
-                label.push('\t');
-                label.push_str(hint);
-            }
-            Row {
-                label,
-                enabled: entry.enabled && !entry.heading,
-                checked: entry.checked,
-            }
-        })
-        .collect()
+    fn rows(entries: &[NativeMenuEntry]) -> Vec<Row> {
+        entries
+            .iter()
+            .map(|entry| {
+                let mut label = entry.label.clone();
+                if let Some(hint) = &entry.hint {
+                    label.push('\t');
+                    label.push_str(hint);
+                }
+                Row {
+                    label,
+                    enabled: entry.enabled && !entry.heading,
+                    checked: entry.checked,
+                    children: rows(&entry.children),
+                }
+            })
+            .collect()
+    }
+    rows(entries)
 }
 
 /// The menu those rows become. Headings present disabled; a row with a
 /// check state presents as a checkbox even when unchecked, so the column
-/// stays aligned. `None` when the OS refused to build it.
+/// stays aligned. A row with `children` presents as a submenu. Click
+/// indices run depth-first — a heading takes its slot like any other row —
+/// so the walk here and the dispatch walk in `present_native_menu` read one
+/// order. `None` when the OS refused to build it.
 pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> {
-    let menu = Menu::new()?;
-    let mut items = Vec::new();
-    for (index, row) in rows.iter().enumerate() {
-        let item_type = if row.checked.is_some() {
-            MenuItemType::Checkbox
-        } else {
-            MenuItemType::Normal
-        };
-        let item = MenuItem::with_label_and_type(&row.label, item_type)?;
-        item.set_enabled(row.enabled);
-        if let Some(checked) = row.checked {
-            item.set_state(if checked {
-                MenuItemState::Checked
+    fn build(
+        rows: &[Row],
+        events: &EventQueue,
+        index: &mut usize,
+    ) -> Option<(Menu, Vec<MenuItem>, Vec<Menu>)> {
+        let menu = Menu::new()?;
+        let mut items = Vec::new();
+        let mut submenus = Vec::new();
+        for row in rows {
+            let item_type = if row.checked.is_some() {
+                MenuItemType::Checkbox
+            } else if !row.children.is_empty() {
+                MenuItemType::Submenu
             } else {
-                MenuItemState::Unchecked
-            });
-        }
-        // Nativeapi emits the choice on the item. The menu itself reports
-        // when tracking ends.
-        let events = events.clone();
-        item.add_listener(move |event| {
-            if matches!(event, MenuEvent::ItemClicked { .. }) {
-                events.push(NativeMenuEvent::Clicked(index));
+                MenuItemType::Normal
+            };
+            let item = MenuItem::with_label_and_type(&row.label, item_type)?;
+            item.set_enabled(row.enabled);
+            if let Some(checked) = row.checked {
+                item.set_state(if checked {
+                    MenuItemState::Checked
+                } else {
+                    MenuItemState::Unchecked
+                });
             }
-        });
-        menu.add_item(Some(&item));
-        items.push(item);
+            // Nativeapi emits the choice on the item. The menu itself reports
+            // when tracking ends.
+            let events = events.clone();
+            let index_at = *index;
+            item.add_listener(move |event| {
+                if matches!(event, MenuEvent::ItemClicked { .. }) {
+                    events.push(NativeMenuEvent::Clicked(index_at));
+                }
+            });
+            *index += 1;
+            if !row.children.is_empty() {
+                let (submenu, children, nested) = build(&row.children, events, index)?;
+                item.set_submenu(Some(&submenu));
+                // The item holds the submenu on the native side; the handle
+                // stays collected so the Rust wrapper cannot drop it out
+                // from under a menu that is still out.
+                submenus.push(submenu);
+                submenus.extend(nested);
+                items.extend(children);
+            }
+            menu.add_item(Some(&item));
+            items.push(item);
+        }
+        Some((menu, items, submenus))
     }
+    let mut index = 0usize;
+    let (menu, items, submenus) = build(rows, events, &mut index)?;
+    // Only the root reports the end of tracking; a submenu closing is part
+    // of the same session.
     let events = events.clone();
     let listener = menu.add_listener(move |event| {
         if matches!(event, MenuEvent::Closed { .. }) {
@@ -131,6 +166,7 @@ pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> 
     Some(LiveMenu {
         menu,
         _items: items,
+        _submenus: submenus,
         listener,
     })
 }
@@ -141,6 +177,7 @@ pub(crate) fn build_menu(rows: &[Row], events: &EventQueue) -> Option<LiveMenu> 
 pub(crate) struct LiveMenu {
     menu: Menu,
     _items: Vec<MenuItem>,
+    _submenus: Vec<Menu>,
     listener: ListenerId,
 }
 

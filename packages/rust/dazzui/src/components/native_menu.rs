@@ -69,9 +69,10 @@ pub fn provide_menu_presentation(
     provide(presentation, child)
 }
 
-/// One row of a menu, flattened for the OS popup. A heading is a group's
-/// caption; it presents disabled. This is the seam a [`NativeMenuBackend`]
-/// reads and a test drives.
+/// One row of a menu, as the OS popup wears it. A heading is a group's
+/// caption; it presents disabled. A row holding [`NativeMenuEntry::children`]
+/// presents as a submenu — the nesting is the OS's own. This is the seam a
+/// [`NativeMenuBackend`] reads and a test drives.
 #[derive(Clone)]
 pub struct NativeMenuEntry {
     pub label: String,
@@ -84,6 +85,8 @@ pub struct NativeMenuEntry {
     pub heading: bool,
     /// Run on the main thread when the row is chosen.
     pub on_select: Option<Press>,
+    /// The rows a right arrow opens beside this one.
+    pub children: Vec<NativeMenuEntry>,
 }
 
 impl NativeMenuEntry {
@@ -95,6 +98,7 @@ impl NativeMenuEntry {
             hint: None,
             heading: false,
             on_select: None,
+            children: Vec::new(),
         }
     }
 
@@ -124,6 +128,22 @@ impl NativeMenuEntry {
     pub fn on_select(mut self, on_select: Option<Press>) -> Self {
         self.on_select = on_select;
         self
+    }
+
+    pub fn children(mut self, children: Vec<NativeMenuEntry>) -> Self {
+        self.children = children;
+        self
+    }
+}
+
+impl NativeMenuEntry {
+    /// Every row, depth-first: the walk the OS build and the click dispatch
+    /// must agree on, a heading taking its slot like any other row.
+    pub fn walk(&self, visit: &mut impl FnMut(&NativeMenuEntry)) {
+        visit(self);
+        for child in &self.children {
+            child.walk(visit);
+        }
     }
 }
 
@@ -458,17 +478,15 @@ pub(crate) fn present_native_menu(
         window_ptr: native_window_ptr(window),
         entries,
     };
-    let selects: Rc<Vec<Option<Press>>> = Rc::new(
-        request
-            .entries
-            .iter()
-            .map(|entry| {
-                (!entry.heading)
-                    .then_some(entry.on_select.clone())
-                    .flatten()
-            })
-            .collect(),
-    );
+    // The click dispatch reads the same depth-first walk the OS build made,
+    // a heading taking its slot like any other row.
+    let mut slots = Vec::new();
+    for entry in &request.entries {
+        entry.walk(&mut |row| {
+            slots.push((!row.heading).then(|| row.on_select.clone()).flatten());
+        });
+    }
+    let selects: Rc<Vec<Option<Press>>> = Rc::new(slots);
     let queue = EventQueue::new();
     let backend = backend();
 

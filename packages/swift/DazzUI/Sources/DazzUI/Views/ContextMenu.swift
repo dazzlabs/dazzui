@@ -47,9 +47,7 @@ public struct ContextMenu<Content: View>: View {
       .overlay(alignment: .topLeading) {
         if open && !presentation.usesNativeMenus {
           MenuSheet {
-            ForEach(items) { item in
-              MenuRow(item: item, tint: tint) { open = false }
-            }
+            MenuRows(items: items, tint: tint) { open = false }
           }
           // At the pointer, not against an edge: the offset is the press's own
           // position inside this region.

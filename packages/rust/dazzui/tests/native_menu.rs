@@ -106,12 +106,16 @@ impl NativeMenuBackend for Fake {
 
     fn present(&self, request: &NativeMenuRequest, events: &dazzui::EventQueue) -> bool {
         let mut inner = self.inner.borrow_mut();
+        // The rows as the OS wears them: the depth-first walk the click
+        // dispatch reads, a submenu's rows following their branch.
+        let mut rows = Vec::new();
+        for entry in &request.entries {
+            entry.walk(&mut |row| {
+                rows.push((row.label.clone(), row.enabled, row.checked));
+            });
+        }
         inner.requests.push(Captured {
-            rows: request
-                .entries
-                .iter()
-                .map(|entry| (entry.label.clone(), entry.enabled, entry.checked))
-                .collect(),
+            rows,
             anchor: request.anchor,
             align_end: request.align_end,
         });
@@ -145,6 +149,7 @@ struct Stage {
 #[derive(Clone, Copy, PartialEq)]
 enum Kind {
     Menu,
+    Nested,
     Menubar,
     Select,
     Context,
@@ -204,6 +209,36 @@ impl Render for Stage {
                             MenuItem::new("Duplicate")
                                 .checked(false)
                                 .on_select(push("duplicate")),
+                        ])
+                        .on_open_change({
+                            let log = self.log.clone();
+                            move |open, _, _| log.borrow_mut().push(format!("open:{open}"))
+                        }),
+                )
+                .into_any_element(),
+            Kind::Nested => div()
+                .child(
+                    Menu::new("nested")
+                        .trigger(|press, _, _, _| {
+                            div()
+                                .id("menu-trigger")
+                                .debug_selector(|| "menu-trigger".into())
+                                .on_click(move |_, window, cx| press(window, cx))
+                                .child("Open")
+                                .into_any_element()
+                        })
+                        .items([
+                            MenuItem::new("Rename").on_select(push("rename")),
+                            MenuItem::new("Move to").submenu([
+                                MenuItem::new("Projects").submenu([
+                                    MenuItem::new("DazzUI").on_select(push("dazzui")),
+                                    MenuItem::new("Shell").disabled(true),
+                                ]),
+                                MenuItem::new("Archive").on_select(push("archive")),
+                            ]),
+                            MenuItem::new("Delete")
+                                .disabled(true)
+                                .on_select(push("delete")),
                         ])
                         .on_open_change({
                             let log = self.log.clone();
@@ -393,6 +428,38 @@ fn align_end_puts_the_right_edge_at_the_trigger(cx: &mut TestAppContext) {
         captured.anchor,
         setup.cx.debug_bounds("menu-trigger").unwrap(),
         "the anchor is the trigger as the frame painted it"
+    );
+}
+
+#[gpui::test]
+fn a_native_menu_walks_its_submenus_and_dispatches_their_rows(cx: &mut TestAppContext) {
+    let mut setup = setup(Kind::Nested, cx);
+    click(&mut setup, "menu-trigger");
+    setup.cx.run_until_parked();
+
+    assert_eq!(setup.fake.request_count(), 1);
+    assert_eq!(
+        setup.fake.request(0).rows,
+        vec![
+            ("Rename".to_string(), true, None),
+            ("Move to".to_string(), true, None),
+            ("Projects".to_string(), true, None),
+            ("DazzUI".to_string(), true, None),
+            ("Shell".to_string(), false, None),
+            ("Archive".to_string(), true, None),
+            ("Delete".to_string(), false, None),
+        ],
+        "depth-first: a submenu's rows follow their branch"
+    );
+
+    // The OS reports a nested row's choice by its depth-first slot; the
+    // session closes with everything else.
+    setup.fake.dismiss_before(3);
+    drain(&mut setup);
+    assert_eq!(
+        *setup.log.borrow(),
+        ["open:true", "dazzui", "open:false"],
+        "the choice three levels down runs, then the close is heard"
     );
 }
 

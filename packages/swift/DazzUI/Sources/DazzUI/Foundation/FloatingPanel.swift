@@ -183,9 +183,17 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
         let y = side == .bottom ? anchor.minY - gap - sheet.height : anchor.maxY + gap
         return NSPoint(x: x, y: y)
       case .leading, .trailing:
-        // Centred on the cross axis, the way `anchored` places a side panel.
         let x = side == .leading ? anchor.minX - gap - sheet.width : anchor.maxX + gap
-        return NSPoint(x: x, y: anchor.midY - sheet.height / 2)
+        // A submenu — the first side panel — aligns its top edge with its
+        // row's, the way Base UI aligns `inline-end`/`start`; `center` is the
+        // way `anchored` places a side panel.
+        let y: CGFloat
+        switch align {
+        case .start: y = anchor.maxY - sheet.height
+        case .center: y = anchor.midY - sheet.height / 2
+        case .end: y = anchor.minY
+        }
+        return NSPoint(x: x, y: y)
       }
     }
   }

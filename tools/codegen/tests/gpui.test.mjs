@@ -69,6 +69,7 @@ test('GPUI sidebar extensions retain shared addresses and compile nested row act
       story.scenes.map(scene => scene.id),
     ]),
     [
+      ['menu', ['menu/3', 'menu/4']],
       [
         'number-field',
         [
@@ -103,6 +104,23 @@ test('GPUI sidebar extensions retain shared addresses and compile nested row act
     specimens.find(specimen => specimen.axes.size === 'medium').axes.tint,
     'success'
   )
+})
+
+test('GPUI compiles the menu submenu extension with its nested items', async () => {
+  const { readStories } = await import('../stories.mjs')
+  const stories = await readStories(root, { platform: 'gpui' })
+  const story = stories.find(story => story.id === 'menu')
+  assert.equal(story.examples.length, 5)
+  const menu = find(story.examples.at(-2).scene.content, 'Menu')
+  const branch = menu.props.items.find(item => item.label === 'Move to')
+  assert.equal(branch.items.length, 2)
+  const nested = branch.items.find(item => item.label === 'Projects')
+  assert.deepEqual(
+    nested.items.map(item => item.label),
+    ['DazzUI', 'Native shell']
+  )
+  assert.ok(menu.props.items.at(-1).disabled)
+  assert.deepEqual(unsupported([story]), [])
 })
 
 test('GPUI compiles the existing theme swatch example and rejects unknown option fields', async () => {

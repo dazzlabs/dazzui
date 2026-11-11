@@ -479,6 +479,13 @@ pub struct PopupState {
     typeahead_timeout: Duration,
     hovered: [bool; 2],
     timer: Option<Task<()>>,
+    /// Which branch row of a menu sheet of this state is open. A sheet
+    /// keeps one level of submenu at a time; the level itself hangs beside
+    /// it in `child`.
+    pub(crate) open_submenu: Option<usize>,
+    /// The level this sheet opened, with what closes it — descendants
+    /// first, then it, the keyboard stepping back a level at a time.
+    pub(crate) child: Option<(Entity<PopupState>, Press)>,
 }
 
 impl PopupState {
@@ -497,6 +504,8 @@ impl PopupState {
             ),
             hovered: [false; 2],
             timer: None,
+            open_submenu: None,
+            child: None,
         }
     }
 
@@ -526,6 +535,8 @@ impl PopupState {
         self.highlighted = highlighted;
         self.typed.clear();
         self.timer = None;
+        // A fresh level opens with no branch of its own open.
+        self.open_submenu = None;
         window.focus(&self.focus);
         cx.notify();
     }
@@ -538,12 +549,37 @@ impl PopupState {
         }
         self.open = false;
         self.highlighted = None;
+        self.open_submenu = None;
+        self.child = None;
         if let Some(restore) = self.restore.take()
             && self.focus.contains_focused(window, cx)
         {
             window.focus(&restore);
         }
         cx.notify();
+    }
+
+    /// Remembers the submenu level a menu sheet of this state opened, with
+    /// what closes it. Rebuilt every frame the sheet draws.
+    pub(crate) fn attach_child(&mut self, child: Entity<PopupState>, close: Press) {
+        self.child = Some((child, close));
+    }
+
+    /// Closes the level below — its descendants first, then it, the
+    /// keyboard stepping back a level at a time. Whether there was one.
+    pub(crate) fn close_child(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        let Some((_, close)) = self.child.take() else {
+            return false;
+        };
+        self.open_submenu = None;
+        cx.notify();
+        close(window, cx);
+        true
+    }
+
+    /// Closes every level below this one.
+    pub(crate) fn close_descendants(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        while self.close_child(window, cx) {}
     }
 
     /// Cancel a pending hover even when the popup has not opened yet.
@@ -682,6 +718,41 @@ pub fn dismissable(
     on_open_change: Option<OnOpenChange>,
     cx: &App,
 ) -> Provide {
+    dismissable_with(
+        sheet,
+        state,
+        keep,
+        on_open_change,
+        DismissOverrides::default(),
+        cx,
+    )
+}
+
+/// What a sheet nested in another runs instead of the default close — the
+/// closing a parent level hands down, and the sheet its own press is judged
+/// against.
+#[derive(Default)]
+pub struct DismissOverrides {
+    /// Runs on an outside press instead of hide-and-notify. A submenu's is
+    /// the whole menu's close: an outside press takes the entire tree.
+    pub outside: Option<Press>,
+    /// Runs on Escape instead of hide-and-notify. A submenu's closes it
+    /// alone and hands the keyboard back to its parent.
+    pub escape: Option<Press>,
+    /// The sheet this one sits inside, as it was drawn: a press there is
+    /// not outside — it belongs to the parent's rows, not to this sheet's
+    /// dismissal.
+    pub outer: Option<Anchor>,
+}
+
+pub fn dismissable_with(
+    sheet: Stateful<Div>,
+    state: &Entity<PopupState>,
+    keep: &Anchor,
+    on_open_change: Option<OnOpenChange>,
+    overrides: DismissOverrides,
+    cx: &App,
+) -> Provide {
     let focus = state.read(cx).focus.clone();
     if let Some(scope) = scoped::<Rc<crate::foundation::focus::ModalScope>>(cx) {
         scope.add_popup(&focus);
@@ -696,19 +767,33 @@ pub fn dismissable(
         .track_focus(&focus)
         .occlude()
         .on_mouse_down_out(move |event, window, cx| {
-            if keep.contains(event.position) || inner.contains(event.position) {
+            if keep.contains(event.position)
+                || inner.contains(event.position)
+                || overrides
+                    .outer
+                    .as_ref()
+                    .is_some_and(|outer| outer.contains(event.position))
+            {
                 return;
             }
-            outside.update(cx, |state, cx| state.hide(window, cx));
-            if let Some(notify) = &notify {
-                notify(false, window, cx);
+            if let Some(close) = &overrides.outside {
+                close(window, cx);
+            } else {
+                outside.update(cx, |state, cx| state.hide(window, cx));
+                if let Some(notify) = &notify {
+                    notify(false, window, cx);
+                }
             }
         })
         .on_key_down(move |event: &KeyDownEvent, window, cx| {
             if event.keystroke.key == "escape" {
-                escape.update(cx, |state, cx| state.hide(window, cx));
-                if let Some(notify) = &on_open_change {
-                    notify(false, window, cx);
+                if let Some(escape_press) = &overrides.escape {
+                    escape_press(window, cx);
+                } else {
+                    escape.update(cx, |state, cx| state.hide(window, cx));
+                    if let Some(notify) = &on_open_change {
+                        notify(false, window, cx);
+                    }
                 }
                 cx.stop_propagation();
             }
@@ -726,6 +811,7 @@ pub struct PopupRow {
     icon: Option<AnyElement>,
     shortcut: Option<AnyElement>,
     check: Option<bool>,
+    branch: bool,
     highlighted: bool,
     disabled: bool,
     tint: Tint,
@@ -741,6 +827,7 @@ impl PopupRow {
             icon: None,
             shortcut: None,
             check: None,
+            branch: false,
             highlighted: false,
             disabled: false,
             tint: Tint::Neutral,
@@ -763,6 +850,13 @@ impl PopupRow {
     /// without one has no column at all.
     pub fn check(mut self, checked: bool) -> Self {
         self.check = Some(checked);
+        self
+    }
+
+    /// Marks the row a branch: it wears the chevron where a leaf wears its
+    /// shortcut, and what it opens is the drawer's own business.
+    pub fn branch(mut self) -> Self {
+        self.branch = true;
         self
     }
 
@@ -847,6 +941,19 @@ impl RenderOnce for PopupRow {
                 .line_height(px(t.label_small.size))
                 .child(shortcut)
         });
+        // `.dz-popup__chevron`: what a branch wears where a leaf wears its
+        // shortcut — an affordance, in the icon's ink.
+        let branch = self.branch.then(|| {
+            div()
+                .flex_none()
+                .ml_auto()
+                .text_color(if self.disabled {
+                    content
+                } else {
+                    t.color_content_muted.hsla()
+                })
+                .child(Icon::new(glyphs::CHEVRON_RIGHT_12_REGULAR).size(t.icon_small))
+        });
         let mut row = div()
             .id(self.id)
             .flex()
@@ -877,7 +984,8 @@ impl RenderOnce for PopupRow {
                     .text_ellipsis()
                     .child(crate::foundation::text_child(self.label)),
             )
-            .children(shortcut);
+            .children(shortcut)
+            .children(branch);
         if !self.disabled {
             if let Some(on_hover) = self.on_hover {
                 row = row.on_hover(move |hovered, window, cx| on_hover(*hovered, window, cx));
@@ -919,6 +1027,12 @@ pub fn group_label_height(t: &ThemeTokens) -> f32 {
 /// beside the state its trigger keeps.
 pub fn part_id(id: &ElementId, part: &'static str) -> ElementId {
     ElementId::NamedChild(Box::new(id.clone()), part.into())
+}
+
+/// An id for the part at `index` — the branch row a submenu level hangs
+/// from, unique per sibling and per level.
+pub fn part_index(id: &ElementId, part: &'static str, index: usize) -> ElementId {
+    ElementId::NamedChild(Box::new(part_id(id, part)), index.to_string().into())
 }
 
 /// Whether a popup is open: `controlled` when the caller holds the state —

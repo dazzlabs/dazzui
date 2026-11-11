@@ -31,10 +31,15 @@ public struct MenuItem: Identifiable {
   /// Trailing hint; displaying it does not register a keyboard shortcut.
   public var shortcut: AnyView?
   /// Radio-style check state. Set it on every item of a group, including the
-  /// unchecked ones, so the leading column stays aligned.
+  /// unchecked ones, so the leading column stays aligned. Checks are a
+  /// flat-list feature: a list holding a submenu renders plain rows.
   public var checked: Bool?
   public var disabled: Bool
   public var onSelect: (() -> Void)?
+  /// What opens beside the row: the row becomes a branch wearing the
+  /// chevron, and its list holds branches of its own — a menu nests as deep
+  /// as its data does.
+  public var items: [MenuItem]?
 
   public init(
     label: String,
@@ -42,7 +47,8 @@ public struct MenuItem: Identifiable {
     shortcut: AnyView? = nil,
     checked: Bool? = nil,
     disabled: Bool = false,
-    onSelect: (() -> Void)? = nil
+    onSelect: (() -> Void)? = nil,
+    items: [MenuItem]? = nil
   ) {
     self.label = label
     self.icon = icon
@@ -50,6 +56,7 @@ public struct MenuItem: Identifiable {
     self.checked = checked
     self.disabled = disabled
     self.onSelect = onSelect
+    self.items = items
   }
 
   /// The common row: a label, optionally an SF Symbol and a shortcut set as
@@ -60,7 +67,8 @@ public struct MenuItem: Identifiable {
     shortcut: String? = nil,
     checked: Bool? = nil,
     disabled: Bool = false,
-    onSelect: (() -> Void)? = nil
+    onSelect: (() -> Void)? = nil,
+    items: [MenuItem]? = nil
   ) {
     self.init(
       label: label,
@@ -68,7 +76,8 @@ public struct MenuItem: Identifiable {
       shortcut: shortcut.map { AnyView(Text($0)) },
       checked: checked,
       disabled: disabled,
-      onSelect: onSelect
+      onSelect: onSelect,
+      items: items
     )
   }
 }
@@ -126,9 +135,59 @@ public struct Menu<Trigger: View>: View {
 
   private var panel: some View {
     MenuSheet {
-      ForEach(items) { item in
-        MenuRow(item: item, tint: tint) { open = false }
+      MenuRows(items: items, tint: tint) { open = false }
+    }
+  }
+}
+
+/// One level of a menu's rows, and the branch rows' child panels.
+///
+/// The open branch lives here rather than in a row, so opening one closes
+/// the one that was open — as a submenu behaves, on the pointer as well as
+/// from a press. Each level keeps its own; a child panel's rows are another
+/// `MenuRows`, whose leaf presses still run the root's dismiss so choosing
+/// anything closes the whole menu.
+struct MenuRows: View {
+  let items: [MenuItem]
+  let tint: Tint
+  let dismiss: () -> Void
+
+  @Environment(\.theme) private var theme
+  @State private var open: String?
+  @State private var hoverTask: Task<Void, Never>?
+
+  var body: some View {
+    ForEach(items) { item in
+      MenuRow(item: item, tint: tint, childOpen: child(for: item)) {
+        dismiss()
       }
+      .onHover { hovering in
+        hover(item, hovered: hovering)
+      }
+    }
+  }
+
+  private func child(for item: MenuItem) -> Binding<Bool> {
+    Binding(
+      get: { open == item.id },
+      set: { shown in open = shown ? item.id : (open == item.id ? nil : open) }
+    )
+  }
+
+  /// Base UI opens a branch `100 ms` after the pointer arrives and closes
+  /// the open one the moment the pointer names another row.
+  private func hover(_ item: MenuItem, hovered: Bool) {
+    guard hovered else { return }
+    hoverTask?.cancel()
+    if item.items?.isEmpty == false {
+      hoverTask = Task {
+        try? await Task.sleep(for: .milliseconds(100))
+        guard !Task.isCancelled else { return }
+        open = item.id
+      }
+    } else {
+      open = nil
+      hoverTask = nil
     }
   }
 }
@@ -240,22 +299,37 @@ struct MenuEmpty: View {
 ///
 /// The row's corner is the panel's minus its padding, so the hover wash stays
 /// concentric with the panel edge.
+///
+/// A row whose item holds `items` is a branch: it wears the chevron where a
+/// leaf wears its shortcut, pressing it toggles its list, and the list hangs
+/// off it as a floating panel — a child window above the whole menu, the way
+/// Base UI portals a submenu above the page. `FloatingPanel` already counts
+/// presses inside a child panel as inside this one, and its Escape closes
+/// the child alone.
 struct MenuRow: View {
   let item: MenuItem
   let tint: Tint
+  /// Whether the row's submenu is open, when the row is a branch.
+  var childOpen: Binding<Bool>? = nil
   let dismiss: () -> Void
 
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
 
+  private var isBranch: Bool { item.items?.isEmpty == false }
+
   var body: some View {
     let vars = theme.vars
     let radius = vars.radiusLarge - vars.spacing1
 
-    Pressable(
+    let row = Pressable(
       action: {
-        item.onSelect?()
-        dismiss()
+        if let childOpen {
+          childOpen.wrappedValue.toggle()
+        } else {
+          item.onSelect?()
+          dismiss()
+        }
       },
       enabled: !item.disabled,
       cornerRadius: radius
@@ -274,12 +348,18 @@ struct MenuRow: View {
         }
         Text(item.label)
           .frame(maxWidth: .infinity, alignment: .leading)
-        if let shortcut = item.shortcut {
+        if let shortcut = item.shortcut, !isBranch {
           // A faint hint in the display cut — never a boxed key cap; a cap in
           // a row this short would be furniture.
           shortcut
             .font(.system(size: vars.labelSmall.size, weight: vars.labelSmall.weight))
             .foregroundStyle(vars.colorContentFaint)
+        }
+        if isBranch {
+          // `.dz-popup__chevron`: the affordance a branch wears where a leaf
+          // wears its shortcut.
+          Icon(.chevronRight12Regular, size: vars.iconSmall)
+            .foregroundStyle(vars.colorContentMuted)
         }
       }
       .font(vars.labelQuiet.font)
@@ -299,6 +379,25 @@ struct MenuRow: View {
       cornerRadius: radius,
       width: vars.focusWidth
     )
+
+    if let childOpen, let children = item.items, !children.isEmpty {
+      row
+        .floatingPanel(
+          isPresented: childOpen,
+          side: .trailing,
+          align: .start,
+          gap: vars.spacing1,
+          modal: true
+        ) {
+          MenuSheet {
+            MenuRows(items: children, tint: tint) {
+              dismiss()
+            }
+          }
+        }
+    } else {
+      row
+    }
   }
 
   /// The `normal` recipe, not `plain`. Both have no resting fill, but `plain`

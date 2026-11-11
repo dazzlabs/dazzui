@@ -809,7 +809,11 @@ func menuItems(_ n: Node, _ items: Value) -> [MenuItem] {
       shortcut: keyText(item["shortcut"]),
       checked: item["checked"].flatMap { $0 == .null ? nil : $0.truthy },
       disabled: item["disabled"]?.truthy ?? false,
-      onSelect: { n.context.run(item["onSelect"] ?? .null) }
+      onSelect: { n.context.run(item["onSelect"] ?? .null) },
+      items: item["items"].flatMap { value -> [MenuItem]? in
+        let children = menuItems(n, value)
+        return children.isEmpty ? nil : children
+      }
     )
   }
 }

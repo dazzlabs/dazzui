@@ -84,7 +84,8 @@ fn tooltip(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
 }
 
 /// A story's `MenuItem[]`: each row's label, icon, shortcut, check state,
-/// whether it is disabled, and what choosing it does.
+/// whether it is disabled, what choosing it does, and the rows a branch
+/// opens beside it.
 fn menu_items(
     node: &Node,
     items: Option<&Value>,
@@ -118,6 +119,10 @@ fn menu_items(
             if let Some(action) = item.get("onSelect").cloned() {
                 let ctx = ctx.clone();
                 row = row.on_select(move |window, cx| ctx.run(&action, &[], window, cx));
+            }
+            if let Some(children) = item.get("items") {
+                let part = format!("{part}.{index}.items");
+                row = row.submenu(menu_items(node, Some(children), &part, window, cx));
             }
             row
         })

@@ -165,6 +165,36 @@ final class MenuPresentationTests: XCTestCase {
     XCTAssertTrue(session.menu.items.allSatisfy { $0.view == nil && $0.keyEquivalent.isEmpty })
   }
 
+  func testNativeSubmenuBuildsNestedRowsAndDispatchesTheirChoice() throws {
+    var chosen: String?
+    let session = NativeMenuSession(
+      entries: [
+        .item(MenuItem("Rename")),
+        .item(
+          MenuItem(
+            label: "Move to", disabled: false,
+            items: [
+              MenuItem(
+                label: "Projects", disabled: false,
+                items: [
+                  MenuItem("DazzUI") { chosen = "DazzUI" },
+                  MenuItem("Shell"),
+                ]),
+              MenuItem("Archive"),
+            ])),
+      ], theme: .default)
+    let moveTo = try XCTUnwrap(session.menu.items[1].submenu)
+    XCTAssertEqual(moveTo.items.map(\.title), ["Projects", "Archive"])
+    let projects = try XCTUnwrap(moveTo.items[0].submenu)
+    XCTAssertEqual(projects.items.map(\.title), ["DazzUI", "Shell"])
+    // The nested row reports through the session like a top-level one, and
+    // the one-choice-per-session rule holds across levels.
+    projects.performActionForItem(at: 0)
+    XCTAssertEqual(chosen, "DazzUI")
+    projects.performActionForItem(at: 1)
+    XCTAssertEqual(chosen, "DazzUI")
+  }
+
   func testNativeSelectConversionUpdatesBindingAndKeepsMixedGroupOrder() {
     var selection = "a"
     let select = DazzUI.Select(

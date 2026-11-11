@@ -308,6 +308,246 @@ extension Stories {
               "$at": 0
             }
           }
+        },
+        {
+          "title": "Through two levels",
+          "note": "Hover opens a branch, and an arrow opens it from the keyboard; Escape closes one level, a press outside the whole menu.",
+          "demo": {
+            "content": {
+              "$el": "Menu",
+              "props": {
+                "trigger": {
+                  "$el": "Button",
+                  "children": [
+                    "Actions"
+                  ],
+                  "$at": 1
+                },
+                "items": [
+                  {
+                    "label": "Rename",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Edit20Regular"
+                        }
+                      },
+                      "$at": 2
+                    }
+                  },
+                  {
+                    "label": "Duplicate",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Copy20Regular"
+                        }
+                      },
+                      "$at": 3
+                    },
+                    "shortcut": {
+                      "$el": "KeyCap",
+                      "props": {
+                        "variant": "hint"
+                      },
+                      "children": [
+                        "⌘D"
+                      ],
+                      "$at": 4
+                    }
+                  },
+                  {
+                    "label": "Move to",
+                    "items": [
+                      {
+                        "label": "Projects",
+                        "items": [
+                          {
+                            "label": "DazzUI",
+                            "icon": {
+                              "$el": "Icon",
+                              "props": {
+                                "icon": {
+                                  "$icon": "Folder20Regular"
+                                }
+                              },
+                              "$at": 5
+                            }
+                          },
+                          {
+                            "label": "Native shell",
+                            "icon": {
+                              "$el": "Icon",
+                              "props": {
+                                "icon": {
+                                  "$icon": "Folder20Regular"
+                                }
+                              },
+                              "$at": 6
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Archive",
+                        "icon": {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Folder20Regular"
+                            }
+                          },
+                          "$at": 7
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Delete",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Delete20Regular"
+                        }
+                      },
+                      "$at": 8
+                    },
+                    "disabled": true
+                  }
+                ]
+              },
+              "$at": 0
+            }
+          }
+        },
+        {
+          "title": "A nested right click",
+          "demo": {
+            "content": {
+              "$el": "ContextMenu",
+              "props": {
+                "items": [
+                  {
+                    "label": "Rename",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Edit20Regular"
+                        }
+                      },
+                      "$at": 1
+                    }
+                  },
+                  {
+                    "label": "Duplicate",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Copy20Regular"
+                        }
+                      },
+                      "$at": 2
+                    },
+                    "shortcut": {
+                      "$el": "KeyCap",
+                      "props": {
+                        "variant": "hint"
+                      },
+                      "children": [
+                        "⌘D"
+                      ],
+                      "$at": 3
+                    }
+                  },
+                  {
+                    "label": "Move to",
+                    "items": [
+                      {
+                        "label": "Projects",
+                        "items": [
+                          {
+                            "label": "DazzUI",
+                            "icon": {
+                              "$el": "Icon",
+                              "props": {
+                                "icon": {
+                                  "$icon": "Folder20Regular"
+                                }
+                              },
+                              "$at": 4
+                            }
+                          },
+                          {
+                            "label": "Native shell",
+                            "icon": {
+                              "$el": "Icon",
+                              "props": {
+                                "icon": {
+                                  "$icon": "Folder20Regular"
+                                }
+                              },
+                              "$at": 5
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Archive",
+                        "icon": {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Folder20Regular"
+                            }
+                          },
+                          "$at": 6
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Delete",
+                    "icon": {
+                      "$el": "Icon",
+                      "props": {
+                        "icon": {
+                          "$icon": "Delete20Regular"
+                        }
+                      },
+                      "$at": 7
+                    },
+                    "disabled": true
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "$el": "Col",
+                  "props": {
+                    "width": "16rem"
+                  },
+                  "children": [
+                    {
+                      "$el": "Card",
+                      "props": {
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Right-click this card"
+                      ],
+                      "$at": 8
+                    }
+                  ]
+                }
+              ],
+              "$at": 0
+            }
+          }
         }
       ]
     }

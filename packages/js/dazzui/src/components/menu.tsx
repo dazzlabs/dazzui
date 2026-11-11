@@ -2,7 +2,7 @@ import { ContextMenu as ContextBase } from '@base-ui/react/context-menu'
 import { Menu as Base } from '@base-ui/react/menu'
 import { Menubar as BaseMenubar } from '@base-ui/react/menubar'
 import { mergeProps } from '@base-ui/react/merge-props'
-import { Checkmark12Filled } from '@fluentui/react-icons'
+import { Checkmark12Filled, ChevronRight12Regular } from '@fluentui/react-icons'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
@@ -15,11 +15,18 @@ export interface MenuItem {
   shortcut?: ReactNode
   /**
    * Radio-style check state. Set it on every item of a group, including the
-   * unchecked ones, so the leading column stays aligned.
+   * unchecked ones, so the leading column stays aligned. Checks are a
+   * flat-list feature: a list holding a submenu renders plain rows.
    */
   checked?: boolean
   disabled?: boolean
   onSelect?: () => void
+  /**
+   * What a right arrow opens: the row becomes a branch wearing the chevron,
+   * and its list hangs beside it, itself holding branches — a menu nests as
+   * deep as its data does.
+   */
+  items?: MenuItem[]
 }
 
 /** A trigger element, or a function of the open state that returns one. */
@@ -34,12 +41,22 @@ export type MenuTrigger =
  * inside their own popup: a `ContextMenu`'s parts *are* the menu's — Base UI
  * re-exports them — so one row renderer serves all three, and a right-click
  * menu cannot drift from the one a button opens.
+ *
+ * A row holding `items` is a branch: a `SubmenuTrigger` whose list hangs
+ * beside it, itself drawn by this function — Base UI does the opening on
+ * hover, the arrows across levels, and the Escape that closes one level.
  */
-function menuRows(items: MenuItem[]): ReactNode {
+function menuRows(
+  items: MenuItem[],
+  tint: Tint,
+  className?: string
+): ReactNode {
   const checkedIndex = items.findIndex(item => item.checked)
   const hasChecks = items.some(item => item.checked !== undefined)
+  const hasBranches = items.some(item => item.items?.length)
 
   const rows = items.map((item, index) => {
+    const branch = item.items?.length
     const content = (
       <>
         {item.checked === undefined ? null : (
@@ -52,8 +69,40 @@ function menuRows(items: MenuItem[]): ReactNode {
         {item.shortcut ? (
           <span className="dz-popup__shortcut">{item.shortcut}</span>
         ) : null}
+        {branch ? (
+          <span aria-hidden className="dz-popup__chevron">
+            <ChevronRight12Regular />
+          </span>
+        ) : null}
       </>
     )
+
+    if (branch) {
+      return (
+        <Base.SubmenuRoot key={item.label}>
+          <Base.SubmenuTrigger
+            disabled={item.disabled}
+            className="dz-popup__item"
+          >
+            {content}
+          </Base.SubmenuTrigger>
+          <Base.Portal>
+            <Base.Positioner
+              side="inline-end"
+              align="start"
+              className="dz-popup-positioner"
+            >
+              <Base.Popup
+                data-tint={tint}
+                className={cx('dz-popup', 'dz-menu', className)}
+              >
+                {menuRows(item.items!, tint, className)}
+              </Base.Popup>
+            </Base.Positioner>
+          </Base.Portal>
+        </Base.SubmenuRoot>
+      )
+    }
 
     return item.checked === undefined ? (
       <Base.Item
@@ -77,7 +126,9 @@ function menuRows(items: MenuItem[]): ReactNode {
     )
   })
 
-  return hasChecks ? (
+  // The radio group is a flat list's shape: a `SubmenuTrigger` is not a radio
+  // choice, and a list holding one renders plain rows.
+  return hasChecks && !hasBranches ? (
     <Base.RadioGroup
       value={checkedIndex}
       onValueChange={(next: number) => items[next]?.onSelect?.()}
@@ -152,7 +203,7 @@ export function Menu({
             data-tint={tint}
             className={cx('dz-popup', 'dz-menu', className)}
           >
-            {menuRows(items)}
+            {menuRows(items, tint, className)}
           </Base.Popup>
         </Base.Positioner>
       </Base.Portal>
@@ -197,7 +248,7 @@ export function ContextMenu({
             data-tint={tint}
             className={cx('dz-popup', 'dz-menu', className)}
           >
-            {menuRows(items)}
+            {menuRows(items, tint, className)}
           </ContextBase.Popup>
         </ContextBase.Positioner>
       </ContextBase.Portal>

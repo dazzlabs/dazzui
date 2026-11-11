@@ -7,6 +7,7 @@
 //! roves its highlight with the arrow keys, Home and End, chooses with Enter
 //! or Space, and types ahead.
 
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use gpui::{
@@ -20,10 +21,10 @@ use crate::components::native_menu::{
     native_press, native_state_for, present_native_menu, set_on_dismiss, set_open,
 };
 use crate::components::popup::{
-    Align, Anchor, OnOpenChange, Placement, PopupRow, PopupState, Press, Side, TriggerFn,
-    dismissable, measured, open_state, part_id, positioned, sheet, toggle_press,
+    Align, Anchor, DismissOverrides, OnOpenChange, Placement, PopupRow, PopupState, Press, Side,
+    TriggerFn, dismissable_with, measured, open_state, part_id, part_index, positioned, sheet,
+    toggle_press,
 };
-use crate::foundation::scope::Provide;
 use crate::foundation::{Tint, focus_visible, pointer_down, with_outline};
 use crate::theme::ActiveTheme;
 
@@ -38,6 +39,9 @@ pub struct MenuItem {
     checked: Option<bool>,
     disabled: bool,
     on_select: Option<Press>,
+    /// What a right arrow opens: the row becomes a branch wearing the
+    /// chevron, and its list hangs beside it, itself holding branches.
+    children: Vec<MenuItem>,
 }
 
 impl MenuItem {
@@ -50,6 +54,7 @@ impl MenuItem {
             checked: None,
             disabled: false,
             on_select: None,
+            children: Vec::new(),
         }
     }
 
@@ -89,6 +94,13 @@ impl MenuItem {
         self.on_select = Some(Rc::new(handler));
         self
     }
+
+    /// The rows a right arrow opens beside this one — the menu nests as
+    /// deep as its data does.
+    pub fn submenu(mut self, items: impl IntoIterator<Item = MenuItem>) -> Self {
+        self.children.extend(items);
+        self
+    }
 }
 
 /// A key the sheet does not handle itself, offered to whoever holds it — the
@@ -97,97 +109,336 @@ type ExtraKey = Rc<dyn Fn(&str, &mut Window, &mut App) -> bool>;
 
 /// The rows an OS popup wears: the items flattened, in order. Element slots
 /// — an icon, a `KeyCap` — do not survive the trip to a native row; the
-/// plain-text hint does.
+/// plain-text hint does. An item holding `submenu` rows hands the nesting
+/// to the OS.
 pub(crate) fn native_entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
-    items
-        .iter()
-        .map(|item| {
-            NativeMenuEntry::new(item.label.to_string())
-                .enabled(!item.disabled)
-                .checked(item.checked)
-                .hint(item.shortcut_hint.as_ref().map(|hint| hint.to_string()))
-                .on_select(item.on_select.clone())
+    fn entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
+        items
+            .iter()
+            .map(|item| {
+                NativeMenuEntry::new(item.label.to_string())
+                    .enabled(!item.disabled)
+                    .checked(item.checked)
+                    .hint(item.shortcut_hint.as_ref().map(|hint| hint.to_string()))
+                    .on_select(item.on_select.clone())
+                    .children(entries(&item.children))
+            })
+            .collect()
+    }
+    entries(items)
+}
+
+/// What a sheet level inherits from the one above it: what its final close
+/// and its Escape run, the id its branches hang from, and the bar's arrows
+/// when this sheet belongs to one.
+struct SheetScope {
+    /// Choosing a leaf, Tab, or an outside press: the whole menu goes —
+    /// every level, then this one, then the host hears it close.
+    close: Press,
+    /// Escape: one level. The root's is its own close; a child's closes it
+    /// and hands the keyboard back to its parent.
+    escape: Press,
+    /// The bar's left and right arrows, when this sheet belongs to one.
+    extra_key: Option<ExtraKey>,
+    /// The id this level's branch states hang from.
+    base: ElementId,
+    /// Where the sheet this level opens from was drawn, when there is one —
+    /// a press on the parent's rows is theirs, not this sheet's dismissal.
+    outer_sheet: Option<Anchor>,
+}
+
+/// The scope a root sheet hands [`menu_sheet`]: its close is hide-and-
+/// notify, its Escape the same, and its branches hang from the menu's id.
+fn root_scope(
+    state: &Entity<PopupState>,
+    on_open_change: Option<OnOpenChange>,
+    extra_key: Option<ExtraKey>,
+    base: ElementId,
+) -> SheetScope {
+    let close: Press = {
+        let state = state.clone();
+        Rc::new(move |window, cx| {
+            state.update(cx, |state, cx| {
+                state.close_descendants(window, cx);
+                state.hide(window, cx);
+            });
+            if let Some(notify) = &on_open_change {
+                notify(false, window, cx);
+            }
         })
-        .collect()
+    };
+    SheetScope {
+        escape: close.clone(),
+        close,
+        extra_key,
+        base,
+        outer_sheet: None,
+    }
 }
 
 /// The rows, in the sheet every menu wears, wired to `state`: the pointer
-/// and the keyboard highlight, a choice closes the menu and then runs.
+/// and the keyboard highlight, a choice closes the menu and then runs. A
+/// branch row opens its own level beside itself — the child sheet draws
+/// inside this one, so its portal registers under this sheet's nest and a
+/// press outside is judged against both.
 fn menu_sheet(
     items: Vec<MenuItem>,
     state: &Entity<PopupState>,
     tint: Tint,
     keep: &Anchor,
-    on_open_change: Option<OnOpenChange>,
-    extra_key: Option<ExtraKey>,
-    cx: &App,
-) -> Provide {
-    let t = cx.theme();
+    scope: &SheetScope,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let t = *cx.theme();
     let highlighted = state.read(cx).highlighted;
+    let open = state.read(cx).open_submenu;
+    // The sheet reports where it was drawn — the box the child level names
+    // as its outside press's exempt zone.
+    let sheet_anchor = Anchor::default();
     let checked = items.iter().position(|item| item.checked == Some(true));
     let enabled: Rc<Vec<bool>> = Rc::new(items.iter().map(|item| !item.disabled).collect());
     let labels: Rc<Vec<SharedString>> =
         Rc::new(items.iter().map(|item| item.label.clone()).collect());
     let selects: Rc<Vec<Option<Press>>> =
         Rc::new(items.iter().map(|item| item.on_select.clone()).collect());
+    let close = scope.close.clone();
 
     let choose: Rc<dyn Fn(usize, &mut Window, &mut App)> = {
-        let state = state.clone();
         let enabled = enabled.clone();
-        let notify = on_open_change.clone();
+        let close = close.clone();
         Rc::new(move |index, window, cx| {
             if !enabled.get(index).copied().unwrap_or(false) {
                 return;
             }
-            state.update(cx, |state, cx| state.hide(window, cx));
-            if let Some(notify) = &notify {
-                notify(false, window, cx);
-            }
+            close(window, cx);
             if let Some(Some(select)) = selects.get(index) {
                 select(window, cx);
             }
         })
     };
 
-    let rows = items.into_iter().enumerate().map(|(index, item)| {
+    // One state per branch row: the level's own highlight, focus, and the
+    // branch it may open in turn. A level that closed without walking down
+    // — a leaf chosen below it, or the whole menu going — is brought down
+    // quietly here, since its sheet is not drawn to hear it.
+    let branches: Rc<HashMap<usize, (Entity<PopupState>, Rc<Vec<bool>>)>> = Rc::new(
+        items
+            .iter()
+            .enumerate()
+            .filter(|(_, item)| !item.children.is_empty())
+            .map(|(index, item)| {
+                let id = part_index(&scope.base, "sub", index);
+                let child = PopupState::keyed(&id, false, window, cx);
+                if child.read(cx).open && open != Some(index) {
+                    child.update(cx, |child, _| {
+                        child.open = false;
+                        child.highlighted = None;
+                        child.child = None;
+                    });
+                }
+                let child_enabled: Rc<Vec<bool>> =
+                    Rc::new(item.children.iter().map(|child| !child.disabled).collect());
+                (index, (child, child_enabled))
+            })
+            .collect(),
+    );
+
+    // What opens a branch: the open one goes first — its own descendants,
+    // then it — and the branch's level takes the keyboard, as a native menu
+    // hands it across. From a pointer the level opens unhighlighted; from
+    // the keys, on its first enabled row.
+    let open_branch: Rc<dyn Fn(usize, Option<usize>, &mut Window, &mut App)> = {
+        let state = state.clone();
+        let branches = branches.clone();
+        Rc::new(move |index, highlighted, window, cx| {
+            let Some((child, _)) = branches.get(&index) else {
+                return;
+            };
+            let child = child.clone();
+            state.update(cx, |state, cx| {
+                if state.open_submenu == Some(index) {
+                    return;
+                }
+                state.close_descendants(window, cx);
+                state.open_submenu = Some(index);
+                child.update(cx, |child, cx| child.show(highlighted, window, cx));
+            });
+        })
+    };
+
+    // What closes the branch this level holds open — its descendants first,
+    // then it, the keyboard stepping back here.
+    let close_child: Press = {
+        let state = state.clone();
+        Rc::new(move |window, cx| {
+            state.update(cx, |state, cx| {
+                state.close_child(window, cx);
+            });
+        })
+    };
+
+    let mut rows: Vec<AnyElement> = Vec::new();
+    let mut anchors: HashMap<usize, Anchor> = HashMap::new();
+    let mut nested: HashMap<usize, Vec<MenuItem>> = HashMap::new();
+    for (index, item) in items.into_iter().enumerate() {
+        let branch = !item.children.is_empty();
         let hover = state.clone();
         let choose = choose.clone();
+        let branches_for_hover = branches.clone();
         let mut row = PopupRow::new(("row", index), item.label)
             .tint(tint)
             .highlighted(highlighted == Some(index))
             .disabled(item.disabled)
-            .on_hover(move |hovered, _, cx| {
+            .on_hover(move |hovered, window, cx| {
                 hover.update(cx, |state, cx| {
                     if hovered {
                         state.highlighted = Some(index);
+                        // The branch under the pointer opens, as the
+                        // highlight lands on it; a leaf closes what is
+                        // open. The way a native menu reads a passing
+                        // pointer, and without a timer to hold it.
+                        if let Some((child, _)) = branches_for_hover.get(&index) {
+                            if state.open_submenu != Some(index) {
+                                let child = child.clone();
+                                state.close_descendants(window, cx);
+                                state.open_submenu = Some(index);
+                                child.update(cx, |child, cx| child.show(None, window, cx));
+                            }
+                        } else {
+                            state.close_descendants(window, cx);
+                        }
                     } else if state.highlighted == Some(index) {
                         state.highlighted = None;
                     }
                     cx.notify();
                 })
+            });
+        if branch {
+            let toggle_state = state.clone();
+            let open_branch_for_press = open_branch.clone();
+            row = row.branch().on_press(move |window, cx| {
+                let already = toggle_state.read(cx).open_submenu == Some(index);
+                if already {
+                    toggle_state.update(cx, |state, cx| {
+                        state.close_child(window, cx);
+                    });
+                } else {
+                    open_branch_for_press(index, None, window, cx);
+                }
+            });
+            if item.checked.is_some() {
+                row = row.check(checked == Some(index));
+            }
+            if let Some(icon) = item.icon {
+                row = row.icon(icon);
+            }
+            if let Some(shortcut) = item.shortcut {
+                row = row.shortcut(shortcut);
+            }
+            // The child sheet hangs from the row: its anchor is where the
+            // row was drawn, written when the row paints.
+            let anchor = Anchor::default();
+            anchors.insert(index, anchor.clone());
+            nested.insert(index, item.children);
+            rows.push(measured(&anchor, row).into_any_element());
+        } else {
+            row = row.on_press(move |window, cx| choose(index, window, cx));
+            if item.checked.is_some() {
+                row = row.check(checked == Some(index));
+            }
+            if let Some(icon) = item.icon {
+                row = row.icon(icon);
+            }
+            if let Some(shortcut) = item.shortcut {
+                row = row.shortcut(shortcut);
+            }
+            rows.push(row.into_any_element());
+        }
+    }
+
+    // The open branch's sheet, inside this one so its portal nests.
+    if let Some(index) = open
+        && let Some(anchor) = anchors.remove(&index)
+        && let Some(children) = nested.remove(&index)
+    {
+        let id = part_index(&scope.base, "sub", index);
+        // Escape closes this level alone, handing the keyboard back.
+        let child_escape = close_child.clone();
+        // Left closes it too, once nothing of its own is open.
+        let left = {
+            let close_child = close_child.clone();
+            Rc::new(move |key: &str, window: &mut Window, cx: &mut App| {
+                if key == "left" {
+                    close_child(window, cx);
+                    true
+                } else {
+                    false
+                }
             })
-            .on_press(move |window, cx| choose(index, window, cx));
-        if item.checked.is_some() {
-            row = row.check(checked == Some(index));
-        }
-        if let Some(icon) = item.icon {
-            row = row.icon(icon);
-        }
-        if let Some(shortcut) = item.shortcut {
-            row = row.shortcut(shortcut);
-        }
-        row
-    });
+        };
+        let child_scope = SheetScope {
+            close: scope.close.clone(),
+            escape: child_escape,
+            extra_key: Some(left),
+            base: id,
+            outer_sheet: Some(sheet_anchor.clone()),
+        };
+        // The parent hears this level as its child, closable as one.
+        let attach_state = state.clone();
+        let (attach_child, _) = branches.get(&index).expect("the open branch is one").clone();
+        let child_for_close = attach_child.clone();
+        let child_for_link = attach_child.clone();
+        attach_state.update(cx, |state, _| {
+            state.attach_child(
+                child_for_link,
+                Rc::new(move |window, cx| {
+                    child_for_close.update(cx, |child, cx| {
+                        child.close_descendants(window, cx);
+                        child.hide(window, cx);
+                    });
+                }),
+            );
+        });
+        let sheet = menu_sheet(children, &attach_child, tint, &anchor, &child_scope, window, cx);
+        rows.push(
+            positioned(&anchor, Placement::side(Side::Right, Align::Start, &t), sheet)
+                .into_any_element(),
+        );
+    }
 
     let keys = state.clone();
-    let tab_notify = on_open_change.clone();
+    let branches_for_keys = branches.clone();
+    let open_branch_for_keys = open_branch.clone();
+    let close_for_keys = close.clone();
+    let scope_extra = scope.extra_key.clone();
     let sheet =
-        sheet(t)
+        sheet(&t)
             .id("menu")
             .children(rows)
             .on_key_down(move |event: &KeyDownEvent, window, cx| {
                 let key = event.keystroke.key.as_str();
-                if let Some(extra) = &extra_key
+                let highlighted = keys.read(cx).highlighted;
+                // The submenu keys outrank the bar's arrows: a right arrow
+                // on a branch opens it onto its first enabled row, a left
+                // one closes the level open.
+                if let Some(at) = highlighted
+                    && key == "right"
+                    && let Some((_, child_enabled)) = branches_for_keys.get(&at)
+                {
+                    let first = child_enabled.iter().position(|&enabled| enabled);
+                    open_branch_for_keys(at, first, window, cx);
+                    cx.stop_propagation();
+                    return;
+                }
+                if key == "left" && keys.read(cx).open_submenu.is_some() {
+                    keys.update(cx, |state, cx| {
+                        state.close_child(window, cx);
+                    });
+                    cx.stop_propagation();
+                    return;
+                }
+                if let Some(extra) = &scope_extra
                     && extra(key, window, cx)
                 {
                     cx.stop_propagation();
@@ -199,17 +450,19 @@ fn menu_sheet(
                             && !event.keystroke.modifiers.alt
                             && !event.keystroke.modifiers.platform =>
                     {
-                        keys.update(cx, |state, cx| state.hide(window, cx));
-                        if let Some(notify) = &tab_notify {
-                            notify(false, window, cx);
-                        }
+                        close_for_keys(window, cx);
                         // Leave traversal to the enclosing modal or the kit's
                         // unhandled-Tab fallback, starting at the trigger.
                         false
                     }
                     "enter" | "space" => {
                         if let Some(index) = keys.read(cx).highlighted {
-                            choose(index, window, cx);
+                            if let Some((_, child_enabled)) = branches_for_keys.get(&index) {
+                                let first = child_enabled.iter().position(|&enabled| enabled);
+                                open_branch_for_keys(index, first, window, cx);
+                            } else {
+                                choose(index, window, cx);
+                            }
                         }
                         true
                     }
@@ -226,7 +479,21 @@ fn menu_sheet(
                     cx.stop_propagation();
                 }
             });
-    dismissable(sheet, state, keep, on_open_change, cx)
+    let sheet = dismissable_with(
+        sheet,
+        state,
+        keep,
+        None,
+        DismissOverrides {
+            outside: Some(scope.close.clone()),
+            escape: Some(scope.escape.clone()),
+            outer: scope.outer_sheet.clone(),
+        },
+        cx,
+    );
+    // The sheet reports where it was drawn — the box the child level names
+    // as its outside press's exempt zone.
+    measured(&sheet_anchor, sheet).into_any_element()
 }
 
 /// A menu a trigger opens.
@@ -366,15 +633,8 @@ impl RenderOnce for Menu {
             None
         } else {
             open.then(|| {
-                let sheet = menu_sheet(
-                    self.items,
-                    &state,
-                    self.tint,
-                    &anchor,
-                    self.on_open_change,
-                    None,
-                    cx,
-                );
+                let scope = root_scope(&state, self.on_open_change.clone(), None, self.id.clone());
+                let sheet = menu_sheet(self.items, &state, self.tint, &anchor, &scope, window, cx);
                 positioned(&anchor, Placement::side(self.side, self.align, t), sheet)
             })
         };
@@ -441,7 +701,8 @@ impl RenderOnce for ContextMenu {
         } else {
             open.then(|| {
                 let at = Anchor::at(Bounds::new(point.unwrap_or_default(), size(px(0.), px(0.))));
-                let sheet = menu_sheet(self.items, &state, self.tint, &region, None, None, cx);
+                let scope = root_scope(&state, None, None, self.id.clone());
+                let sheet = menu_sheet(self.items, &state, self.tint, &region, &scope, window, cx);
                 positioned(&at, Placement::side(Side::Bottom, Align::Start, t), sheet)
             })
         };
@@ -786,8 +1047,9 @@ impl RenderOnce for Menubar {
                                 true
                             })
                         };
+                        let scope = root_scope(&state, None, Some(walk), self.id.clone());
                         let sheet =
-                            menu_sheet(items, &state, self.tint, &whole, None, Some(walk), cx);
+                            menu_sheet(items, &state, self.tint, &whole, &scope, window, cx);
                         positioned(
                             &names[index],
                             Placement::side(Side::Bottom, Align::Start, t),

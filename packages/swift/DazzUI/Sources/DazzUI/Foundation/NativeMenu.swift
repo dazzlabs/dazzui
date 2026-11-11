@@ -90,7 +90,19 @@ internal final class NativeMenuBar: ObservableObject {
       super.init()
       menu.autoenablesItems = false
       menu.delegate = self
-      for (index, entry) in entries.enumerated() {
+      var nextTag = 0
+      Self.fill(menu, from: entries, theme: theme, scale: scale, tags: &nextTag, into: self)
+    }
+
+    /// Builds the rows, descending into an item's `items` as an
+    /// `NSMenuItem.submenu` — the nesting is AppKit's own, highlight and
+    /// keyboard traversal included. Tags run across the whole tree, since
+    /// every row reports its choice through this one session.
+    private static func fill(
+      _ menu: NSMenu, from entries: [NativeMenuEntry], theme: Theme,
+      scale: CGFloat, tags: inout Int, into session: NativeMenuSession
+    ) {
+      for entry in entries {
         switch entry {
         case .heading(let title):
           if #available(macOS 14, *) {
@@ -104,9 +116,11 @@ internal final class NativeMenuBar: ObservableObject {
           }
         case .item(let choice):
           let item = NSMenuItem(
-            title: choice.label, action: #selector(choose(_:)), keyEquivalent: "")
-          item.target = self
-          item.tag = index
+            title: choice.label, action: #selector(NativeMenuSession.choose(_:)),
+            keyEquivalent: "")
+          item.target = session
+          item.tag = tags
+          tags += 1
           item.isEnabled = !choice.disabled
           item.state = choice.checked == true ? .on : .off
           if let icon = choice.icon {
@@ -128,7 +142,14 @@ internal final class NativeMenuBar: ObservableObject {
             item.attributedTitle = title
             item.setAccessibilityLabel(choice.label)
           }
-          actions[index] = choice.onSelect ?? {}
+          if let children = choice.items, !children.isEmpty {
+            let submenu = NSMenu(title: choice.label)
+            submenu.autoenablesItems = false
+            fill(submenu, from: children.map(NativeMenuEntry.item), theme: theme,
+                 scale: scale, tags: &tags, into: session)
+            item.submenu = submenu
+          }
+          session.actions[item.tag] = choice.onSelect ?? {}
           menu.addItem(item)
         }
       }
@@ -147,7 +168,11 @@ internal final class NativeMenuBar: ObservableObject {
     }
 
     @objc private func choose(_ sender: NSMenuItem) {
-      guard !cancelled, !selected, sender.isEnabled, sender.menu === menu else { return }
+      // The row may sit in any level of the tree, so the session — not the
+      // root menu — is what vouches for it.
+      guard !cancelled, !selected, sender.isEnabled, sender.target === self,
+        actions[sender.tag] != nil
+      else { return }
       selected = true
       actions[sender.tag]?()
     }

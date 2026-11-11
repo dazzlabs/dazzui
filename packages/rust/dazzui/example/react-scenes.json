@@ -1,6 +1,127 @@
 {
   "stories": [
     {
+      "id": "menu",
+      "name": "Menu",
+      "summary": "Actions kept out of the way until they are asked for.",
+      "scenes": [
+        {
+          "id": "menu/3",
+          "title": "Through two levels",
+          "specimens": [
+            {
+              "address": "menu/3/0",
+              "component": "menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/3/1",
+              "component": "button",
+              "axes": {},
+              "text": "Actions"
+            },
+            {
+              "address": "menu/3/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/3/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/3/4",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/3/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/3/6",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/3/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/3/8",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "menu/4",
+          "title": "A nested right click",
+          "specimens": [
+            {
+              "address": "menu/4/0",
+              "component": "context-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/4/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/3",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/4/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/6",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/4/8",
+              "component": "card",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Right-click this card"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "number-field",
       "name": "NumberField",
       "summary": "A number, stepped or typed, with the unit it is counted in.",

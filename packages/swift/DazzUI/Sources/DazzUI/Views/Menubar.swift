@@ -61,9 +61,7 @@ public struct Menubar: View {
         .overlay(alignment: .bottomLeading) {
           if open == menu.id && !presentation.usesNativeMenus {
             MenuSheet {
-              ForEach(menu.items) { item in
-                MenuRow(item: item, tint: tint) { open = nil }
-              }
+              MenuRows(items: menu.items, tint: tint) { open = nil }
             }
             .alignmentGuide(.bottom) { _ in 0 }
             .offset(y: vars.spacing1)

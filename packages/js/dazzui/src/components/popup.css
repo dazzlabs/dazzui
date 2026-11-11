@@ -137,6 +137,27 @@
   line-height: 1;
 }
 
+/*
+ * The chevron a branch row wears. It takes the shortcut's cut — the row's
+ * trailing edge — but speaks in the icon's ink, an affordance rather than a
+ * hint. A row whose submenu is open is `data-popup-open`, and Base UI draws
+ * that state the same way it draws a highlight.
+ */
+.dz-popup__chevron {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  margin-inline-start: auto;
+  color: var(--color-content-muted);
+  font-size: var(--label-small-font-size);
+  line-height: 1;
+}
+
+.dz-popup__chevron > svg {
+  width: var(--label-small-font-size);
+  height: var(--label-small-font-size);
+}
+
 /* A group heading inside the sheet: the section label's voice, on the row's
    own inset. */
 .dz-popup__group-label {

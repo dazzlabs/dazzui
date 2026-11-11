@@ -67,6 +67,7 @@ impl Render for Harness {
             move |_: &mut Window, _: &mut App| log.borrow_mut().push(entry.clone())
         };
         let open_log = self.log.clone();
+        let nested_open_log = self.log.clone();
         let value_log = self.log.clone();
         div()
             .size_full()
@@ -118,6 +119,29 @@ impl Render for Harness {
                 PreviewCard::new("card")
                     .trigger(div().debug_selector(|| "card-trigger".into()).size(px(40.)))
                     .child(marker("card-body", painted)),
+            )
+            .child(
+                Menu::new("nested")
+                    .trigger(|press, _, _, _| trigger("nested-trigger", press))
+                    .items([
+                        MenuItem::new("Rename")
+                            .icon(marker("nested-row", painted))
+                            .on_select(push("nested-rename")),
+                        MenuItem::new("Move to")
+                            .icon(marker("branch-row", painted))
+                            .submenu([
+                                MenuItem::new("Projects").submenu([MenuItem::new("DazzUI")
+                                    .icon(marker("leaf-row", painted))
+                                    .on_select(push("dazzui"))]),
+                                MenuItem::new("Archive")
+                                    .icon(marker("sub-row", painted))
+                                    .on_select(push("archive")),
+                            ])
+                            .on_select(push("move-to")),
+                    ])
+                    .on_open_change(move |open, _, _| {
+                        nested_open_log.borrow_mut().push(format!("open:{open}"))
+                    }),
             )
     }
 }
@@ -296,5 +320,113 @@ fn preview_card_opens_after_the_pointer_rests(cx: &mut TestAppContext) {
     assert!(
         !drawn(&painted, cx, "card-body"),
         "closed once the pointer left"
+    );
+}
+
+#[gpui::test]
+fn a_submenu_opens_beside_its_branch_and_the_keyboard_walks_the_levels(cx: &mut TestAppContext) {
+    let Setup { log, painted, cx } = setup(cx);
+    click(cx, "nested-trigger");
+    assert!(drawn(&painted, cx, "nested-row"), "the menu opens");
+    assert!(!drawn(&painted, cx, "sub-row"), "closed at first");
+
+    // The arrows reach the branch; the right one opens its level beside it.
+    cx.simulate_keystrokes("down down right");
+    assert!(drawn(&painted, cx, "sub-row"), "the branch opens");
+    assert!(
+        drawn(&painted, cx, "nested-row"),
+        "the parent stays under its child"
+    );
+    let branch = cx.debug_bounds("branch-row").unwrap();
+    let sub = cx.debug_bounds("sub-row").unwrap();
+    assert!(
+        sub.left() >= branch.right(),
+        "the child sheet hangs off the branch's trailing edge"
+    );
+
+    // A second branch opens a second level; choosing inside closes the
+    // whole menu.
+    cx.simulate_keystrokes("right");
+    assert!(drawn(&painted, cx, "leaf-row"), "two levels hang open");
+    cx.simulate_keystrokes("enter");
+    assert!(!drawn(&painted, cx, "nested-row"), "the whole menu goes");
+    assert!(!drawn(&painted, cx, "sub-row"));
+    assert_eq!(
+        *log.borrow(),
+        ["open:true", "open:false", "dazzui"],
+        "the sheet closes first, then the leaf three levels down runs"
+    );
+}
+
+#[gpui::test]
+fn escape_closes_one_submenu_level_at_a_time(cx: &mut TestAppContext) {
+    let Setup { log, painted, cx } = setup(cx);
+    click(cx, "nested-trigger");
+    cx.simulate_keystrokes("down down right right");
+    assert!(drawn(&painted, cx, "leaf-row"));
+
+    cx.simulate_keystrokes("escape");
+    assert!(
+        !drawn(&painted, cx, "leaf-row"),
+        "the deepest level goes"
+    );
+    assert!(
+        drawn(&painted, cx, "sub-row"),
+        "its parent stays, the keyboard back on it"
+    );
+
+    cx.simulate_keystrokes("escape");
+    assert!(!drawn(&painted, cx, "sub-row"));
+    assert!(drawn(&painted, cx, "nested-row"), "one level, not the menu");
+
+    cx.simulate_keystrokes("escape");
+    assert!(!drawn(&painted, cx, "nested-row"), "the last one closes it");
+    assert_eq!(*log.borrow(), ["open:true", "open:false"]);
+}
+
+#[gpui::test]
+fn hovering_a_branch_opens_it_and_hovering_a_leaf_closes_it(cx: &mut TestAppContext) {
+    let Setup { log, painted, cx } = setup(cx);
+    click(cx, "nested-trigger");
+    assert!(drawn(&painted, cx, "nested-row"));
+
+    // The pointer opens the branch as it lands on it, the way a native
+    // menu reads a passing pointer.
+    let branch = cx.debug_bounds("branch-row").unwrap();
+    cx.simulate_mouse_move(branch.center(), None, Modifiers::none());
+    cx.run_until_parked();
+    assert!(drawn(&painted, cx, "sub-row"), "the pointer opens it");
+    assert!(
+        drawn(&painted, cx, "nested-row"),
+        "the parent stays under its child"
+    );
+
+    // A leaf closes what is open, and no choice runs on a hover.
+    let leaf = cx.debug_bounds("nested-row").unwrap();
+    cx.simulate_mouse_move(leaf.center(), None, Modifiers::none());
+    cx.run_until_parked();
+    assert!(!drawn(&painted, cx, "sub-row"), "the pointer closes it");
+    assert!(drawn(&painted, cx, "nested-row"));
+    assert_eq!(*log.borrow(), ["open:true"], "a hover never chooses");
+}
+
+#[gpui::test]
+fn a_press_on_the_parent_sheet_while_a_submenu_is_open_reaches_its_row(cx: &mut TestAppContext) {
+    let Setup { log, painted, cx } = setup(cx);
+    click(cx, "nested-trigger");
+    cx.simulate_keystrokes("down down right");
+    assert!(drawn(&painted, cx, "sub-row"));
+
+    // The parent's Rename row is outside the child sheet, and a press there
+    // is the parent's business: the row chooses, the whole menu goes.
+    let rename = cx.debug_bounds("nested-row").unwrap();
+    cx.simulate_click(rename.center(), Modifiers::none());
+    cx.run_until_parked();
+    assert!(!drawn(&painted, cx, "sub-row"), "the child went too");
+    assert!(!drawn(&painted, cx, "nested-row"));
+    assert_eq!(
+        *log.borrow(),
+        ["open:true", "open:false", "nested-rename"],
+        "the press landed on the row, not on the child's dismissal"
     );
 }
