@@ -111,10 +111,16 @@
   visibility: hidden;
 }
 
+/*
+ * The icon slot is as tall as the label's line, not the glyph: the 16px icon
+ * overhangs it into the row's padding, centred, so a row with an icon is the
+ * same 26px as one without and a menu mixing the two keeps one rhythm.
+ */
 .dz-popup__icon {
   display: flex;
   flex-shrink: 0;
   align-items: center;
+  height: var(--label-quiet-font-size);
   color: var(--color-content-muted);
 }
 

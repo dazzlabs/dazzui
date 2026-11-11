@@ -911,6 +911,8 @@ impl RenderOnce for PopupRow {
                     }),
             )
         });
+        // As tall as the label's line, not the glyph: the icon overhangs into
+        // the row's padding, so a row with one is as tall as a row without.
         let icon = self.icon.map(|icon| {
             icon_slot(
                 t.icon_medium,
@@ -918,6 +920,7 @@ impl RenderOnce for PopupRow {
                     .flex()
                     .flex_none()
                     .items_center()
+                    .h(px(quiet.size))
                     .text_color(if self.disabled {
                         content
                     } else {
