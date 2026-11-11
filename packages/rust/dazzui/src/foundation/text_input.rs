@@ -1587,6 +1587,7 @@ pub struct TextInput {
     multiline: bool,
     rows: usize,
     auto_height: bool,
+    max_rows: Option<usize>,
     masked: bool,
     read_only: bool,
     disabled: bool,
@@ -1615,6 +1616,7 @@ impl TextInput {
             multiline: false,
             rows: 1,
             auto_height: false,
+            max_rows: None,
             masked: false,
             read_only: false,
             disabled: false,
@@ -1673,6 +1675,14 @@ impl TextInput {
     /// minimum height. Useful for selectable paragraphs without an inner viewport.
     pub fn auto_height(mut self, auto_height: bool) -> Self {
         self.auto_height = auto_height;
+        self
+    }
+
+    /// Limit an auto-height multiline input to this many visible rows. Extra
+    /// lines scroll inside the input. The limit cannot be smaller than
+    /// [`rows`](Self::rows).
+    pub fn max_rows(mut self, rows: usize) -> Self {
+        self.max_rows = Some(rows.max(1));
         self
     }
 
@@ -1851,6 +1861,7 @@ impl RenderOnce for TextInput {
             input: state.clone(),
             rows: if multiline { self.rows } else { 1 },
             auto_height: multiline && self.auto_height,
+            max_rows: self.max_rows,
             centered: self.centered && !multiline,
             placeholder_color: self.placeholder_color,
             selection_color: self.selection_color,
@@ -1953,6 +1964,7 @@ struct TextBody {
     input: Entity<InputState>,
     rows: usize,
     auto_height: bool,
+    max_rows: Option<usize>,
     centered: bool,
     placeholder_color: Option<Hsla>,
     selection_color: Option<Hsla>,
@@ -2095,6 +2107,9 @@ impl Element for TextBody {
             let layout_style = text_style.clone();
             let placeholder_color = self.placeholder_color.unwrap_or(text_style.color);
             let minimum_height = line_height * self.rows as f32;
+            let maximum_height = self
+                .max_rows
+                .map(|rows| line_height * rows.max(self.rows) as f32);
             let layout =
                 window.request_measured_layout(style, move |known, available, window, cx| {
                     let width = known.width.or(match available.width {
@@ -2116,6 +2131,9 @@ impl Element for TextBody {
                     }
                     content_size.width = width.unwrap_or(content_size.width);
                     content_size.height = minimum_height.max(content_size.height);
+                    if let Some(maximum_height) = maximum_height {
+                        content_size.height = maximum_height.min(content_size.height);
+                    }
                     content_size
                 });
             return (layout, text_style);

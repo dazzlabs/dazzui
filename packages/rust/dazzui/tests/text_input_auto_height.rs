@@ -15,24 +15,29 @@ struct Harness {
     input: Entity<InputState>,
     width: f32,
     auto_height: bool,
+    max_rows: Option<usize>,
     paints: Rc<RefCell<Vec<ObservedPaint>>>,
 }
 
 impl Render for Harness {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let input = TextInput::new("paragraph")
+            .state(self.input.clone())
+            .multiline(true)
+            .read_only(true)
+            .rows(2)
+            .auto_height(self.auto_height);
+        let input = if let Some(max_rows) = self.max_rows {
+            input.max_rows(max_rows)
+        } else {
+            input
+        };
         div().w(px(self.width)).child(PaintProbe {
             child: div()
                 .bg(white())
                 .text_size(px(13.))
                 .line_height(px(20.))
-                .child(
-                    TextInput::new("paragraph")
-                        .state(self.input.clone())
-                        .multiline(true)
-                        .read_only(true)
-                        .rows(2)
-                        .auto_height(self.auto_height),
-                )
+                .child(input)
                 .into_any_element(),
             paints: self.paints.clone(),
         })
@@ -46,6 +51,7 @@ fn paragraph_grows_wraps_and_shrinks_while_fixed_rows_keep_their_viewport(cx: &m
         input: cx.new(|cx| InputState::new(window, cx)),
         width: 240.,
         auto_height: false,
+        max_rows: None,
         paints: Rc::default(),
     });
     let input = view.read_with(cx, |view, _| view.input.clone());
@@ -86,6 +92,17 @@ fn paragraph_grows_wraps_and_shrinks_while_fixed_rows_keep_their_viewport(cx: &m
     });
     cx.run_until_parked();
     assert!(height(cx) > wide);
+    input.update(cx, |input, cx| input.set_value("one", cx));
+    cx.run_until_parked();
+    assert_eq!(height(cx), px(40.));
+
+    view.update(cx, |view, cx| {
+        view.max_rows = Some(3);
+        cx.notify();
+    });
+    input.update(cx, |input, cx| input.set_value("one\ntwo\nthree\nfour", cx));
+    cx.run_until_parked();
+    assert_eq!(height(cx), px(60.));
     input.update(cx, |input, cx| input.set_value("one", cx));
     cx.run_until_parked();
     assert_eq!(height(cx), px(40.));
