@@ -96,11 +96,6 @@ const story: Story = {
       Demo: () => <Window collapsible="icon" />,
     },
     {
-      title: 'Comfortable density',
-      note: '32px rows on 8px gutters for a workspace column.',
-      Demo: () => <Window collapsible="icon" density="comfortable" />,
-    },
-    {
       title: 'Floating and inset',
       Demo: () => (
         <Col gap="4">
