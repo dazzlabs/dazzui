@@ -1,4 +1,5 @@
 import {
+  Add20Regular,
   Chat20Regular,
   Document20Regular,
   Flash20Regular,
@@ -10,12 +11,18 @@ import {
   Settings20Regular,
 } from '@fluentui/react-icons'
 import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Divider,
   Icon,
   IconButton,
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -37,49 +44,64 @@ import { Col, Frame, Row, Text } from '../../components/stage'
 import type { StoryExtension } from '../../lib/story'
 
 const PAGES = [
-  { id: 'home', label: 'Home', icon: Home20Regular },
-  { id: 'automations', label: 'Automations', icon: Flash20Regular },
+  { id: 'new-chat', label: 'New Chat', icon: Home20Regular },
+  { id: 'automation', label: 'Automation', icon: Flash20Regular },
   { id: 'library', label: 'Library', icon: Document20Regular },
 ]
 
-const PROJECTS = [
-  { id: 'atlas', label: 'Atlas', note: '4 sessions' },
-  { id: 'website', label: 'Website', note: '1 session' },
+const PINNED = [
+  { id: 'atlas', label: 'Atlas', count: 4 },
+  { id: 'website', label: 'Website', count: 1 },
 ]
 
-const TREE: TreeNode[] = [
+const PROJECTS: TreeNode[] = [
   {
-    id: 'atlas',
-    label: 'Atlas',
+    id: 'ledger',
+    label: 'Ledger',
     icon: <Icon icon={Folder20Regular} />,
+    meta: (
+      <Row gap="2">
+        <Row gap="1">
+          <Icon icon={Folder20Regular} />
+          <Text>2</Text>
+        </Row>
+        <Text tint="warning">2 need you</Text>
+      </Row>
+    ),
     children: [
       {
-        id: 'overview',
+        id: 'ledger-overview',
         label: 'Overview',
         icon: <Icon icon={Document20Regular} />,
       },
       {
-        id: 'changes',
+        id: 'ledger-changes',
         label: 'Changes',
         icon: <Icon icon={Document20Regular} />,
-        meta: '4',
+        meta: '8',
       },
       {
-        id: 'sessions',
+        id: 'ledger-sessions',
         label: 'Sessions',
         icon: <Icon icon={Chat20Regular} />,
-        meta: 3,
+        meta: 4,
         children: [
           {
-            id: 'session-tokens',
-            label: 'Theme tokens',
-            icon: <Icon icon={Chat20Regular} />,
+            id: 'ledger-session-1',
+            label: 'Reconcile import',
+            icon: <Text tint="success">●</Text>,
+            meta: 'now',
+          },
+          {
+            id: 'ledger-session-2',
+            label: 'Ledger permissions',
+            icon: <Text tint="warning">●</Text>,
             meta: '2h',
           },
           {
-            id: 'session-layout',
-            label: 'Sidebar layout',
-            icon: <Icon icon={Chat20Regular} />,
+            id: 'ledger-session-3',
+            label: 'Export to CSV',
+            icon: <Text tint="primary">●</Text>,
             meta: '1d',
           },
         ],
@@ -87,21 +109,51 @@ const TREE: TreeNode[] = [
     ],
   },
   {
-    id: 'website',
-    label: 'Website',
+    id: 'docs',
+    label: 'Docs',
     icon: <Icon icon={Folder20Regular} />,
+    meta: <Text tone="secondary">1 session</Text>,
     children: [
       {
-        id: 'website-pages',
+        id: 'docs-pages',
         label: 'Pages',
         icon: <Icon icon={Document20Regular} />,
-        meta: '1',
+        meta: '3',
+      },
+      {
+        id: 'docs-sessions',
+        label: 'Sessions',
+        icon: <Icon icon={Chat20Regular} />,
+        meta: 1,
+        children: [
+          {
+            id: 'docs-session-1',
+            label: 'Rewrite the guide',
+            icon: <Text tint="primary">●</Text>,
+            meta: '3d',
+          },
+        ],
       },
     ],
   },
 ]
 
-/** The complete column: pages, pinned projects, a tree and a footer. */
+const LABELS: Record<string, string> = {
+  'new-chat': 'New Chat',
+  automation: 'Automation',
+  library: 'Library',
+  atlas: 'Atlas',
+  website: 'Website',
+  ledger: 'Ledger',
+  docs: 'Docs',
+  'atlas-overview': 'Atlas · Overview',
+  'atlas-changes': 'Atlas · Changes',
+  'atlas-session-1': 'Deny approvals past their timeout',
+  'ledger-overview': 'Ledger · Overview',
+  'ledger-changes': 'Ledger · Changes',
+  'ledger-session-1': 'Reconcile import',
+}
+
 function WorkspaceSidebar({
   selected,
   onSelect,
@@ -112,17 +164,19 @@ function WorkspaceSidebar({
   const { open } = useSidebar()
 
   return (
-    <Sidebar collapsible="icon" density="comfortable">
+    <Sidebar collapsible="icon" density="comfortable" width="19.5rem">
       <SidebarHeader>
         <Row justify="between">
-          <Text strong>Workspace</Text>
+          <Row gap="2">
+            <Avatar name="DazzUI" shape="square" size="small" tint="primary" />
+            <Text strong>DazzUI</Text>
+          </Row>
           <SidebarTrigger label="Collapse sidebar" size="small" />
         </Row>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {PAGES.map(page => (
@@ -148,7 +202,7 @@ function WorkspaceSidebar({
           <SidebarGroupLabel>Pinned</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {PROJECTS.map(project => (
+              {PINNED.map(project => (
                 <SidebarMenuItem key={project.id}>
                   <SidebarMenuButton
                     active={selected === project.id}
@@ -158,10 +212,11 @@ function WorkspaceSidebar({
                   >
                     {project.label}
                   </SidebarMenuButton>
+                  <SidebarMenuBadge>{project.count}</SidebarMenuBadge>
                   <SidebarMenuAction
                     label={`More actions for ${project.label}`}
                     showOnHover
-                    onClick={() => onSelect(`${project.id}-more`)}
+                    onClick={() => onSelect(project.id)}
                   >
                     <Icon icon={MoreHorizontal20Regular} />
                   </SidebarMenuAction>
@@ -173,19 +228,25 @@ function WorkspaceSidebar({
 
         <SidebarGroup>
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarGroupAction label="Add project" size="tiny">
+            <Icon icon={Add20Regular} />
+          </SidebarGroupAction>
           <SidebarGroupContent>
             {open ? (
               <Tree
                 aria-label="Projects"
-                defaultExpanded={['atlas', 'sessions']}
-                items={TREE}
+                defaultExpanded={['ledger', 'ledger-sessions']}
+                items={PROJECTS}
                 selected={selected}
                 variant="sidebar"
                 onSelectedChange={onSelect}
               />
             ) : (
               <SidebarMenu>
-                {PROJECTS.map(project => (
+                {[
+                  { id: 'ledger', label: 'Ledger' },
+                  { id: 'docs', label: 'Docs' },
+                ].map(project => (
                   <SidebarMenuItem key={project.id}>
                     <SidebarMenuButton
                       active={selected === project.id}
@@ -218,33 +279,94 @@ function WorkspaceSidebar({
   )
 }
 
+function Inset({ selected }: { selected: string }) {
+  const label = LABELS[selected] ?? selected
+  return (
+    <SidebarInset>
+      <SidebarHeader>
+        <Row justify="between">
+          <Row gap="2">
+            <SidebarTrigger />
+            <Text strong>{label}</Text>
+            <Badge size="small" tint="success" variant="tinted">
+              Open
+            </Badge>
+          </Row>
+          <Row gap="1">
+            <Button size="small" variant="plain">
+              Pull
+            </Button>
+            <Button size="small" variant="filled">
+              Push
+            </Button>
+          </Row>
+        </Row>
+      </SidebarHeader>
+
+      <Col gap="4" width="100%">
+        <Card size="medium" variant="outlined">
+          <Row justify="between">
+            <Col gap="1">
+              <Text strong>Deny approvals past their timeout</Text>
+              <Text tone="secondary">
+                #12 · session/approval-timeout → main · 2 commits
+              </Text>
+            </Col>
+            <Badge size="small" tint="success" variant="tinted">
+              Open
+            </Badge>
+          </Row>
+          <Text tone="secondary">
+            Each approval records when it was requested, and approval_timeout in
+            the daemon config denies it once the timeout passes. Covered by
+            tests/approval_timeout.rs.
+          </Text>
+          <Divider />
+          <Col gap="2">
+            <CheckRow state="success" label="fmt" detail="12s" />
+            <CheckRow
+              state="success"
+              label="test (macos-latest)"
+              detail="3m 41s"
+            />
+            <CheckRow state="danger" label="clippy" detail="1m 07s" />
+          </Col>
+        </Card>
+      </Col>
+    </SidebarInset>
+  )
+}
+
+function CheckRow({
+  state,
+  label,
+  detail,
+}: {
+  state: 'success' | 'danger'
+  label: string
+  detail: string
+}) {
+  return (
+    <Row justify="between">
+      <Row gap="2">
+        <Badge size="small" tint={state} variant="tinted">
+          {state === 'success' ? '✓' : '×'}
+        </Badge>
+        <Text>{label}</Text>
+      </Row>
+      <Text tone="secondary">{detail}</Text>
+    </Row>
+  )
+}
+
 function CompleteWorkspace() {
-  const [selected, setSelected] = useState('home')
-  const title = selected.endsWith('-more')
-    ? `More actions for ${selected.slice(0, -5)}`
-    : (PAGES.find(page => page.id === selected)?.label ??
-      PROJECTS.find(project => project.id === selected)?.label ??
-      selected)
+  const [selected, setSelected] = useState('ledger-overview')
 
   return (
-    <Frame width="100%" height="32rem">
+    <Frame width="100%" height="36rem">
       <SidebarProvider>
         <WorkspaceSidebar selected={selected} onSelect={setSelected} />
-        <SidebarInset>
-          <SidebarHeader>
-            <Row gap="2">
-              <SidebarTrigger />
-              <Text strong>{title}</Text>
-            </Row>
-          </SidebarHeader>
-          <Col gap="3" width="100%">
-            <Text tone="secondary">
-              The sidebar keeps its pages, pinned projects and project tree in
-              one comfortable 32px column. Fold it to icons; the tree becomes a
-              project rail and every action is still one click away.
-            </Text>
-          </Col>
-        </SidebarInset>
+        <Inset selected={selected} />
       </SidebarProvider>
     </Frame>
   )
@@ -255,7 +377,7 @@ const extension: StoryExtension = {
   examples: [
     {
       title: 'Complete workspace',
-      note: 'Pages, pinned projects, a sidebar tree, hover actions and the icon rail in one column.',
+      note: 'Pages, pinned projects, project trees, sessions, hover actions, a project view and the icon rail.',
       Demo: CompleteWorkspace,
     },
   ],
