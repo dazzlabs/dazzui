@@ -166,13 +166,24 @@ function WorkspaceSidebar({
   return (
     <Sidebar collapsible="icon" density="comfortable" width="19.5rem">
       <SidebarHeader>
-        <Row justify="between">
-          <Row gap="2">
-            <Avatar name="DazzUI" shape="square" size="small" tint="primary" />
-            <Text strong>DazzUI</Text>
+        {open ? (
+          <Row justify="between">
+            <Row gap="2">
+              <Avatar
+                name="DazzUI"
+                shape="square"
+                size="small"
+                tint="primary"
+              />
+              <Text strong>DazzUI</Text>
+            </Row>
+            <SidebarTrigger label="Collapse sidebar" size="small" />
           </Row>
-          <SidebarTrigger label="Collapse sidebar" size="small" />
-        </Row>
+        ) : (
+          <Col align="center">
+            <Avatar name="DazzUI" shape="square" size="small" tint="primary" />
+          </Col>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
@@ -263,17 +274,31 @@ function WorkspaceSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <Row gap="1">
-          <IconButton label="Settings" size="small" variant="plain">
-            <Icon icon={Settings20Regular} />
-          </IconButton>
-          <IconButton label="Help" size="small" variant="plain">
-            <Icon icon={QuestionCircle20Regular} />
-          </IconButton>
-          <IconButton label="Connect phone" size="small" variant="plain">
-            <Icon icon={Phone20Regular} />
-          </IconButton>
-        </Row>
+        {open ? (
+          <Row gap="1">
+            <IconButton label="Settings" size="small" variant="plain">
+              <Icon icon={Settings20Regular} />
+            </IconButton>
+            <IconButton label="Help" size="small" variant="plain">
+              <Icon icon={QuestionCircle20Regular} />
+            </IconButton>
+            <IconButton label="Connect phone" size="small" variant="plain">
+              <Icon icon={Phone20Regular} />
+            </IconButton>
+          </Row>
+        ) : (
+          <Col gap="1" align="center">
+            <IconButton label="Settings" size="small" variant="plain">
+              <Icon icon={Settings20Regular} />
+            </IconButton>
+            <IconButton label="Help" size="small" variant="plain">
+              <Icon icon={QuestionCircle20Regular} />
+            </IconButton>
+            <IconButton label="Connect phone" size="small" variant="plain">
+              <Icon icon={Phone20Regular} />
+            </IconButton>
+          </Col>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

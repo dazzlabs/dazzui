@@ -432,6 +432,15 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
+/* The label is one box so the row can drop it cleanly when the column
+   becomes a rail. */
+.dz-sidebar__menu-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* A trailing label span truncates on one line. With plain-text children,
    the icon is the last element child, so keep its overflow visible. */
 .dz-sidebar__menu-button > span:last-child:not(.dz-sidebar__menu-icon) {
@@ -617,6 +626,10 @@
  * height on a side, which is what the icon width was sized around — with the
  * glyph centred and the label cut off past it.
  */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-label {
+  display: none;
+}
+
 .dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-button {
   width: var(--control-medium-size);
   height: var(--control-medium-size);

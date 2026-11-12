@@ -500,7 +500,7 @@ export function SidebarMenuButton({
               {icon}
             </span>
           ) : null}
-          {children}
+          <span className="dz-sidebar__menu-label">{children}</span>
         </>
       ),
       ...props,
