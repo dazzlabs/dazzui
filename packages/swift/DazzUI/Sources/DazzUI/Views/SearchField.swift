@@ -97,13 +97,13 @@ public struct SearchField<Hint: View>: View {
     let vars = theme.vars
     let text = Binding(get: { value }, set: onValueChange)
 
-    #if os(Windows)
+    #if os(Windows) || os(Linux)
       let nativePlaceholder = placeholder
     #else
       let nativePlaceholder = ""
     #endif
     return ZStack(alignment: .leading) {
-      #if !os(Windows)
+      #if !os(Windows) && !os(Linux)
         if value.isEmpty {
           Text(placeholder).foregroundStyle(vars.colorContentFaint)
         }
@@ -114,7 +114,7 @@ public struct SearchField<Hint: View>: View {
         .focused($focused)
         .onSubmit { onSubmit?() }
         .accessibilityLabel(accessibilityLabel ?? placeholder)
-        #if os(macOS) || os(Windows)
+        #if os(macOS) || os(Windows) || os(Linux)
           // Escape clears first and dismisses only once there is nothing
           // left, so a stray press never closes a field mid-search.
           .onExitCommand {

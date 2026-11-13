@@ -113,7 +113,7 @@ public extension View {
     cornerRadius: CGFloat = 0,
     width: CGFloat = 3
   ) -> some View {
-    #if os(Windows)
+    #if os(Windows) || os(Linux)
       self
     #else
     overlay {

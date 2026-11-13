@@ -105,7 +105,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           )
         )
       )
-    #elseif os(Windows)
+    #elseif os(Windows) || os(Linux)
       measured.popover(
         isPresented: $isPresented,
         arrowEdge: side == .top

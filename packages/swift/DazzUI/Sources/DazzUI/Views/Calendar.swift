@@ -114,11 +114,18 @@ public struct CalendarStrings: Sendable {
 
   private static let english = Locale(identifier: "en_US_POSIX")
 
-  @Sendable public static func monthTitle(_ date: Date) -> String {
+  private static let monthFormatter = formatter("MMMM yyyy")
+  private static let dayFormatter = formatter("EEEE, MMMM d, yyyy")
+
+  private static func formatter(_ format: String) -> DateFormatter {
     let formatter = DateFormatter()
     formatter.locale = english
-    formatter.dateFormat = "MMMM yyyy"
-    return formatter.string(from: date)
+    formatter.dateFormat = format
+    return formatter
+  }
+
+  @Sendable public static func monthTitle(_ date: Date) -> String {
+    monthFormatter.string(from: date)
   }
 
   @Sendable public static func weekday(_ weekday: Int) -> String {
@@ -126,10 +133,7 @@ public struct CalendarStrings: Sendable {
   }
 
   @Sendable public static func dayLabel(_ date: Date) -> String {
-    let formatter = DateFormatter()
-    formatter.locale = english
-    formatter.dateFormat = "EEEE, MMMM d, yyyy"
-    return formatter.string(from: date)
+    dayFormatter.string(from: date)
   }
 }
 
@@ -346,10 +350,20 @@ public struct Calendar: View {
   public var body: some View {
     let vars = theme.vars
     let cell = size == .small ? vars.calendarSmallCellSize : vars.calendarMediumCellSize
+    let math = self.math
+    let selection = span
+    let today = math.startOfDay(self.today ?? Date())
+    let month = math.startOfMonth(self.month?.wrappedValue ?? ownMonth ?? selection.start ?? today)
+    let preview = pending ? (hovered ?? focused ?? selection.start ?? today) : nil
+    let focus = gridFocused ? (focused ?? selection.start ?? today) : nil
+    let days = DayState(
+      math: math, today: today, selection: selection,
+      rangeEnd: mode == .range ? (preview ?? selection.end) : nil,
+      preview: preview, focus: focus, min: min, max: max)
 
     HStack(alignment: .top, spacing: vars.spacing4) {
       ForEach(0..<months, id: \.self) { index in
-        monthView(index: index, cell: cell, vars: vars)
+        monthView(index: index, month: month, cell: cell, vars: vars, state: days)
       }
     }
     .onHover { if !$0 { hovered = nil } }
@@ -361,9 +375,12 @@ public struct Calendar: View {
     .accessibilityElement(children: .contain)
   }
 
-  private func monthView(index: Int, cell: CGFloat, vars: ThemeVariables) -> some View {
-    let current = math.addMonths(firstMonth, index)
-    let days = math.monthGrid(current)
+  private func monthView(
+    index: Int, month: Date, cell: CGFloat, vars: ThemeVariables, state: DayState
+  ) -> some View {
+    let current = state.math.addMonths(month, index)
+    let days = state.math.monthGrid(current)
+    let nextMonth = state.math.addMonths(current, 1)
     let width = 7 * cell + 6 * vars.calendarCellGap
 
     return VStack(spacing: vars.spacing1) {
@@ -407,7 +424,7 @@ public struct Calendar: View {
         ForEach(0..<6, id: \.self) { row in
           HStack(spacing: vars.calendarCellGap) {
             ForEach(days[row * 7..<row * 7 + 7], id: \.self) { day in
-              dayView(day, current: current, cell: cell, vars: vars)
+              dayView(day, outside: day < current || day >= nextMonth, cell: cell, vars: vars, state: state)
             }
           }
         }
@@ -416,32 +433,49 @@ public struct Calendar: View {
     .frame(width: width)
   }
 
-  private func dayView(_ day: Date, current: Date, cell: CGFloat, vars: ThemeVariables)
-    -> some View
-  {
-    let value = span
-    let isStart = math.sameDay(day, value.start)
-    let isEnd = math.sameDay(day, value.end)
-    let picked = mode == .range ? isStart || isEnd : isStart
-    // What the span to draw is: the two picked ends, or the one picked end
-    // and the day being previewed against it.
-    let preview = pending ? (hovered ?? focusedDay) : nil
-    var lo: Date?
-    var hi: Date?
-    if mode == .range, let a = value.start, let b = pending ? preview : value.end {
-      lo = math.compareDay(a, b) != .orderedDescending ? a : b
-      hi = math.compareDay(a, b) != .orderedDescending ? b : a
+  /// Resolve calendar days once per render. Every cell in a month shares the
+  /// same selection bounds, clock and calendar.
+  private struct DayState {
+    let math: DayMath
+    let today, start, end, lower, upper, preview, focus, min, max: Date?
+
+    init(
+      math: DayMath, today: Date, selection: DateRange, rangeEnd: Date?, preview: Date?,
+      focus: Date?, min: Date?, max: Date?
+    ) {
+      self.math = math
+      self.today = today
+      start = selection.start.map(math.startOfDay)
+      end = selection.end.map(math.startOfDay)
+      if let start, let rangeEnd = rangeEnd.map(math.startOfDay) {
+        lower = Swift.min(start, rangeEnd)
+        upper = Swift.max(start, rangeEnd)
+      } else {
+        lower = nil
+        upper = nil
+      }
+      self.preview = preview.map(math.startOfDay)
+      self.focus = focus.map(math.startOfDay)
+      self.min = min.map(math.startOfDay)
+      self.max = max.map(math.startOfDay)
     }
-    let inSpan =
-      lo != nil && hi != nil && math.compareDay(day, lo!) != .orderedAscending
-      && math.compareDay(day, hi!) != .orderedDescending
-    let spanStart = inSpan && math.sameDay(day, lo)
-    let spanEnd = inSpan && math.sameDay(day, hi)
-    let previewed = pending && preview != nil && math.sameDay(day, preview) && !isStart
-    let outside = !math.sameMonth(day, current)
-    let isToday = math.sameDay(day, todayDay)
-    let off = disabled(day)
-    let isFocused = gridFocused && math.sameDay(day, focusedDay)
+  }
+
+  private func dayView(
+    _ day: Date, outside: Bool, cell: CGFloat, vars: ThemeVariables, state: DayState
+  ) -> some View {
+    let midnight = state.math.startOfDay(day)
+    let isStart = midnight == state.start
+    let isEnd = midnight == state.end
+    let picked = mode == .range ? isStart || isEnd : isStart
+    let inSpan = state.lower.map { midnight >= $0 } == true && state.upper.map { midnight <= $0 } == true
+    let spanStart = inSpan && midnight == state.lower
+    let spanEnd = inSpan && midnight == state.upper
+    let previewed = midnight == state.preview && !isStart
+    let isToday = midnight == state.today
+    let off = state.min.map { midnight < $0 } == true || state.max.map { midnight > $0 } == true
+    let isFocused = midnight == state.focus
+    let dayNumber = state.math.day(day)
     let radius = vars.radiusSmall
 
     return Pressable(action: { pick(day) }, enabled: !off, cornerRadius: radius) { state in
@@ -467,7 +501,7 @@ public struct Calendar: View {
         isToday
         ? vars.labelStrong.weight : (picked ? vars.labelMedium.weight : vars.labelQuiet.weight)
 
-      Text("\(math.day(day))")
+      Text("\(dayNumber)")
         .font(.system(size: vars.labelQuiet.size, weight: weight))
         .monospacedDigit()
         .foregroundStyle(colors.content)

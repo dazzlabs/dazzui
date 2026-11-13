@@ -10,9 +10,15 @@ import PackageDescription
 
 var targets: [Target] = [.executableTarget(name: "Example", dependencies: ["DazzUI"])]
 
-#if os(Windows)
-  targets.append(
-    .testTarget(name: "GalleryTests", dependencies: ["Example"], path: "Tests/Windows"))
+#if os(Windows) || os(Linux)
+  #if os(Linux)
+    let platformExcludes = ["NativeGalleryTests.swift"]
+  #else
+    let platformExcludes: [String] = []
+  #endif
+  targets.append(.testTarget(
+    name: "GalleryTests", dependencies: ["Example"], path: "Tests/Windows",
+    exclude: platformExcludes))
 #endif
 let package = Package(
   name: "Example",

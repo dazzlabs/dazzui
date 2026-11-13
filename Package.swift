@@ -10,16 +10,30 @@
 //     .package(url: "https://github.com/dazzlabs/dazzui.git", revision: "<commit>")
 //
 // Pin a revision rather than a version: the repository's tags belong to the
-// npm packages. Build with `xcodebuild`, not `swift build` — the icon package's
+// npm packages. On Apple platforms, use `xcodebuild`; the icon package's
 // asset catalog needs Xcode's build system (see packages/swift/DazzUI/README.md).
 
 import Foundation
 
 import PackageDescription
 
-#if os(Windows)
+#if os(Windows) || os(Linux)
   let portPath =
     ProcessInfo.processInfo.environment["SWIFTUI_PORT_PATH"] ?? "../../libnativeapi/swiftui-port"
+  var targets: [Target] = [
+    .target(
+      name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
+      path: "packages/swift/DazzUI/Windows/FluentIcons", resources: [.process("Resources")]),
+    .target(
+      name: "DazzUI",
+      dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
+      path: "packages/swift/DazzUI/Sources/DazzUI"),
+  ]
+  #if os(Windows)
+    targets.append(.testTarget(
+      name: "DazzUIWindowsTests", dependencies: ["DazzUI"],
+      path: "packages/swift/DazzUI/Tests/Windows"))
+  #endif
   let package = Package(
     name: "DazzUI",
     products: [
@@ -27,18 +41,7 @@ import PackageDescription
       .library(name: "FluentIcons", targets: ["FluentIcons"]),
     ],
     dependencies: [.package(name: "SwiftUIPort", path: portPath)],
-    targets: [
-      .target(
-        name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
-        path: "packages/swift/DazzUI/Windows/FluentIcons", resources: [.process("Resources")]),
-      .target(
-        name: "DazzUI",
-        dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
-        path: "packages/swift/DazzUI/Sources/DazzUI"),
-      .testTarget(
-        name: "DazzUIWindowsTests", dependencies: ["DazzUI"],
-        path: "packages/swift/DazzUI/Tests/Windows"),
-    ]
+    targets: targets
   )
 #else
   let package = Package(

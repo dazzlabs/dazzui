@@ -5,7 +5,7 @@ import Foundation
 
 func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme: ThemeChoice) {
   func argument(_ name: String) -> String? {
-    #if os(Windows)
+    #if os(Windows) || os(Linux)
       let args = ProcessInfo.processInfo.arguments
       if let index = args.firstIndex(of: "-" + name), index + 1 < args.count {
         return args[index + 1]

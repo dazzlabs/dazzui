@@ -13,7 +13,7 @@
 // packages rather than to the Swift one, so a host carrying both dependencies
 // resolves a single copy.
 //
-// **Build with `xcodebuild`, not `swift build`.** The icon package ships a
+// On Apple platforms, build with `xcodebuild`. The icon package ships a
 // 20,000-glyph asset catalog its own manifest never declares as a resource,
 // so SwiftPM alone leaves `Bundle.module` unsynthesised and the dependency
 // fails to compile. Xcode's build system processes the catalog and the
@@ -23,10 +23,23 @@ import Foundation
 
 import PackageDescription
 
-#if os(Windows)
+#if os(Windows) || os(Linux)
   let portPath =
     ProcessInfo.processInfo.environment["SWIFTUI_PORT_PATH"]
     ?? "../../../../../libnativeapi/swiftui-port"
+  var targets: [Target] = [
+    .target(
+      name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
+      path: "Windows/FluentIcons", resources: [.process("Resources")]),
+    .target(
+      name: "DazzUI",
+      dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
+      path: "Sources/DazzUI"),
+  ]
+  #if os(Windows)
+    targets.append(.testTarget(
+      name: "DazzUIWindowsTests", dependencies: ["DazzUI"], path: "Tests/Windows"))
+  #endif
   let package = Package(
     name: "DazzUI",
     products: [
@@ -34,18 +47,7 @@ import PackageDescription
       .library(name: "FluentIcons", targets: ["FluentIcons"]),
     ],
     dependencies: [.package(name: "SwiftUIPort", path: portPath)],
-    targets: [
-      .target(
-        name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
-        path: "Windows/FluentIcons", resources: [.process("Resources")]),
-      .target(
-        name: "DazzUI",
-        dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
-        path: "Sources/DazzUI"),
-      .testTarget(
-        name: "DazzUIWindowsTests", dependencies: ["DazzUI"],
-        path: "Tests/Windows"),
-    ]
+    targets: targets
   )
 #else
   let package = Package(

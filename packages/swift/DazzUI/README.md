@@ -104,6 +104,13 @@ with Microsoft's MIT license. After adding a glyph, run
 `pnpm swiftui:windows:icons --check` verifies generated assets without writing.
 Pass `-Page calendar -Theme studio-dark` to the launcher to open a specific page.
 
+## Linux through swiftui-port
+
+The root and DazzUI package manifests build the full SwiftUI library with
+SwiftUIPort and the bundled Fluent glyphs on Linux. See the
+[Gallery instructions](Example/README.md#linux) for dependencies, running the
+Gallery and tests.
+
 ## System sizing on macOS
 
 Use `.theme(.studioLight, sizing: .system)` to follow AppKit typography and

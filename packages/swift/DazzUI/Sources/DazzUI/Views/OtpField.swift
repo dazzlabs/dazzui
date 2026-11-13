@@ -67,7 +67,7 @@ public struct OtpField: View {
         .disabled(!enabled)
         .foregroundStyle(Color.clear)
         .tint(Color.clear)
-        #if os(Windows)
+        #if os(Windows) || os(Linux)
           // Native EDIT keeps paste, IME and focus; the shared cells draw the value.
           .opacity(0)
         #endif

@@ -114,14 +114,14 @@ public struct Combobox<Value: Hashable>: View {
   private func field(metrics: ControlMetrics) -> some View {
     let vars = theme.vars
 
-    #if os(Windows)
+    #if os(Windows) || os(Linux)
       let nativePlaceholder = placeholder
     #else
       let nativePlaceholder = ""
     #endif
     return HStack(spacing: vars.spacing1) {
       ZStack(alignment: .leading) {
-        #if !os(Windows)
+        #if !os(Windows) && !os(Linux)
           if query.isEmpty {
             Text(placeholder).foregroundStyle(vars.colorContentFaint)
           }

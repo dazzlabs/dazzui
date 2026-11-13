@@ -3,6 +3,8 @@
 The DazzUI example for SwiftUI, the counterpart of
 `packages/dart/dazzui/example`.
 
+## macOS
+
 Open it in Xcode and press ⌘R:
 
 ```bash
@@ -26,8 +28,8 @@ edit.
 The app resolves `DazzUI` by path, so it always builds the working copy
 beside it rather than a published version.
 
-**`swift build` and `swift run` do not work here**, and the reason is the icon
-dependency rather than anything about this app: Fluent's Swift package never
+The macOS build requires Xcode to process the icon catalog. Fluent's Swift
+package never
 declares its asset catalog as a resource, so SwiftPM alone leaves
 `Bundle.module` unsynthesised and fails to compile it. Xcode's build system
 processes the catalog, which is why the project exists. The package README has
@@ -39,6 +41,29 @@ sizing** in the theme panel switches back to the shared design geometry. Pass
 `-design-sizing` to start with design metrics. **Use native menus** in the same
 panel switches ordinary menus to AppKit while keeping their triggers and
 fields in the gallery's layout. Search suggestions remain custom.
+
+## Linux
+
+The Gallery builds the same `Sources/Example` and DazzUI components using
+SwiftUIPort and the bundled Fluent icon resources. It runs in GTK 3 on Wayland
+or X11. The Gallery uses DazzUI design sizing and custom menus on Linux.
+
+Install Swift and the nativeapi build dependencies. On Ubuntu the packages are
+`pkg-config`, `libgtk-3-dev`, `libx11-dev` and `libxi-dev`; on Arch use
+`pkgconf`, `gtk3`, `libx11` and `libxi`. Clone nativeapi with its submodules.
+Set the package paths and run these commands in this directory.
+
+```bash
+export SWIFTUI_PORT_PATH=/path/to/swiftui-port
+export NATIVEAPI_SWIFT_PATH=/path/to/nativeapi/bindings/swift
+swift build
+swift run -c release Example -page calendar -theme studio-dark
+swift test
+```
+
+`swift run Example --smoke` opens the window and exits after three seconds.
+The SwiftPM tests render all generated scenes, all story pages and every theme,
+and exercise search, navigation and theme switching through the shared runtime.
 
 ## How it is organised
 

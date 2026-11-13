@@ -78,11 +78,15 @@ public struct DateRangePickerStrings: Sendable {
     self.calendar = calendar
   }
 
-  @Sendable public static func day(_ date: Date) -> String {
+  private static let dayFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.dateFormat = "EEE, MMM d"
-    return formatter.string(from: date)
+    return formatter
+  }()
+
+  @Sendable public static func day(_ date: Date) -> String {
+    dayFormatter.string(from: date)
   }
 }
 

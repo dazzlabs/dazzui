@@ -662,6 +662,7 @@ let components: [String: ComponentBuilder] = [
           multiline: n.flag("multiline"),
           rows: n.number("rows").map { Int($0) } ?? 2
         )
+        .accessibilityLabel(n.string("aria-label") ?? n.string("placeholder") ?? "")
       }
     )
   },
@@ -726,19 +727,19 @@ let components: [String: ComponentBuilder] = [
  * the same text, so a round trip through a scene's state reads as it was
  * written. */
 
-private func storyDateFormatter() -> DateFormatter {
+private let storyDateFormatter: DateFormatter = {
   let formatter = DateFormatter()
   formatter.locale = Locale(identifier: "en_US_POSIX")
   formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
   return formatter
-}
+}()
 
 func date(_ value: Value?) -> Date? {
-  value?.string.flatMap { storyDateFormatter().date(from: $0) }
+  value?.string.flatMap { storyDateFormatter.date(from: $0) }
 }
 
 func writeDate(_ date: Date) -> Value {
-  .string(storyDateFormatter().string(from: date))
+  .string(storyDateFormatter.string(from: date))
 }
 
 func dateRange(_ value: Value) -> DateRange {

@@ -58,8 +58,8 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
     #endif
   }
 }
-#if os(Windows)
-  // AppKit system metrics are not available through SwiftUIPort. Windows uses
+#if os(Windows) || os(Linux)
+  // AppKit system metrics are not available through SwiftUIPort. The desktop port uses
   // design metrics; native display scaling is applied by the backend.
   internal struct SystemThemeModifier: ViewModifier {
     let name: ThemeName
