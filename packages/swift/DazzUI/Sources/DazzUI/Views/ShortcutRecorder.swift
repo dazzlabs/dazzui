@@ -248,7 +248,7 @@ public struct ShortcutRecorder: View {
       // Clicking away cancels, the way the blur handler does.
       if !isFocused { stop() }
     }
-    #if os(Windows) || os(Linux)
+    #if os(Windows) || os(Linux) || os(WASI)
       .onKeyPress { press in
         guard recording else { return .ignored }
         if press.key == .escape {

@@ -1,4 +1,4 @@
-// Windows packaging for the Fluent glyphs used by the shared Swift sources.
+// Package the Fluent glyphs used by the Windows, Linux and Web Swift builds.
 // Artwork comes from the same official Fluent React package as other ports.
 import fs from 'node:fs'
 import path from 'node:path'
@@ -54,7 +54,13 @@ ${[...names]
   .join('\n')}
 }
 public extension Image {
-  init(fluent icon: FluentIcon) { self.init(icon.rawValue, bundle: .module) }
+  init(fluent icon: FluentIcon) {
+    #if os(WASI)
+      self.init("fluent/\\(icon.rawValue).svg")
+    #else
+      self.init(icon.rawValue, bundle: .module)
+    #endif
+  }
 }
 `
 )

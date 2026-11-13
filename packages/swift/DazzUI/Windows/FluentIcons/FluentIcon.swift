@@ -52,5 +52,11 @@ public enum FluentIcon: String, CaseIterable, Sendable {
   case weatherSunny20Regular
 }
 public extension Image {
-  init(fluent icon: FluentIcon) { self.init(icon.rawValue, bundle: .module) }
+  init(fluent icon: FluentIcon) {
+    #if os(WASI)
+      self.init("fluent/\(icon.rawValue).svg")
+    #else
+      self.init(icon.rawValue, bundle: .module)
+    #endif
+  }
 }

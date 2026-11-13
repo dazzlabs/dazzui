@@ -9,6 +9,8 @@ import SwiftUI
 /// which is what a border at this size always does.
 #if os(Windows) || os(Linux)
   import class NativeAPI.Clipboard
+#elseif os(WASI)
+  import JavaScriptKit
 #endif
 
 /// How long the tick stands after a copy.
@@ -232,12 +234,28 @@ public struct CodeBlock<Actions: View>: View {
       NSPasteboard.general.setString(body_, forType: .string)
     #elseif os(Windows) || os(Linux)
       guard NativeAPI.Clipboard.shared.writeText(body_) else { return }
+    #elseif os(WASI)
+      guard let clipboard = JSObject.global.navigator.clipboard.object,
+        let promise = clipboard.writeText!(body_).object
+      else { return }
+      _ = JSPromise(unsafelyWrapping: promise).then(success: { _ in
+        showCopied()
+        return .undefined
+      }, failure: { _ in .undefined })
+      return
     #endif
+    #if !os(WASI)
+      showCopied()
+    #endif
+  }
+
+  private func showCopied() {
     copied = true
     // The tick outlives the copy by a second and a half, so the block may be
     // gone by the time it should be cleared — which is harmless here, since
     // the state goes with the view.
-    DispatchQueue.main.asyncAfter(deadline: .now() + codeBlockCopiedFor) {
+    Task { @MainActor in
+      try? await Task.sleep(for: .seconds(codeBlockCopiedFor))
       copied = false
     }
   }

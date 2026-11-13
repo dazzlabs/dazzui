@@ -292,8 +292,9 @@ public final class Toaster: ObservableObject {
     next += 1
     toasts.append(Raised(id: id, options: options))
     let timeout = options.resolvedTimeout
-    if timeout > 0 {
-      DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
+    if timeout.isFinite && timeout > 0 {
+      Task { @MainActor [weak self] in
+        try? await Task.sleep(for: .seconds(timeout))
         self?.close(id)
       }
     }

@@ -65,6 +65,27 @@ swift test
 The SwiftPM tests render all generated scenes, all story pages and every theme,
 and exercise search, navigation and theme switching through the shared runtime.
 
+## WebAssembly
+
+Build the SwiftUI gallery with the Swift.org Swift 6.4.2 toolchain, its matching
+[WebAssembly SDK](https://www.swift.org/documentation/articles/wasm-getting-started.html),
+and Node.js with npm. Use a SwiftUIPort checkout with Web support. The build
+script finds the sibling `libnativeapi/swiftui-port` checkout or uses
+`SWIFTUI_PORT_PATH` if set.
+
+Run these commands from the Example directory.
+
+```bash
+swiftly run ./tool/build-web.sh +6.4.2
+python3 -m http.server 8766 --bind 127.0.0.1 --directory .build/web
+```
+
+Use `./tool/build-web.sh` directly when the Swift.org toolchain is already
+selected. Open [the gallery](http://127.0.0.1:8766/) or start on a specific page
+with [`?page=button&theme=ember-dark`](http://127.0.0.1:8766/?page=button&theme=ember-dark).
+The static output includes the compiled Swift app, browser runtime and Fluent
+icons. It uses design sizing and custom menus.
+
 ## How it is organised
 
 The React example's window, drawn with this package: the component list,

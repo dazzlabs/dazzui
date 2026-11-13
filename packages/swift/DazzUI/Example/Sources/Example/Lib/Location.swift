@@ -2,7 +2,17 @@
 /// reads them from its address: `-page button -theme ember-dark` on the
 /// command line, or nothing for the defaults.
 import Foundation
+#if os(WASI)
+  import JavaScriptKit
+#endif
 
+#if os(WASI)
+func readLocation() -> (page: String?, theme: ThemeChoice) {
+  let search = JSObject.global.location.search.string ?? ""
+  let query = JSObject.global.URLSearchParams.object!.new(search)
+  return resolveLocation { query.get!($0).string }
+}
+#else
 func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme: ThemeChoice) {
   func argument(_ name: String) -> String? {
     #if os(Windows) || os(Linux)
@@ -13,6 +23,11 @@ func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme
     #endif
     return defaults.string(forKey: name)
   }
+  return resolveLocation(argument)
+}
+#endif
+
+private func resolveLocation(_ argument: (String) -> String?) -> (page: String?, theme: ThemeChoice) {
   let page = argument("page").flatMap { $0.isEmpty ? nil : $0 }
   let id = argument("theme") ?? ""
   guard let cut = id.lastIndex(of: "-") else { return (page, defaultTheme) }

@@ -40,7 +40,7 @@ public struct ContextMenu<Content: View>: View {
   }
 
   public var body: some View {
-    #if os(Windows) || os(Linux)
+    #if os(Windows) || os(Linux) || os(WASI)
       content().contextMenu {
         MenuSheet {
           MenuRows(items: items, tint: tint) { open = false }

@@ -238,7 +238,7 @@ public struct TextField: View {
     let ramp = tintFor(state, tint)
 
     let editor = ZStack(alignment: multiline ? .topLeading : .leading) {
-      #if !os(Windows) && !os(Linux)
+      #if !os(Windows) && !os(Linux) && !os(WASI)
         if text.isEmpty {
           Text(placeholder).foregroundStyle(vars.colorContentFaint)
         }
@@ -313,7 +313,7 @@ public struct TextField: View {
   }
 
   private var nativePlaceholder: String {
-    #if os(Windows) || os(Linux)
+    #if os(Windows) || os(Linux) || os(WASI)
       placeholder
     #else
       ""

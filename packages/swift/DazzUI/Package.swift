@@ -23,34 +23,51 @@ import Foundation
 
 import PackageDescription
 
+let buildForWeb = ProcessInfo.processInfo.environment["SWIFTUI_PORT_WEB"] == "1"
 #if os(Windows) || os(Linux)
+  let useSwiftUIPort = true
+#else
+  let useSwiftUIPort = buildForWeb
+#endif
+
+let package: Package
+if useSwiftUIPort {
   let portPath =
     ProcessInfo.processInfo.environment["SWIFTUI_PORT_PATH"]
     ?? "../../../../../libnativeapi/swiftui-port"
+  var dependencies: [Package.Dependency] = [.package(name: "SwiftUIPort", path: portPath)]
+  var dazzDependencies: [Target.Dependency] = [
+    "FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort"),
+  ]
+  if buildForWeb {
+    dependencies.append(.package(url: "https://github.com/swiftwasm/JavaScriptKit.git", exact: "0.63.0"))
+    dazzDependencies.append(.product(name: "JavaScriptKit", package: "JavaScriptKit"))
+  }
   var targets: [Target] = [
     .target(
       name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
-      path: "Windows/FluentIcons", resources: [.process("Resources")]),
+      path: "Windows/FluentIcons", exclude: buildForWeb ? ["Resources"] : [],
+      resources: buildForWeb ? [] : [.process("Resources")]),
     .target(
       name: "DazzUI",
-      dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
+      dependencies: dazzDependencies,
       path: "Sources/DazzUI"),
   ]
   #if os(Windows)
     targets.append(.testTarget(
       name: "DazzUIWindowsTests", dependencies: ["DazzUI"], path: "Tests/Windows"))
   #endif
-  let package = Package(
+  package = Package(
     name: "DazzUI",
     products: [
       .library(name: "DazzUI", targets: ["DazzUI"]),
       .library(name: "FluentIcons", targets: ["FluentIcons"]),
     ],
-    dependencies: [.package(name: "SwiftUIPort", path: portPath)],
+    dependencies: dependencies,
     targets: targets
   )
-#else
-  let package = Package(
+} else {
+  package = Package(
     name: "DazzUI",
     platforms: [.macOS(.v13), .iOS(.v16)],
     products: [
@@ -71,5 +88,4 @@ import PackageDescription
       )
     ]
   )
-
-#endif
+}
