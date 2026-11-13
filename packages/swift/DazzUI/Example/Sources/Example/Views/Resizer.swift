@@ -1,7 +1,11 @@
 import DazzUI
-import SwiftUI
 
 /// How wide a column may be, and how wide it starts.
+import SwiftUI
+
+/// The edge of a column, to be dragged. It draws nothing until the pointer
+/// is on it — the rule is already there, drawn by the column — and then the
+/// accent line; a double-click resets it.
 struct ColumnWidth {
   let initial: CGFloat
   let min: CGFloat
@@ -11,10 +15,6 @@ struct ColumnWidth {
     Swift.min(Swift.max(width, min), max).rounded()
   }
 }
-
-/// The edge of a column, to be dragged. It draws nothing until the pointer
-/// is on it — the rule is already there, drawn by the column — and then the
-/// accent line; a double-click resets it.
 struct Resizer: View {
   /// `1` when dragging right widens the column, `-1` when dragging left does.
   let outward: CGFloat
@@ -39,7 +39,9 @@ struct Resizer: View {
     .frame(width: vars.spacing2)
     .onHover { inside in
       hovered = inside
-      if inside { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
+      #if canImport(AppKit)
+        if inside { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
+      #endif
     }
     .gesture(
       DragGesture(minimumDistance: 0, coordinateSpace: .global)

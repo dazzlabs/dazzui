@@ -1,5 +1,4 @@
 import FluentIcons
-import SwiftUI
 
 /// Inline search for a list or a table.
 ///
@@ -8,6 +7,8 @@ import SwiftUI
 /// the field's focus from out here rather than being drawn by the field
 /// itself. The lift is the same move every text control makes: the recessed
 /// card rises to the paper behind an accent border and a soft accent wash.
+import SwiftUI
+
 public struct SearchField<Hint: View>: View {
   public var value: String
   public var onValueChange: (String) -> Void
@@ -96,17 +97,24 @@ public struct SearchField<Hint: View>: View {
     let vars = theme.vars
     let text = Binding(get: { value }, set: onValueChange)
 
+    #if os(Windows)
+      let nativePlaceholder = placeholder
+    #else
+      let nativePlaceholder = ""
+    #endif
     return ZStack(alignment: .leading) {
-      if value.isEmpty {
-        Text(placeholder).foregroundStyle(vars.colorContentFaint)
-      }
-      SwiftUI.TextField("", text: text)
+      #if !os(Windows)
+        if value.isEmpty {
+          Text(placeholder).foregroundStyle(vars.colorContentFaint)
+        }
+      #endif
+      SwiftUI.TextField(nativePlaceholder, text: text)
         .textFieldStyle(.plain)
         .lineLimit(1)
         .focused($focused)
         .onSubmit { onSubmit?() }
         .accessibilityLabel(accessibilityLabel ?? placeholder)
-        #if os(macOS)
+        #if os(macOS) || os(Windows)
           // Escape clears first and dismisses only once there is nothing
           // left, so a stray press never closes a field mid-search.
           .onExitCommand {
@@ -138,10 +146,9 @@ public struct SearchField<Hint: View>: View {
     )
   }
 }
-
-public extension SearchField where Hint == EmptyView {
+extension SearchField where Hint == EmptyView {
   /// A search field with nothing in its trailing slot.
-  init(
+  public init(
     value: String,
     onValueChange: @escaping (String) -> Void,
     placeholder: String = "Search",
@@ -166,4 +173,3 @@ public extension SearchField where Hint == EmptyView {
     )
   }
 }
-

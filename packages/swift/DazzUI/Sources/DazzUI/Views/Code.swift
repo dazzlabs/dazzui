@@ -1,4 +1,5 @@
 import FluentIcons
+
 import SwiftUI
 
 /// A run of code inside a sentence — a flag, a path, an identifier.
@@ -6,6 +7,27 @@ import SwiftUI
 /// A wash and a face, not a box: the chip corner and the half-step inset keep
 /// it separable from the prose around it without breaking the line's rhythm,
 /// which is what a border at this size always does.
+#if os(Windows)
+  import class NativeAPI.Clipboard
+#endif
+
+/// How long the tick stands after a copy.
+///
+/// A file-scope constant rather than a static on the view: `CodeBlock` is
+/// generic over its actions, and a generic type cannot carry a stored static.
+
+/// A block of code, read rather than edited.
+///
+/// The gutter is a column of its own rather than text in the same run, so a
+/// selection that crosses ten lines takes ten lines of code and not ten line
+/// numbers — the single thing a reader does with one of these, and the thing a
+/// numbered run gets wrong. It also sits outside the scroller, so it stays put
+/// while the code slides under it.
+///
+/// A head is drawn only where there is something to put in it. A block with no
+/// title, no language and nothing to press is the code alone, because a bar
+/// holding one label says less than the space it takes.
+
 public struct Code: View {
   public var code: String
 
@@ -34,24 +56,7 @@ public struct Code: View {
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusTiny, style: .circular))
   }
 }
-
-/// How long the tick stands after a copy.
-///
-/// A file-scope constant rather than a static on the view: `CodeBlock` is
-/// generic over its actions, and a generic type cannot carry a stored static.
 private let codeBlockCopiedFor: Double = 1.6
-
-/// A block of code, read rather than edited.
-///
-/// The gutter is a column of its own rather than text in the same run, so a
-/// selection that crosses ten lines takes ten lines of code and not ten line
-/// numbers — the single thing a reader does with one of these, and the thing a
-/// numbered run gets wrong. It also sits outside the scroller, so it stays put
-/// while the code slides under it.
-///
-/// A head is drawn only where there is something to put in it. A block with no
-/// title, no language and nothing to press is the code alone, because a bar
-/// holding one label says less than the space it takes.
 public struct CodeBlock<Actions: View>: View {
   public var code: String
   /// What the block is — a path, a filename, a shell's name.
@@ -225,6 +230,8 @@ public struct CodeBlock<Actions: View>: View {
     #if canImport(AppKit)
       NSPasteboard.general.clearContents()
       NSPasteboard.general.setString(body_, forType: .string)
+    #elseif os(Windows)
+      guard NativeAPI.Clipboard.shared.writeText(body_) else { return }
     #endif
     copied = true
     // The tick outlives the copy by a second and a half, so the block may be
@@ -235,10 +242,9 @@ public struct CodeBlock<Actions: View>: View {
     }
   }
 }
-
-public extension CodeBlock where Actions == EmptyView {
+extension CodeBlock where Actions == EmptyView {
   /// A block with nothing in its head but its own labels.
-  init(
+  public init(
     code: String,
     title: String? = nil,
     language: String? = nil,

@@ -106,12 +106,16 @@ public extension View {
   ///
   /// It hugs the control with no gap, the way macOS draws it, and it is the
   /// system accent in every tint — it never follows `data-tint`.
+  /// Windows keeps focus behavior without drawing an additional outer ring.
   func focusRing(
     visible: Bool,
     color: Color,
     cornerRadius: CGFloat = 0,
     width: CGFloat = 3
   ) -> some View {
+    #if os(Windows)
+      self
+    #else
     overlay {
       if visible {
         // A stroke is centred on its path, so insetting by half the width
@@ -121,6 +125,7 @@ public extension View {
           .padding(-width)
       }
     }
+    #endif
   }
 
   /// A border on every edge, following the box's corner radius.

@@ -1,9 +1,10 @@
+import SwiftUI
+
 #if canImport(AppKit)
   import AppKit
 #endif
-import SwiftUI
 
-public extension View {
+extension View {
   /// Hangs a floating sheet off this view, the counterpart of the portal and
   /// positioner a Base UI popup renders into.
   ///
@@ -27,7 +28,7 @@ public extension View {
   /// opposite side where the screen has no room. Environment does not cross a
   /// window, so the theme is carried over explicitly. `panel` is handed this
   /// view's size, for a list that has to be at least as wide as its trigger.
-  func floatingPanel<Panel: View>(
+  public func floatingPanel<Panel: View>(
     isPresented: Binding<Bool>,
     side: PopoverSide = .bottom,
     align: PopoverAlign = .start,
@@ -48,7 +49,7 @@ public extension View {
   }
 
   /// A floating sheet whose content does not depend on the anchor's size.
-  func floatingPanel<Panel: View>(
+  public func floatingPanel<Panel: View>(
     isPresented: Binding<Bool>,
     side: PopoverSide = .bottom,
     align: PopoverAlign = .start,
@@ -66,7 +67,6 @@ public extension View {
     )
   }
 }
-
 private struct FloatingPanelModifier<Panel: View>: ViewModifier {
   @Binding var isPresented: Bool
   let side: PopoverSide
@@ -105,6 +105,20 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           )
         )
       )
+    #elseif os(Windows)
+      measured.popover(
+        isPresented: $isPresented,
+        arrowEdge: side == .top
+          ? .bottom : side == .leading ? .trailing : side == .trailing ? .leading : .top
+      ) {
+        panel(anchor)
+          .environment(\.theme, theme)
+          .font(theme.vars.bodyMedium.font)
+          .environment(\.colorScheme, theme.name.colorScheme)
+          .menuPresentation(presentation)
+          .fixedSize()
+          .presentationBackgroundInteraction(modal ? .disabled : .enabled)
+      }
     #else
       // No second window to draw in: the overlay is as far as the platform
       // goes, raised above its own siblings at least.
@@ -130,7 +144,6 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
     shadows.map { $0.blur + $0.spread + max(abs($0.x), abs($0.y)) }.max() ?? 0
   }
 }
-
 #if canImport(AppKit)
   /// Where the sheet goes against the anchor, in screen coordinates — AppKit's,
   /// whose origin is the bottom-left.

@@ -1,7 +1,8 @@
 import DazzUI
-import SwiftUI
 
 /// The theme, and nothing else: which half of it, then which family.
+import SwiftUI
+
 struct ThemePanel: View {
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
@@ -36,18 +37,26 @@ struct ThemePanel: View {
       }
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
-          DazzUI.Toggle(pressed: sizing == .system, size: .small,
-            accessibilityName: "Follow system sizing", action: {
-            sizing = sizing == .system ? .design : .system
-          }) { Text("Follow system sizing") }
-          .padding(.horizontal, vars.spacing4)
-          .padding(.bottom, vars.spacing2)
-          DazzUI.Toggle(pressed: menuPresentation == .native, size: .small,
-            accessibilityName: "Use native menus", action: {
-            menuPresentation = menuPresentation == .native ? .custom : .native
-          }) { Text("Use native menus") }
-          .padding(.horizontal, vars.spacing4)
-          .padding(.bottom, vars.spacing2)
+          #if canImport(AppKit)
+            DazzUI.Toggle(
+              pressed: sizing == .system, size: .small,
+              accessibilityName: "Follow system sizing",
+              action: {
+                sizing = sizing == .system ? .design : .system
+              }
+            ) { Text("Follow system sizing") }
+            .padding(.horizontal, vars.spacing4)
+            .padding(.bottom, vars.spacing2)
+            DazzUI.Toggle(
+              pressed: menuPresentation == .native, size: .small,
+              accessibilityName: "Use native menus",
+              action: {
+                menuPresentation = menuPresentation == .native ? .custom : .native
+              }
+            ) { Text("Use native menus") }
+            .padding(.horizontal, vars.spacing4)
+            .padding(.bottom, vars.spacing2)
+          #endif
           ForEach(themeFamilyGroups, id: \.title) { group in
             VStack(alignment: .leading, spacing: vars.spacing2) {
               SectionLabel { Text(group.title) }

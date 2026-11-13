@@ -1,8 +1,3 @@
-#if canImport(AppKit)
-  import AppKit
-#endif
-import SwiftUI
-
 /// The menu a right-click opens, over the thing that was clicked.
 ///
 /// It is the same menu a button opens — the panel and the rows are
@@ -15,6 +10,12 @@ import SwiftUI
 /// mode. Every affordance in a context menu must also be reachable
 /// somewhere a pointer can see: a right-click is a shortcut, never the only
 /// door.
+import SwiftUI
+
+#if canImport(AppKit)
+  import AppKit
+#endif
+
 public struct ContextMenu<Content: View>: View {
   public var items: [MenuItem]
   /// Which colour ramp the row wash resolves against.
@@ -39,33 +40,42 @@ public struct ContextMenu<Content: View>: View {
   }
 
   public var body: some View {
-    content()
-      .background(SecondaryClickCatcher { point in
-        at = point
-        open = true
-      })
-      .overlay(alignment: .topLeading) {
-        if open && !presentation.usesNativeMenus {
-          MenuSheet {
-            MenuRows(items: items, tint: tint) { open = false }
+    #if os(Windows)
+      content().contextMenu {
+        MenuSheet {
+          MenuRows(items: items, tint: tint) { open = false }
+        }.environment(\.theme, theme).fixedSize()
+      }
+    #else
+      content()
+        .background(
+          SecondaryClickCatcher { point in
+            at = point
+            open = true
           }
-          // At the pointer, not against an edge: the offset is the press's own
-          // position inside this region.
-          .offset(x: at.x, y: at.y)
+        )
+        .overlay(alignment: .topLeading) {
+          if open && !presentation.usesNativeMenus {
+            MenuSheet {
+              MenuRows(items: items, tint: tint) { open = false }
+            }
+            // At the pointer, not against an edge: the offset is the press's own
+            // position inside this region.
+            .offset(x: at.x, y: at.y)
+          }
         }
-      }
-      .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
-      .background {
-        if open && !presentation.usesNativeMenus {
-          SwiftUI.Button("") { open = false }
-            .keyboardShortcut(.cancelAction)
-            .opacity(0)
-            .frame(width: 0, height: 0)
+        .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
+        .background {
+          if open && !presentation.usesNativeMenus {
+            SwiftUI.Button("") { open = false }
+              .keyboardShortcut(.cancelAction)
+              .opacity(0)
+              .frame(width: 0, height: 0)
+          }
         }
-      }
+    #endif
   }
 }
-
 #if canImport(AppKit)
   /// Catches the secondary click SwiftUI has no gesture for.
   ///

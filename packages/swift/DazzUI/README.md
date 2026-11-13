@@ -31,6 +31,79 @@ struct ContentView: View {
 `theme(_:)` scopes a token set to a subtree, the way React's `data-theme`
 attribute does. Themes are per-subtree, so several can sit on screen at once.
 
+## Windows through swiftui-port
+
+The complete `Example/` gallery runs through
+[swiftui-port](https://github.com/libnativeapi/swiftui-port). Windows compiles
+all shared DazzUI sources and generated tokens: 53 component stories, 192
+preview/example scenes and 72 theme values. The gallery includes its sidebar
+search, navigation, theme controls, scrollable examples and Fluent glyphs.
+DazzUI components, adapters and assets remain in this repository; swiftui-port
+supplies generic SwiftUI layout, state, drawing, input and presentation APIs.
+`DazzMobileUI` is not exported on Windows.
+
+The Windows test targets render every story and theme and exercise native
+editing, button activation, selection popups, dialogs, scrolling, slider
+interaction and asynchronous lifecycle updates. This is functional coverage,
+not a claim of React/macOS pixel conformance.
+
+Use local checkouts containing [swiftui-port #2](https://github.com/libnativeapi/swiftui-port/pull/2)
+and [nativeapi #34](https://github.com/libnativeapi/nativeapi/pull/34). While those changes are in review,
+use the PR branches or the tested revisions `9ac3ac6de`
+and `c6f38de82`, respectively. Initialize nativeapi's `core`
+submodule at the revision recorded in that checkout. The verified host uses
+Windows x64, Swift 6.4.2, Visual Studio C++ build tools and Windows SDK.
+Enable Developer Mode so the core source symlink can be prepared.
+From this repository's root:
+
+```powershell
+$env:SWIFTUI_PORT_PATH = 'C:/src/swiftui-port'
+$env:NATIVEAPI_SWIFT_PATH = 'C:/src/nativeapi/bindings/swift'
+pnpm swiftui:windows:build
+pnpm swiftui:windows:test
+pnpm swiftui:windows:benchmark      # release timings, including native paint
+pnpm swiftui:windows                 # opens the native window
+pnpm swiftui:windows -Smoke          # opens and exits after three seconds
+```
+
+Without pnpm, run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File
+packages/swift/DazzUI/scripts/run-windows.ps1` with `-BuildOnly`, `-Test`,
+`-Smoke`, `-SwiftUIPortPath` or `-NativeApiSwiftPath` as needed. Defaults assume
+sibling `dazzlabs/dazzui` and `libnativeapi/{swiftui-port,nativeapi}` checkouts.
+Both the repository root and package manifest support Windows path consumers.
+Library tests and the gallery use separate build caches to keep SwiftPM's root-package test plans independent.
+The launcher builds/runs **release** by default; tests default to debug.
+Use `-Configuration debug` for a debugger or `-Test -Configuration release`
+to verify the optimized build. The optional `testRenderingBenchmark` records
+hover, scroll and theme timings (including native painting) when
+`SWIFTUI_PORT_BENCHMARK_PATH` names an output JSON file; it is skipped otherwise.
+`pnpm swiftui:windows:benchmark` sets it automatically; use `-Configuration debug`
+for a comparable debug run and `-BenchmarkOutput <file.json>` to choose the report.
+The benchmark defaults to 120 hover transitions and 120 scroll ticks, following
+four separately recorded warmup transitions. `-BenchmarkSamples <count>` changes
+the length; direct SwiftPM runs use `SWIFTUI_PORT_BENCHMARK_SAMPLES`. The launcher
+prints mean/P50/P95/P99/max and the fraction within 16.67 ms, and writes a sibling
+`.summary.json`. Samples include input processing, renderer updates and native
+painting. They measure CPU/update-to-paint latency, not DWM presentation FPS.
+Paint timings and reused pixel counts help distinguish raster work from copies.
+It uses the tested `--build-system native` builder; Swift 6.4 emits a
+deprecation warning for that flag.
+
+Windows currently uses design sizing, including when `.system` is requested;
+it does not subscribe to Windows text-size settings. DPI scaling is native.
+The compatibility layer draws text with Windows fonts, approximates shadows
+and supports basic rotation/scale/opacity/offset animations. See swiftui-port's
+compatibility and divergence documents for details. Windows uses custom menus
+and in-window popovers; the AppKit native-menu and
+system-sizing toggles only appear on macOS. The Apple manifests retain their
+existing dependencies and Xcode build path.
+
+The 47 used Fluent glyphs are checked in under `Windows/FluentIcons/Resources`,
+with Microsoft's MIT license. After adding a glyph, run
+`pnpm swiftui:windows:icons` from the root (requires `pnpm install`).
+`pnpm swiftui:windows:icons --check` verifies generated assets without writing.
+Pass `-Page calendar -Theme studio-dark` to the launcher to open a specific page.
+
 ## System sizing on macOS
 
 Use `.theme(.studioLight, sizing: .system)` to follow AppKit typography and
@@ -215,8 +288,8 @@ the catalog.
 
 ## Playground
 
-`Example/` holds the gallery app — six pages of components, and a Themes page
-that renders the same view under every theme at once:
+`Example/` holds the shared gallery app — 53 component stories and theme controls
+for comparing every component in light and dark palettes:
 
 ```bash
 open Example/Example.xcodeproj
