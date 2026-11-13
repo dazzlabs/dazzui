@@ -3,13 +3,21 @@ import SwiftUI
 /// The active theme: which one it is, and the variables it resolved to.
 public struct Theme: Sendable {
   public let name: ThemeName
-  public let vars: ThemeVariables
   public let sizing: ThemeSizing
+  private final class Resolved: Sendable {
+    let variables: ThemeVariables
+    init(_ variables: ThemeVariables) { self.variables = variables }
+  }
+  private let resolved: Resolved
+
+  // Each themed view captures the environment. Share the token table across
+  // those captures, including the resolved system-sizing snapshot.
+  public var vars: ThemeVariables { resolved.variables }
 
   public init(_ name: ThemeName) {
     self.name = name
-    self.vars = name.variables
     self.sizing = .design
+    self.resolved = Resolved(name.variables)
   }
 
   @MainActor public init(_ name: ThemeName, sizing: ThemeSizing) {
@@ -19,7 +27,7 @@ public struct Theme: Sendable {
   internal init(_ name: ThemeName, sizing: ThemeSizing, metrics: SystemSizingMetrics) {
     self.name = name
     self.sizing = sizing
-    self.vars = sizing == .system ? name.variables.resolvingSystemSizing(metrics) : name.variables
+    self.resolved = Resolved(sizing == .system ? name.variables.resolvingSystemSizing(metrics) : name.variables)
   }
 
   /// The default is Bright Light, the same theme `:root` holds.
