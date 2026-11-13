@@ -1,10 +1,8 @@
-import Foundation
 import FluentIcons
-import SwiftUI
 
-#if os(macOS)
-import AppKit
-#endif
+import Foundation
+
+import SwiftUI
 
 // A shortcut is kept as the glyph string a settings page prints — `⌥⇧2`,
 // `⌥ Space` — rather than as a key-code tuple, because that is what every
@@ -12,11 +10,41 @@ import AppKit
 // `Option+Shift+2` is one mapping away.
 
 /// Modifiers in the order macOS prints them: ⌃ ⌥ ⇧ ⌘.
-private let modifierKeys: Set<String> = ["Control", "Alt", "Shift", "Meta"]
+#if os(macOS)
+  import AppKit
+#endif
 
 /// Keys named by their physical position (the web `code`), not by the
 /// character they produce: with ⌥ held, the character for the T key is `†` on
 /// a US layout, and the recorded shortcut would print as gibberish.
+
+/// A key press, in the shape the web event carries it: a physical position, a
+/// produced character, and the four modifier flags.
+
+/// The glyph string for a key event, or `nil` when the event is not something
+/// a shortcut can be made of.
+///
+/// A key on its own is typing, not a shortcut, so it has to carry ⌃, ⌥ or ⌘ —
+/// ⇧ alone is still typing — unless it is a function key, which is a shortcut
+/// by itself. Word keys (`Space`, `F5`) get a space after the modifiers so
+/// `⌥ Space` reads as two things and `⌥⇧2` as one.
+
+/// `error` for a binding the page cannot accept — one already taken.
+
+/// The control a settings row uses to rebind a shortcut. Click it and it
+/// listens; press a combination and it keeps it. Escape backs out, ⌫ clears,
+/// and clicking away cancels.
+///
+/// Held modifiers show live while it listens, so pressing ⌥⇧ and then
+/// wondering which key to add is not done blind.
+///
+/// Drawn as a field, not a key cap: a ``KeyCap`` says "this is what the key is",
+/// a field says "you can change this". Like every field it is a recessed card
+/// that lifts to the paper while recording, behind the accent wash.
+
+/// The ✕ that unbinds a shortcut.
+
+private let modifierKeys: Set<String> = ["Control", "Alt", "Shift", "Meta"]
 private let keyGlyphs: [String: String] = [
   "Space": "Space",
   "Enter": "↩",
@@ -44,9 +72,6 @@ private let keyGlyphs: [String: String] = [
   "Slash": "/",
   "Backquote": "`",
 ]
-
-/// A key press, in the shape the web event carries it: a physical position, a
-/// produced character, and the four modifier flags.
 public struct ShortcutEvent: Sendable, Equatable {
   /// The physical key, named as the web names it — `KeyT`, `Digit2`, `Space`.
   public var code: String
@@ -73,11 +98,9 @@ public struct ShortcutEvent: Sendable, Equatable {
     self.metaKey = metaKey
   }
 }
-
 private func matches(_ value: String, _ pattern: String) -> Bool {
   value.range(of: pattern, options: .regularExpression) != nil
 }
-
 private func keyGlyph(_ code: String, _ key: String) -> String? {
   if let glyph = keyGlyphs[code] { return glyph }
   if matches(code, "^Key[A-Z]$") { return String(code.dropFirst(3)) }
@@ -94,7 +117,6 @@ private func keyGlyph(_ code: String, _ key: String) -> String? {
   }
   return nil
 }
-
 private func modifierGlyphs(_ event: ShortcutEvent) -> String {
   var glyphs = ""
   if event.ctrlKey { glyphs += "⌃" }
@@ -103,14 +125,6 @@ private func modifierGlyphs(_ event: ShortcutEvent) -> String {
   if event.metaKey { glyphs += "⌘" }
   return glyphs
 }
-
-/// The glyph string for a key event, or `nil` when the event is not something
-/// a shortcut can be made of.
-///
-/// A key on its own is typing, not a shortcut, so it has to carry ⌃, ⌥ or ⌘ —
-/// ⇧ alone is still typing — unless it is a function key, which is a shortcut
-/// by itself. Word keys (`Space`, `F5`) get a space after the modifiers so
-/// `⌥ Space` reads as two things and `⌥⇧2` as one.
 public func formatShortcut(_ event: ShortcutEvent) -> String? {
   guard let key = keyGlyph(event.code, event.key) else { return nil }
 
@@ -125,23 +139,10 @@ public func formatShortcut(_ event: ShortcutEvent) -> String? {
   }
   return "\(mods)\(key)"
 }
-
-/// `error` for a binding the page cannot accept — one already taken.
 public enum ShortcutRecorderState: String, CaseIterable, Sendable {
   case `default`
   case error
 }
-
-/// The control a settings row uses to rebind a shortcut. Click it and it
-/// listens; press a combination and it keeps it. Escape backs out, ⌫ clears,
-/// and clicking away cancels.
-///
-/// Held modifiers show live while it listens, so pressing ⌥⇧ and then
-/// wondering which key to add is not done blind.
-///
-/// Drawn as a field, not a key cap: a ``KeyCap`` says "this is what the key is",
-/// a field says "you can change this". Like every field it is a recessed card
-/// that lifts to the paper while recording, behind the accent wash.
 public struct ShortcutRecorder: View {
   /// The bound keys as printed — `⌥⇧2`, `⌥ Space`. Empty means unbound.
   public var value: String
@@ -170,7 +171,7 @@ public struct ShortcutRecorder: View {
   /// Set for a beat after a press the recorder could not take.
   @State private var rejected = false
   #if os(macOS)
-  @State private var monitor = ShortcutMonitor()
+    @State private var monitor = ShortcutMonitor()
   #endif
 
   public init(
@@ -247,6 +248,30 @@ public struct ShortcutRecorder: View {
       // Clicking away cancels, the way the blur handler does.
       if !isFocused { stop() }
     }
+    #if os(Windows)
+      .onKeyPress { press in
+        guard recording else { return .ignored }
+        if press.key == .escape {
+          stop()
+          return .handled
+        }
+        if press.modifiers.isEmpty && (press.key == .delete || press.key == .deleteForward) {
+          clear()
+          return .handled
+        }
+        let event = ShortcutEvent(
+          key: press.characters.uppercased(), ctrlKey: press.modifiers.contains(.control),
+          altKey: press.modifiers.contains(.option), shiftKey: press.modifiers.contains(.shift),
+          metaKey: press.modifiers.contains(.command))
+        guard let next = formatShortcut(event) else {
+          rejected = true
+          return .handled
+        }
+        onValueChange(next)
+        stop()
+        return .handled
+      }
+    #endif
     .task(id: rejected) {
       guard rejected else { return }
       try? await Task.sleep(nanoseconds: UInt64(Self.rejectFlash * 1_000_000_000))
@@ -312,11 +337,12 @@ public struct ShortcutRecorder: View {
 
   private func beginRecording() {
     guard !recording else { return }
-    #if os(macOS)
     recording = true
-    // The keys have to be caught before the window acts on them: no dialog
-    // closes on this Escape, no ⌘F opens a search.
-    monitor.start(handle)
+    focused = true
+    #if os(macOS)
+      // The keys have to be caught before the window acts on them: no dialog
+      // closes on this Escape, no ⌘F opens a search.
+      monitor.start(handle)
     #endif
   }
 
@@ -324,7 +350,7 @@ public struct ShortcutRecorder: View {
     recording = false
     held = ""
     #if os(macOS)
-    monitor.stop()
+      monitor.stop()
     #endif
   }
 
@@ -338,44 +364,43 @@ public struct ShortcutRecorder: View {
   }
 
   #if os(macOS)
-  /// Returns true when the event was consumed and must not reach the window.
-  private func handle(_ event: NSEvent) -> Bool {
-    guard recording else { return false }
+    /// Returns true when the event was consumed and must not reach the window.
+    private func handle(_ event: NSEvent) -> Bool {
+      guard recording else { return false }
 
-    let shortcut = shortcutEvent(event)
-    if event.type == .flagsChanged {
-      held = modifierGlyphs(shortcut)
-      return true
-    }
+      let shortcut = shortcutEvent(event)
+      if event.type == .flagsChanged {
+        held = modifierGlyphs(shortcut)
+        return true
+      }
 
-    if shortcut.key == "Escape" {
+      if shortcut.key == "Escape" {
+        stop()
+        return true
+      }
+      if modifierKeys.contains(shortcut.key) {
+        held = modifierGlyphs(shortcut)
+        return true
+      }
+
+      let bare =
+        !shortcut.ctrlKey && !shortcut.altKey && !shortcut.metaKey
+        && !shortcut.shiftKey
+      if bare && (shortcut.key == "Backspace" || shortcut.key == "Delete") {
+        clear()
+        return true
+      }
+
+      guard let next = formatShortcut(shortcut) else {
+        rejected = true
+        return true
+      }
       stop()
+      onValueChange(next)
       return true
     }
-    if modifierKeys.contains(shortcut.key) {
-      held = modifierGlyphs(shortcut)
-      return true
-    }
-
-    let bare = !shortcut.ctrlKey && !shortcut.altKey && !shortcut.metaKey
-      && !shortcut.shiftKey
-    if bare && (shortcut.key == "Backspace" || shortcut.key == "Delete") {
-      clear()
-      return true
-    }
-
-    guard let next = formatShortcut(shortcut) else {
-      rejected = true
-      return true
-    }
-    stop()
-    onValueChange(next)
-    return true
-  }
   #endif
 }
-
-/// The ✕ that unbinds a shortcut.
 private struct ClearButton: View {
   let label: String
   let action: () -> Void
@@ -403,89 +428,89 @@ private struct ClearButton: View {
     )
   }
 }
-
 #if os(macOS)
-/// Holds the local event monitor for as long as the recorder is listening.
-///
-/// A local monitor is the AppKit half of the React handler's
-/// `preventDefault` + `stopPropagation`: returning nil swallows the event
-/// before the window's key equivalents see it.
-private final class ShortcutMonitor {
-  private var token: Any?
+  /// Holds the local event monitor for as long as the recorder is listening.
+  ///
+  /// A local monitor is the AppKit half of the React handler's
+  /// `preventDefault` + `stopPropagation`: returning nil swallows the event
+  /// before the window's key equivalents see it.
+  private final class ShortcutMonitor {
+    private var token: Any?
 
-  func start(_ handle: @escaping (NSEvent) -> Bool) {
-    stop()
-    token = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { event in
-      handle(event) ? nil : event
+    func start(_ handle: @escaping (NSEvent) -> Bool) {
+      stop()
+      token = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { event in
+        handle(event) ? nil : event
+      }
     }
+
+    func stop() {
+      if let token { NSEvent.removeMonitor(token) }
+      token = nil
+    }
+
+    deinit { stop() }
   }
 
-  func stop() {
-    if let token { NSEvent.removeMonitor(token) }
-    token = nil
+  /// The physical key each AppKit virtual key code names, spelled the way the
+  /// web spells it — because that is the vocabulary `keyGlyphs` is written in.
+  private let virtualKeyCodes: [UInt16: String] = [
+    0: "KeyA", 1: "KeyS", 2: "KeyD", 3: "KeyF", 4: "KeyH", 5: "KeyG",
+    6: "KeyZ", 7: "KeyX", 8: "KeyC", 9: "KeyV", 11: "KeyB", 12: "KeyQ",
+    13: "KeyW", 14: "KeyE", 15: "KeyR", 16: "KeyY", 17: "KeyT", 31: "KeyO",
+    32: "KeyU", 34: "KeyI", 35: "KeyP", 37: "KeyL", 38: "KeyJ", 40: "KeyK",
+    45: "KeyN", 46: "KeyM",
+    18: "Digit1", 19: "Digit2", 20: "Digit3", 21: "Digit4", 22: "Digit6",
+    23: "Digit5", 25: "Digit9", 26: "Digit7", 28: "Digit8", 29: "Digit0",
+    24: "Equal", 27: "Minus", 30: "BracketRight", 33: "BracketLeft",
+    39: "Quote", 41: "Semicolon", 42: "Backslash", 43: "Comma", 44: "Slash",
+    47: "Period", 50: "Backquote",
+    36: "Enter", 48: "Tab", 49: "Space", 51: "Backspace", 53: "Escape",
+    76: "NumpadEnter",
+    82: "Numpad0", 83: "Numpad1", 84: "Numpad2", 85: "Numpad3", 86: "Numpad4",
+    87: "Numpad5", 88: "Numpad6", 89: "Numpad7", 91: "Numpad8", 92: "Numpad9",
+    115: "Home", 116: "PageUp", 117: "Delete", 119: "End", 121: "PageDown",
+    123: "ArrowLeft", 124: "ArrowRight", 125: "ArrowDown", 126: "ArrowUp",
+    122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7",
+    100: "F8", 101: "F9", 109: "F10", 103: "F11", 111: "F12", 105: "F13",
+    107: "F14", 113: "F15",
+  ]
+
+  /// The key *name* the web reports for the positions the recorder branches on.
+  /// Everything else falls through to the character the key produces, which is
+  /// only ever read when there is no position at all.
+  private let domKeyNames: [String: String] = [
+    "Escape": "Escape",
+    "Backspace": "Backspace",
+    "Delete": "Delete",
+    "Enter": "Enter",
+    "NumpadEnter": "Enter",
+    "Tab": "Tab",
+    "Space": " ",
+    "ArrowUp": "ArrowUp",
+    "ArrowDown": "ArrowDown",
+    "ArrowLeft": "ArrowLeft",
+    "ArrowRight": "ArrowRight",
+    "Home": "Home",
+    "End": "End",
+    "PageUp": "PageUp",
+    "PageDown": "PageDown",
+  ]
+
+  private func shortcutEvent(_ event: NSEvent) -> ShortcutEvent {
+    let flags = event.modifierFlags
+    let code = virtualKeyCodes[event.keyCode] ?? ""
+    let key =
+      domKeyNames[code]
+      ?? (event.type == .keyDown ? event.charactersIgnoringModifiers ?? "" : "")
+
+    return ShortcutEvent(
+      code: code,
+      key: key,
+      ctrlKey: flags.contains(.control),
+      altKey: flags.contains(.option),
+      shiftKey: flags.contains(.shift),
+      metaKey: flags.contains(.command)
+    )
   }
-
-  deinit { stop() }
-}
-
-/// The physical key each AppKit virtual key code names, spelled the way the
-/// web spells it — because that is the vocabulary `keyGlyphs` is written in.
-private let virtualKeyCodes: [UInt16: String] = [
-  0: "KeyA", 1: "KeyS", 2: "KeyD", 3: "KeyF", 4: "KeyH", 5: "KeyG",
-  6: "KeyZ", 7: "KeyX", 8: "KeyC", 9: "KeyV", 11: "KeyB", 12: "KeyQ",
-  13: "KeyW", 14: "KeyE", 15: "KeyR", 16: "KeyY", 17: "KeyT", 31: "KeyO",
-  32: "KeyU", 34: "KeyI", 35: "KeyP", 37: "KeyL", 38: "KeyJ", 40: "KeyK",
-  45: "KeyN", 46: "KeyM",
-  18: "Digit1", 19: "Digit2", 20: "Digit3", 21: "Digit4", 22: "Digit6",
-  23: "Digit5", 25: "Digit9", 26: "Digit7", 28: "Digit8", 29: "Digit0",
-  24: "Equal", 27: "Minus", 30: "BracketRight", 33: "BracketLeft",
-  39: "Quote", 41: "Semicolon", 42: "Backslash", 43: "Comma", 44: "Slash",
-  47: "Period", 50: "Backquote",
-  36: "Enter", 48: "Tab", 49: "Space", 51: "Backspace", 53: "Escape",
-  76: "NumpadEnter",
-  82: "Numpad0", 83: "Numpad1", 84: "Numpad2", 85: "Numpad3", 86: "Numpad4",
-  87: "Numpad5", 88: "Numpad6", 89: "Numpad7", 91: "Numpad8", 92: "Numpad9",
-  115: "Home", 116: "PageUp", 117: "Delete", 119: "End", 121: "PageDown",
-  123: "ArrowLeft", 124: "ArrowRight", 125: "ArrowDown", 126: "ArrowUp",
-  122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7",
-  100: "F8", 101: "F9", 109: "F10", 103: "F11", 111: "F12", 105: "F13",
-  107: "F14", 113: "F15",
-]
-
-/// The key *name* the web reports for the positions the recorder branches on.
-/// Everything else falls through to the character the key produces, which is
-/// only ever read when there is no position at all.
-private let domKeyNames: [String: String] = [
-  "Escape": "Escape",
-  "Backspace": "Backspace",
-  "Delete": "Delete",
-  "Enter": "Enter",
-  "NumpadEnter": "Enter",
-  "Tab": "Tab",
-  "Space": " ",
-  "ArrowUp": "ArrowUp",
-  "ArrowDown": "ArrowDown",
-  "ArrowLeft": "ArrowLeft",
-  "ArrowRight": "ArrowRight",
-  "Home": "Home",
-  "End": "End",
-  "PageUp": "PageUp",
-  "PageDown": "PageDown",
-]
-
-private func shortcutEvent(_ event: NSEvent) -> ShortcutEvent {
-  let flags = event.modifierFlags
-  let code = virtualKeyCodes[event.keyCode] ?? ""
-  let key = domKeyNames[code]
-    ?? (event.type == .keyDown ? event.charactersIgnoringModifiers ?? "" : "")
-
-  return ShortcutEvent(
-    code: code,
-    key: key,
-    ctrlKey: flags.contains(.control),
-    altKey: flags.contains(.option),
-    shiftKey: flags.contains(.shift),
-    metaKey: flags.contains(.command)
-  )
-}
 #endif

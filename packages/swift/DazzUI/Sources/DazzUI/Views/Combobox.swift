@@ -1,8 +1,38 @@
 import FluentIcons
-import SwiftUI
 
 /// One choosable option: the value a caller gets back, and the label the query
 /// is matched against.
+import SwiftUI
+
+/// A choice out of a list too long to scroll: the reader types to narrow it,
+/// and picks one of what is left.
+///
+/// It is a ``Select`` with a query in front of it, and that is the only
+/// question worth asking when choosing between them — a list of six is a
+/// select, a list of six hundred is this. Both end in one of the options;
+/// neither lets a reader enter something that is not on the list, which is
+/// what separates them from an ``Autocomplete``.
+///
+/// The box is the ``TextField``'s and the list is the ``MenuSheet``, so a
+/// combobox in a form sits on the same rhythm as everything around it and its
+/// list is the same panel a ``Menu`` opens.
+
+/// A text field that suggests as you type.
+///
+/// The difference from a ``Combobox`` is what the value is: a combobox ends in
+/// one of its options and nothing else; an autocomplete's value is whatever
+/// was typed, and the list is a shortcut to a likely answer rather than the
+/// set of allowed ones. A branch name, a search query, a tag that may not
+/// exist yet.
+///
+/// So there is no chevron and no clear: nothing here is opened or chosen, and
+/// the field is emptied the way any text field is.
+
+/// The clear and the chevron: the field's own furniture rather than buttons on
+/// it — no box at rest, the subtle ink, and the neutral wash only under the
+/// pointer. A pair of drawn buttons inside a field would read as two more
+/// controls in the form.
+
 public struct ComboboxOption<Value: Hashable>: Identifiable {
   public var id: Value { value }
   public var value: Value
@@ -19,19 +49,6 @@ public struct ComboboxOption<Value: Hashable>: Identifiable {
     self.disabled = disabled
   }
 }
-
-/// A choice out of a list too long to scroll: the reader types to narrow it,
-/// and picks one of what is left.
-///
-/// It is a ``Select`` with a query in front of it, and that is the only
-/// question worth asking when choosing between them — a list of six is a
-/// select, a list of six hundred is this. Both end in one of the options;
-/// neither lets a reader enter something that is not on the list, which is
-/// what separates them from an ``Autocomplete``.
-///
-/// The box is the ``TextField``'s and the list is the ``MenuSheet``, so a
-/// combobox in a form sits on the same rhythm as everything around it and its
-/// list is the same panel a ``Menu`` opens.
 public struct Combobox<Value: Hashable>: View {
   public var options: [ComboboxOption<Value>]
   @Binding public var value: Value?
@@ -97,16 +114,27 @@ public struct Combobox<Value: Hashable>: View {
   private func field(metrics: ControlMetrics) -> some View {
     let vars = theme.vars
 
+    #if os(Windows)
+      let nativePlaceholder = placeholder
+    #else
+      let nativePlaceholder = ""
+    #endif
     return HStack(spacing: vars.spacing1) {
       ZStack(alignment: .leading) {
-        if query.isEmpty {
-          Text(placeholder).foregroundStyle(vars.colorContentFaint)
-        }
-        SwiftUI.TextField("", text: $query)
+        #if !os(Windows)
+          if query.isEmpty {
+            Text(placeholder).foregroundStyle(vars.colorContentFaint)
+          }
+        #endif
+        SwiftUI.TextField(nativePlaceholder, text: $query)
           .textFieldStyle(.plain)
           .focused($focused)
           .disabled(!enabled)
-          .onChange(of: query) { _ in open = true }
+          .onChange(of: query) { query in
+            // Selection updates query and closes the panel in one transaction.
+            // Its deferred change callback must not reopen the selected row.
+            if query != options.first(where: { $0.value == value })?.label { open = true }
+          }
       }
       .lineLimit(1)
       .font(FieldStyle.font(size: metrics.content.size, mono: false, vars: vars))
@@ -179,17 +207,6 @@ public struct Combobox<Value: Hashable>: View {
     }
   }
 }
-
-/// A text field that suggests as you type.
-///
-/// The difference from a ``Combobox`` is what the value is: a combobox ends in
-/// one of its options and nothing else; an autocomplete's value is whatever
-/// was typed, and the list is a shortcut to a likely answer rather than the
-/// set of allowed ones. A branch name, a search query, a tag that may not
-/// exist yet.
-///
-/// So there is no chevron and no clear: nothing here is opened or chosen, and
-/// the field is emptied the way any text field is.
 public struct Autocomplete: View {
   public var items: [String]
   @Binding public var text: String
@@ -205,6 +222,7 @@ public struct Autocomplete: View {
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
   @State private var open = false
+  @State private var selectedText: String?
 
   public init(
     items: [String],
@@ -241,7 +259,7 @@ public struct Autocomplete: View {
       enabled: enabled
     )
     .focused($focused)
-    .onChange(of: text) { _ in open = true }
+    .onChange(of: text) { if $0 != selectedText { open = true } }
     .floatingPanel(
       isPresented: Binding(get: { open && enabled }, set: { open = $0 }),
       gap: vars.spacing1,
@@ -253,6 +271,7 @@ public struct Autocomplete: View {
         } else {
           ForEach(matches, id: \.self) { item in
             MenuRow(item: MenuItem(item), tint: .neutral) {
+              selectedText = item
               text = item
               open = false
             }
@@ -268,11 +287,6 @@ public struct Autocomplete: View {
     return items.filter { $0.lowercased().contains(needle) }
   }
 }
-
-/// The clear and the chevron: the field's own furniture rather than buttons on
-/// it — no box at rest, the subtle ink, and the neutral wash only under the
-/// pointer. A pair of drawn buttons inside a field would read as two more
-/// controls in the form.
 private struct FieldAction: View {
   let icon: FluentIcon
   let help: String
@@ -297,7 +311,6 @@ private struct FieldAction: View {
     theme.vars.resolve(theme.vars.descriptor(.normal, .surface), tint: .neutral, state: .hovered)
   }
 }
-
 extension Array {
   /// The element at an index that may be out of range — what a "same group as
   /// the row before" test needs at the top of the list.

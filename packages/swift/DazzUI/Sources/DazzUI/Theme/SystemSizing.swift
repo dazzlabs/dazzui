@@ -1,14 +1,14 @@
 import SwiftUI
+
+/// Runtime sizing is independent from the selected color family.
 #if os(macOS)
   import AppKit
 #endif
 
-/// Runtime sizing is independent from the selected color family.
 public enum ThemeSizing: String, CaseIterable, Sendable {
   case design
   case system
 }
-
 internal struct SystemSizingMetrics: Sendable, Equatable {
   struct Control: Sendable, Equatable {
     let fontSize: CGFloat
@@ -44,56 +44,85 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
         base.controlSize = size
         base.font = .systemFont(ofSize: NSFont.systemFontSize(for: size))
         base.sizeToFit()
-        return Control(fontSize: fontSize, height: max(button.frame.height, base.frame.height * scale))
+        return Control(
+          fontSize: fontSize, height: max(button.frame.height, base.frame.height * scale))
       }
       return SystemSizingMetrics(bodyFontSize: body, controls: controls)
     #else
       let vars = Theme.default.vars
-      return SystemSizingMetrics(bodyFontSize: vars.bodyMedium.size, controls: ControlSize.allCases.map {
-        Control(fontSize: vars.metrics($0).content.size, height: vars.metrics($0).size)
-      })
+      return SystemSizingMetrics(
+        bodyFontSize: vars.bodyMedium.size,
+        controls: ControlSize.allCases.map {
+          Control(fontSize: vars.metrics($0).content.size, height: vars.metrics($0).size)
+        })
     #endif
   }
 }
+#if os(Windows)
+  // AppKit system metrics are not available through SwiftUIPort. Windows uses
+  // design metrics; native display scaling is applied by the backend.
+  internal struct SystemThemeModifier: ViewModifier {
+    let name: ThemeName
+    let sizing: ThemeSizing
+    func body(content: Content) -> some View {
+      content.environment(\.theme, Theme(name))
+        .font(name.variables.bodyMedium.font)
+        .environment(\.colorScheme, name.colorScheme)
+    }
+  }
+#else
+  @MainActor
+  internal struct SystemThemeModifier: ViewModifier {
+    let name: ThemeName
+    let sizing: ThemeSizing
+    private let readMetrics: @MainActor () -> SystemSizingMetrics
+    @State private var metrics: SystemSizingMetrics
+    @Environment(\.scenePhase) private var scenePhase
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-@MainActor
-internal struct SystemThemeModifier: ViewModifier {
-  let name: ThemeName
-  let sizing: ThemeSizing
-  private let readMetrics: @MainActor () -> SystemSizingMetrics
-  @State private var metrics: SystemSizingMetrics
-  @Environment(\.scenePhase) private var scenePhase
-  private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    init(
+      name: ThemeName, sizing: ThemeSizing,
+      readMetrics: @escaping @MainActor () -> SystemSizingMetrics = { SystemSizingMetrics.read() }
+    ) {
+      self.name = name
+      self.sizing = sizing
+      self.readMetrics = readMetrics
+      _metrics = State(initialValue: readMetrics())
+    }
 
-  init(name: ThemeName, sizing: ThemeSizing,
-       readMetrics: @escaping @MainActor () -> SystemSizingMetrics = { SystemSizingMetrics.read() }) {
-    self.name = name
-    self.sizing = sizing
-    self.readMetrics = readMetrics
-    _metrics = State(initialValue: readMetrics())
+    func body(content: Content) -> some View {
+      let resolved = Theme(name, sizing: sizing, metrics: metrics)
+      content
+        .environment(\.theme, resolved)
+        .font(resolved.vars.bodyMedium.font)
+        .environment(\.colorScheme, name.colorScheme)
+        .onAppear(perform: refresh)
+        .onChange(of: sizing) { _ in refresh() }
+        .onReceive(timer) { _ in
+          if scenePhase == .active { refresh() }
+        }
+        #if os(macOS)
+          .onReceive(
+            NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
+              .receive(on: RunLoop.main)
+          ) { _ in refresh() }
+          .onReceive(
+            NotificationCenter.default.publisher(for: NSFont.fontSetChangedNotification).receive(
+              on: RunLoop.main)
+          ) { _ in refresh() }
+          .onReceive(
+            NSWorkspace.shared.notificationCenter.publisher(
+              for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification
+            ).receive(on: RunLoop.main)
+          ) { _ in refresh() }
+        #endif
+    }
+
+    private func refresh() {
+      guard sizing == .system else { return }
+      let updated = readMetrics()
+      if updated != metrics { metrics = updated }
+    }
   }
 
-  func body(content: Content) -> some View {
-    let resolved = Theme(name, sizing: sizing, metrics: metrics)
-    content
-      .environment(\.theme, resolved)
-      .font(resolved.vars.bodyMedium.font)
-      .environment(\.colorScheme, name.colorScheme)
-      .onAppear(perform: refresh)
-      .onChange(of: sizing) { _ in refresh() }
-      .onReceive(timer) { _ in
-        if scenePhase == .active { refresh() }
-      }
-      #if os(macOS)
-      .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification).receive(on: RunLoop.main)) { _ in refresh() }
-      .onReceive(NotificationCenter.default.publisher(for: NSFont.fontSetChangedNotification).receive(on: RunLoop.main)) { _ in refresh() }
-      .onReceive(NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification).receive(on: RunLoop.main)) { _ in refresh() }
-      #endif
-  }
-
-  private func refresh() {
-    guard sizing == .system else { return }
-    let updated = readMetrics()
-    if updated != metrics { metrics = updated }
-  }
-}
+#endif

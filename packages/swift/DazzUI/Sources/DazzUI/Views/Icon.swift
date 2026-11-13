@@ -1,5 +1,4 @@
 import FluentIcons
-import SwiftUI
 
 /// Draws a glyph at a given size, inheriting the surrounding text colour.
 ///
@@ -11,6 +10,8 @@ import SwiftUI
 /// The glyph is drawn as a template image, so `foregroundStyle` tints it the
 /// way `currentColor` does on the web, and the fixed-size artwork scales to
 /// `size`.
+import SwiftUI
+
 public struct Icon: View {
   public var image: Image
   /// Explicit edge length; nil follows the enclosing slot or theme.
@@ -41,16 +42,5 @@ public struct Icon: View {
       .scaledToFit()
       .frame(width: edge, height: edge)
       .accessibilityHidden(true)
-  }
-}
-
-private struct DazzIconSizeKey: EnvironmentKey {
-  static let defaultValue: CGFloat? = nil
-}
-
-extension EnvironmentValues {
-  var dazzIconSize: CGFloat? {
-    get { self[DazzIconSizeKey.self] }
-    set { self[DazzIconSizeKey.self] = newValue }
   }
 }

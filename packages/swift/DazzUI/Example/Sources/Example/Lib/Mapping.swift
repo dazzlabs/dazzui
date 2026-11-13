@@ -576,6 +576,7 @@ let components: [String: ComponentBuilder] = [
             ? values.wrappedValue.map { String(Int($0.rounded())) }.joined(separator: " – ")
             : nil
         )
+        .accessibilityLabel(n.string("aria-label") ?? "")
       }
     )
   },

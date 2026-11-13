@@ -1,5 +1,3 @@
-import SwiftUI
-
 /// The one-time code a reader is copying out of a message.
 ///
 /// It is drawn as a run of cells but it is one field underneath, and that is
@@ -10,6 +8,8 @@ import SwiftUI
 ///
 /// Each cell is the text controls' box at one character wide, so a code sits
 /// on the same rhythm as the fields around it.
+import SwiftUI
+
 public struct OtpField: View {
   @Binding public var value: String
   public var length: Int
@@ -50,7 +50,7 @@ public struct OtpField: View {
     let vars = theme.vars
 
     HStack(spacing: vars.spacing2) {
-      ForEach(0 ..< length, id: \.self) { index in
+      ForEach(0..<length, id: \.self) { index in
         cell(at: index)
           // The break between two groups of digits is a step of air rather
           // than a rule, which is what a printed code does.
@@ -67,6 +67,10 @@ public struct OtpField: View {
         .disabled(!enabled)
         .foregroundStyle(Color.clear)
         .tint(Color.clear)
+        #if os(Windows)
+          // Native EDIT keeps paste, IME and focus; the shared cells draw the value.
+          .opacity(0)
+        #endif
         .onChange(of: value) { next in
           let digits = String(next.filter(\.isNumber).prefix(length))
           if digits != next { value = digits }

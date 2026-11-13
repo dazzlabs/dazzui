@@ -18,26 +18,56 @@
 // so SwiftPM alone leaves `Bundle.module` unsynthesised and the dependency
 // fails to compile. Xcode's build system processes the catalog and the
 // package builds. See the README.
+
+import Foundation
+
 import PackageDescription
 
-let package = Package(
-  name: "DazzUI",
-  platforms: [.macOS(.v13), .iOS(.v16)],
-  products: [
-    .library(name: "DazzUI", targets: ["DazzUI"])
-  ],
-  dependencies: [
-    .package(
-      url: "https://github.com/microsoft/fluentui-system-icons.git",
-      revision: "21d5d02f724be2aaf586564775fff73a18a76eb6"
-    )
-  ],
-  targets: [
-    .target(
-      name: "DazzUI",
-      dependencies: [
-        .product(name: "FluentIcons", package: "fluentui-system-icons")
-      ]
-    )
-  ]
-)
+#if os(Windows)
+  let portPath =
+    ProcessInfo.processInfo.environment["SWIFTUI_PORT_PATH"]
+    ?? "../../../../../libnativeapi/swiftui-port"
+  let package = Package(
+    name: "DazzUI",
+    products: [
+      .library(name: "DazzUI", targets: ["DazzUI"]),
+      .library(name: "FluentIcons", targets: ["FluentIcons"]),
+    ],
+    dependencies: [.package(name: "SwiftUIPort", path: portPath)],
+    targets: [
+      .target(
+        name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
+        path: "Windows/FluentIcons", resources: [.process("Resources")]),
+      .target(
+        name: "DazzUI",
+        dependencies: ["FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort")],
+        path: "Sources/DazzUI"),
+      .testTarget(
+        name: "DazzUIWindowsTests", dependencies: ["DazzUI"],
+        path: "Tests/Windows"),
+    ]
+  )
+#else
+  let package = Package(
+    name: "DazzUI",
+    platforms: [.macOS(.v13), .iOS(.v16)],
+    products: [
+      .library(name: "DazzUI", targets: ["DazzUI"])
+    ],
+    dependencies: [
+      .package(
+        url: "https://github.com/microsoft/fluentui-system-icons.git",
+        revision: "21d5d02f724be2aaf586564775fff73a18a76eb6"
+      )
+    ],
+    targets: [
+      .target(
+        name: "DazzUI",
+        dependencies: [
+          .product(name: "FluentIcons", package: "fluentui-system-icons")
+        ]
+      )
+    ]
+  )
+
+#endif
