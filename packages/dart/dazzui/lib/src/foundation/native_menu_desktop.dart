@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:nativeapi/nativeapi.dart' as native;
 
 import 'native_menu_model.dart';
+import 'native_menu_windows.dart';
 
 NativeMenuBackend createNativeMenuBackend() => _DesktopBackend();
 
@@ -49,7 +50,8 @@ class _DesktopBackend implements NativeMenuBackend {
       window.dispose();
       return null;
     }
-    final session = _DesktopSession(menu, onDismiss);
+    final session = _DesktopSession(menu);
+    final windows = Platform.isWindows;
     try {
       for (var index = 0; index < entries.length; index++) {
         final entry = entries[index];
@@ -65,6 +67,8 @@ class _DesktopBackend implements NativeMenuBackend {
         );
         if (item == null) throw StateError('Could not create native menu item');
         session.items.add(item);
+        // Win32 checkmarks and bitmaps update the item in its parent HMENU.
+        if (windows) menu.addItem(item);
         item.isEnabled = !entry.heading && entry.enabled;
         if (entry.checked != null) {
           item.state = entry.checked!
@@ -79,18 +83,39 @@ class _DesktopBackend implements NativeMenuBackend {
             item.icon = image;
           }
         }
-        final selectedIndex = index;
-        final listener = item.addListener((event) {
-          if (event is native.MenuItemClickedEvent &&
-              !session.closed &&
-              entry.enabled &&
-              !entry.heading) {
-            session.close();
-            onSelect(selectedIndex);
-          }
-        });
-        session.listeners.add(listener);
-        menu.addItem(item);
+        if (!windows) {
+          final selectedIndex = index;
+          final listener = item.addListener((event) {
+            if (event is native.MenuItemClickedEvent &&
+                !session.closed &&
+                entry.enabled &&
+                !entry.heading) {
+              session.close();
+              onSelect(selectedIndex);
+            }
+          });
+          session.listeners.add(listener);
+          menu.addItem(item);
+        }
+      }
+      if (windows) {
+        final command = trackWindowsMenu(
+          menu: menu.nativeObject,
+          owner: window.nativeObject,
+          position: position,
+          alignEnd: alignEnd,
+        );
+        final index = command == null || command == 0
+            ? -1
+            : session.items.indexWhere((item) => item.id == command);
+        session.close();
+        if (command == null) return null;
+        if (index >= 0 && entries[index].enabled && !entries[index].heading) {
+          onSelect(index);
+        } else {
+          onDismiss();
+        }
+        return session;
       }
       session.menuListener = menu.addListener((event) {
         if (event is native.MenuOpenedEvent) {
@@ -146,10 +171,9 @@ class _DesktopBackend implements NativeMenuBackend {
 }
 
 class _DesktopSession implements NativeMenuSession {
-  _DesktopSession(this.menu, this.onDismiss);
+  _DesktopSession(this.menu);
 
   final native.Menu menu;
-  final VoidCallback onDismiss;
   final items = <native.MenuItem>[];
   final listeners = <int>[];
   final images = <native.Image>[];

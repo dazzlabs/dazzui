@@ -77,6 +77,8 @@ Native menus are available on macOS, Windows and Linux when the nativeapi
 backend and current host window are available. Web and mobile use the custom
 panel, as does a desktop host where the backend cannot open a menu. Linux builds
 need nativeapi's GTK 3, X11 and Xi development packages.
+On Windows the Flutter window owns its Win32 popup, so it stays active while
+the system menu is open.
 
 Combobox and Autocomplete retain their searchable custom suggestion lists in
 both modes, so typing continues to filter them. Rich popovers such as the date
