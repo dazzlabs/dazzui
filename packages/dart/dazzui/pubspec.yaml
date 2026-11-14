@@ -15,7 +15,6 @@ environment:
 
 dependencies:
   collection: ^1.18.0
-  ffi: ^2.1.0
   # The three glyphs the kit draws itself — the search field's magnifier and
   # its dismiss, and the menu's tick. An icon set is the one thing a product
   # replaces wholesale, so every other glyph is a prop; these three are the
