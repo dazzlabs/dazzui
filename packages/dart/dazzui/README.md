@@ -56,8 +56,8 @@ token source; `lib/src/generated/` is what it wrote. **Never hand-edit it.**
 
 ## Native menus
 
-The package requires Dart 3.13 or newer, matching its direct `nativeapi`
-dependency. Wrap your window once to use native desktop dropdowns:
+The package requires Flutter 3.50 and Dart 3.14 or newer, matching its
+`nativeapi` dependency. Wrap your window once to use native desktop dropdowns:
 
 ```dart
 MenuConfiguration(

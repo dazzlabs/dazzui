@@ -141,7 +141,7 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   run-loop timer for popup tracking. String shortcut hints remain text, arbitrary
   shortcut views remain custom-only, and SwiftUI icon slots are rasterized on
   macOS (omitted in Windows/Linux native rows). Flutter depends directly on
-  `nativeapi` and follows its Dart SDK floor (3.13); GPUI takes nativeapi's
+  `nativeapi` and follows its Dart SDK floor (3.14); GPUI takes nativeapi's
   Rust binding behind its `native-menus` cargo feature, and its native rows
   carry no icon or key-cap slots, since gpui cannot rasterize an element
   into the bitmap a native row wears.

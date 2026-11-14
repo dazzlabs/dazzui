@@ -7,6 +7,9 @@ import type { Tint } from '../lib/tint'
 
 export type TreeSize = 'small' | 'medium'
 
+/** The tree's drawing: the default file tree, or the tighter sidebar tree. */
+export type TreeVariant = 'default' | 'sidebar'
+
 export interface TreeNode<T extends string = string> {
   id: T
   label: ReactNode
@@ -37,6 +40,12 @@ export interface TreeProps<T extends string = string> {
   selected?: T | null
   onSelectedChange?: (id: T) => void
   size?: TreeSize
+  /**
+   * `sidebar` tightens the rows to the sidebar's 12px step, gives them a
+   * hairline gap and drops the empty twisty a leaf would otherwise reserve.
+   * The default keeps a file tree's columns aligned across leaves and branches.
+   */
+  variant?: TreeVariant
   /**
    * Which ramp the selected row is washed with. The hover comes off the
    * `normal` recipe either way — that one reads the theme's surface roles
@@ -123,6 +132,7 @@ export function Tree<T extends string = string>({
   selected,
   onSelectedChange,
   size = 'medium',
+  variant = 'default',
   tint = 'primary',
   className,
   ...props
@@ -254,6 +264,7 @@ export function Tree<T extends string = string>({
          which accent it runs on. */
       data-tint={tint}
       data-size={size}
+      data-variant={variant}
       className={cx('dz-tree', className)}
       {...props}
     >
