@@ -47,6 +47,8 @@ struct ThemePanel: View {
             ) { Text("Follow system sizing") }
             .padding(.horizontal, vars.spacing4)
             .padding(.bottom, vars.spacing2)
+          #endif
+          #if os(macOS) || ((os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY)
             DazzUI.Toggle(
               pressed: menuPresentation == .native, size: .small,
               accessibilityName: "Use native menus",

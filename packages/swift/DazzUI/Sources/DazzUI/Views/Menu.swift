@@ -29,7 +29,11 @@ public struct MenuItem: Identifiable {
   public var label: String
   public var icon: AnyView?
   /// Trailing hint; displaying it does not register a keyboard shortcut.
-  public var shortcut: AnyView?
+  public var shortcut: AnyView? {
+    didSet { nativeShortcut = nil }
+  }
+  /// Plain hint carried into native menus without installing an accelerator.
+  internal var nativeShortcut: String?
   /// Radio-style check state. Set it on every item of a group, including the
   /// unchecked ones, so the leading column stays aligned. Checks are a
   /// flat-list feature: a list holding a submenu renders plain rows.
@@ -79,6 +83,7 @@ public struct MenuItem: Identifiable {
       onSelect: onSelect,
       items: items
     )
+    nativeShortcut = shortcut
   }
 }
 
