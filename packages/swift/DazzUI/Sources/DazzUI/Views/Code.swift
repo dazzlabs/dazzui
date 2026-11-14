@@ -7,7 +7,7 @@ import SwiftUI
 /// A wash and a face, not a box: the chip corner and the half-step inset keep
 /// it separable from the prose around it without breaking the line's rhythm,
 /// which is what a border at this size always does.
-#if os(Windows) || os(Linux)
+#if os(Windows) || (os(Linux) && !SWIFTUI_PORT_HARMONY)
   import class NativeAPI.Clipboard
 #elseif os(WASI)
   import JavaScriptKit
@@ -232,6 +232,8 @@ public struct CodeBlock<Actions: View>: View {
     #if canImport(AppKit)
       NSPasteboard.general.clearContents()
       NSPasteboard.general.setString(body_, forType: .string)
+    #elseif SWIFTUI_PORT_HARMONY
+      return
     #elseif os(Windows) || os(Linux)
       guard NativeAPI.Clipboard.shared.writeText(body_) else { return }
     #elseif os(WASI)
@@ -244,7 +246,7 @@ public struct CodeBlock<Actions: View>: View {
       }, failure: { _ in .undefined })
       return
     #endif
-    #if !os(WASI)
+    #if !os(WASI) && !SWIFTUI_PORT_HARMONY
       showCopied()
     #endif
   }
