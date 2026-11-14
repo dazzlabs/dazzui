@@ -137,7 +137,7 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   preference. Unsupported platforms or an unavailable native backend fall
   back to the custom panel. Shortcut strings remain hints, rather than
   registering additional accelerators. Flutter depends directly on
-  `nativeapi` and follows its Dart SDK floor (3.13); GPUI takes nativeapi's
+  `nativeapi` and follows its Dart SDK floor (3.14); GPUI takes nativeapi's
   Rust binding behind its `native-menus` cargo feature, and its native rows
   carry no icon or key-cap slots, since gpui cannot rasterize an element
   into the bitmap a native row wears.

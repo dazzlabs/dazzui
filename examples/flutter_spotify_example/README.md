@@ -7,7 +7,7 @@ A Spotify-inspired Flutter desktop player using DazzUI's generated
 
 ## Run
 
-From this directory, with Flutter stable and Dart 3.13 or later:
+From this directory, with Flutter 3.50 and Dart 3.14 or later:
 
 ```bash
 flutter pub get
