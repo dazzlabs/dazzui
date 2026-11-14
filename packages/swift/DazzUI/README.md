@@ -94,9 +94,9 @@ it does not subscribe to Windows text-size settings. DPI scaling is native.
 The compatibility layer draws text with Windows fonts, approximates shadows
 and supports basic rotation/scale/opacity/offset animations. See swiftui-port's
 compatibility and divergence documents for details. Windows uses custom menus
-and in-window popovers; the AppKit native-menu and
-system-sizing toggles only appear on macOS. The Apple manifests retain their
-existing dependencies and Xcode build path.
+and in-window popovers. Native menus are available on all three desktop platforms;
+the system-sizing toggle remains macOS-only. Apple platforms use the Xcode build
+path, with NativeAPI supplying macOS menus.
 
 The 47 used Fluent glyphs are checked in under `Windows/FluentIcons/Resources`,
 with Microsoft's MIT license. After adding a glyph, run
@@ -139,24 +139,36 @@ sizing** in its theme panel; `-design-sizing` starts it in design mode.
 
 ## Menu presentation
 
-Set `.menuPresentation(.native)` at the app's root to use AppKit menus for
-`Menu`, `Select`, `ContextMenu` and the in-window `Menubar`. The default is
-`.custom`; a nested `.menuPresentation(.custom)` overrides its ancestors.
-The setting is independent from theme and system sizing, and crosses dialog,
-drawer and floating-panel boundaries. Changing it closes any open menu; the
-next opening uses the new mode.
+Set `.menuPresentation(.native)` at the app's root to use nativeapi menus on
+macOS, Windows and Linux for `Menu`, `Select`, `ContextMenu` and the in-window
+`Menubar`. The default is `.custom`; a nested `.menuPresentation(.custom)`
+overrides its ancestors. The preference crosses dialog, drawer and floating-panel
+boundaries. Changing it closes any open menu; trigger layout stays unchanged.
 
-Triggers and Select fields keep their DazzUI layout in both modes. Native rows
-retain order, headings, checkmarks, disabled state, icons and shortcut hints.
-AnyView icon and hint slots are rendered into images inside standard native
-rows; shortcut hints do not register keyboard accelerators. AppKit owns native
-menu highlighting, navigation and dismissal. The menubar remains inside the
-window, with pointer switching between its menus.
+All three desktop platforms use the NativeAPI Swift binding for menu construction,
+submenus, disabled and checked rows, popup positioning, selection and dismissal.
+macOS uses AppKit only for the SwiftUI anchor and icon rasterization. Windows uses
+Win32 menus and Linux uses GTK menus. Menubar labels remain inside the application
+window, with pointer switching between their native popups.
 
-Combobox and Autocomplete suggestions remain custom so typing and filtering
-continue to work. DateRangePicker's calendar remains custom; ordinary menus
-inside it follow the setting. Platforms without AppKit use custom presentation.
-The example's theme panel offers **Use native menus** for live comparison.
+String shortcuts passed to `MenuItem("Open", shortcut: "Ctrl+O")` are display hints,
+not registered accelerators. Arbitrary SwiftUI shortcut views remain a custom-mode
+feature. macOS rasterizes icon slots into native row images; Windows/Linux native
+rows currently omit SwiftUI icon slots. Searchable Combobox and Autocomplete
+suggestions, rich popovers and DateRangePicker calendars remain custom.
+Web, iOS and HarmonyOS retain custom menu presentation.
+
+The NativeAPI source package is required on all three desktop platforms. Set
+`NATIVEAPI_SWIFT_PATH` to `nativeapi/bindings/swift`; the default assumes sibling
+`dazzlabs/dazzui` and `libnativeapi/nativeapi` checkouts. Windows/Linux additionally
+need `SWIFTUI_PORT_PATH` pointing to a port that supplies `nativeWindow`,
+`onSecondaryClick` and `NativeRunLoopTimer`. The example's theme panel offers
+**Use native menus** for live comparison.
+
+Menu regression checks: macOS uses the Example Xcode project's
+`MenuPresentationTests`; Windows/Linux use `swift test --filter NativeMenuTests`
+from this package (Linux needs a display). Tests inspect native objects and exercise
+selection, cancellation, queued opens and content-relative positioning.
 
 ## Naming
 

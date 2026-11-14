@@ -6,7 +6,7 @@
 /// than against a trigger's edge.
 ///
 /// The secondary click is caught here so the popup follows the subtree's
-/// `menuPresentation`: DazzUI's sheet by default, or AppKit's menu in native
+/// `menuPresentation`: DazzUI's sheet by default, or the platform's native menu in native
 /// mode. Every affordance in a context menu must also be reachable
 /// somewhere a pointer can see: a right-click is a shortcut, never the only
 /// door.
@@ -40,11 +40,22 @@ public struct ContextMenu<Content: View>: View {
   }
 
   public var body: some View {
-    #if os(Windows) || os(Linux) || os(WASI)
+    #if os(WASI) || SWIFTUI_PORT_HARMONY
       content().contextMenu {
         MenuSheet {
           MenuRows(items: items, tint: tint) { open = false }
         }.environment(\.theme, theme).fixedSize()
+      }
+    #elseif os(Windows) || os(Linux)
+      if presentation.usesNativeMenus {
+        content()
+          .onSecondaryClick { point in at = point; open = true }
+          .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
+      } else {
+        content().contextMenu {
+          MenuSheet { MenuRows(items: items, tint: tint) { open = false } }
+            .environment(\.theme, theme).fixedSize()
+        }
       }
     #else
       content()

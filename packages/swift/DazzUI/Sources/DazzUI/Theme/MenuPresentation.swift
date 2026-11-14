@@ -6,7 +6,7 @@ public enum MenuPresentation: String, CaseIterable, Sendable {
   case native
 
   internal var usesNativeMenus: Bool {
-    #if canImport(AppKit)
+    #if os(macOS) || ((os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY)
       self == .native
     #else
       false
@@ -27,7 +27,7 @@ extension EnvironmentValues {
 
 extension View {
   /// Scopes menu presentation to this subtree. The default is custom;
-  /// platforms without AppKit retain custom menus. Search suggestions remain
+  /// other platforms retain custom menus. Search suggestions remain
   /// custom in either mode.
   public func menuPresentation(_ presentation: MenuPresentation) -> some View {
     environment(\.menuPresentation, presentation)

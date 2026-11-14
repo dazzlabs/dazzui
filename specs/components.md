@@ -136,7 +136,11 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   such as the date picker. Ordinary menus inside those panels inherit the
   preference. Unsupported platforms or an unavailable native backend fall
   back to the custom panel. Shortcut strings remain hints, rather than
-  registering additional accelerators. Flutter depends directly on
+  registering additional accelerators. SwiftUI uses nativeapi's Swift binding
+  on macOS, Windows and Linux; the port supplies its owning window and a native
+  run-loop timer for popup tracking. String shortcut hints remain text, arbitrary
+  shortcut views remain custom-only, and SwiftUI icon slots are rasterized on
+  macOS (omitted in Windows/Linux native rows). Flutter depends directly on
   `nativeapi` and follows its Dart SDK floor (3.13); GPUI takes nativeapi's
   Rust binding behind its `native-menus` cargo feature, and its native rows
   carry no icon or key-cap slots, since gpui cannot rasterize an element

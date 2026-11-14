@@ -34,6 +34,11 @@ final class MenuPresentationTests: XCTestCase {
 
   private func pump() { RunLoop.main.run(until: Date().addingTimeInterval(0.08)) }
 
+  private func settle(_ condition: () -> Bool) {
+    let deadline = Date().addingTimeInterval(2)
+    while !condition() && Date() < deadline { pump() }
+  }
+
   private func trackingTimer(
     after interval: TimeInterval = 0.02, repeats: Bool = true,
     action: @escaping @MainActor () -> Void
@@ -148,21 +153,20 @@ final class MenuPresentationTests: XCTestCase {
       entries: [
         .heading("People"),
         .item(
-          MenuItem(
-            label: "Ada", icon: AnyView(Text("A")), shortcut: AnyView(Text("⌘A")), checked: true)),
+          MenuItem("Ada", icon: .add20Regular, shortcut: "⌘A", checked: true)),
         .item(MenuItem("Unavailable", checked: false, disabled: true)),
       ], theme: Theme(.studioLight))
-    XCTAssertEqual(session.menu.items[0].title, "People")
-    XCTAssertTrue(session.menu.items[1].title.hasPrefix("Ada"))
-    XCTAssertEqual(session.menu.items[1].accessibilityLabel(), "Ada")
-    XCTAssertEqual(session.menu.items[2].title, "Unavailable")
-    XCTAssertFalse(session.menu.items[0].isEnabled)
-    let item = session.menu.items[1]
+    XCTAssertEqual(session.appKitMenu.items[0].title, "People")
+    XCTAssertTrue(session.appKitMenu.items[1].title.hasPrefix("Ada"))
+    XCTAssertEqual(session.appKitMenu.items[1].title, "Ada\t⌘A")
+    XCTAssertEqual(session.appKitMenu.items[2].title, "Unavailable")
+    XCTAssertFalse(session.appKitMenu.items[0].isEnabled)
+    let item = session.appKitMenu.items[1]
     XCTAssertNotNil(item.image)
-    XCTAssertNotNil(item.attributedTitle)
+    XCTAssertNil(item.attributedTitle)
     XCTAssertEqual(item.state, .on)
-    XCTAssertFalse(session.menu.items[2].isEnabled)
-    XCTAssertTrue(session.menu.items.allSatisfy { $0.view == nil && $0.keyEquivalent.isEmpty })
+    XCTAssertFalse(session.appKitMenu.items[2].isEnabled)
+    XCTAssertTrue(session.appKitMenu.items.allSatisfy { $0.view == nil && $0.keyEquivalent.isEmpty })
   }
 
   func testNativeSubmenuBuildsNestedRowsAndDispatchesTheirChoice() throws {
@@ -183,7 +187,7 @@ final class MenuPresentationTests: XCTestCase {
               MenuItem("Archive"),
             ])),
       ], theme: .default)
-    let moveTo = try XCTUnwrap(session.menu.items[1].submenu)
+    let moveTo = try XCTUnwrap(session.appKitMenu.items[1].submenu)
     XCTAssertEqual(moveTo.items.map(\.title), ["Projects", "Archive"])
     let projects = try XCTUnwrap(moveTo.items[0].submenu)
     XCTAssertEqual(projects.items.map(\.title), ["DazzUI", "Shell"])
@@ -209,13 +213,13 @@ final class MenuPresentationTests: XCTestCase {
         .option(value: "c", label: "Cleo"),
       ], selection: Binding(get: { selection }, set: { selection = $0 }))
     let session = NativeMenuSession(entries: select.nativeEntries, theme: .default)
-    XCTAssertEqual(session.menu.items.map(\.title), ["Unassigned", "People", "Ada", "Ben", "Cleo"])
-    XCTAssertEqual(session.menu.items[2].state, .on)
-    session.menu.performActionForItem(at: 3)
+    XCTAssertEqual(session.appKitMenu.items.map(\.title), ["Unassigned", "People", "Ada", "Ben", "Cleo"])
+    XCTAssertEqual(session.appKitMenu.items[2].state, .on)
+    session.appKitMenu.performActionForItem(at: 3)
     XCTAssertEqual(selection, "a")
-    session.menu.performActionForItem(at: 4)
+    session.appKitMenu.performActionForItem(at: 4)
     XCTAssertEqual(selection, "c")
-    session.menu.performActionForItem(at: 0)
+    session.appKitMenu.performActionForItem(at: 0)
     XCTAssertEqual(selection, "c", "One tracking session may dispatch only once")
   }
 
@@ -237,10 +241,12 @@ final class MenuPresentationTests: XCTestCase {
         guard !entered else { return }
         entered = true
         XCTAssertTrue(session.tracking)
-        if index >= 0 { session.menu.performActionForItem(at: index) }
+        if index >= 0 { session.appKitMenu.performActionForItem(at: index) }
         session.cancel()
       }
       session.present(at: NSPoint(x: 10, y: 10), in: view)
+      pump()
+      settle { !session.tracking }
       XCTAssertTrue(entered)
       XCTAssertFalse(session.tracking)
       XCTAssertEqual(closed, 1)
@@ -269,7 +275,7 @@ final class MenuPresentationTests: XCTestCase {
     let anchor = try XCTUnwrap(descendants(root).compactMap { $0 as? NativeMenuAnchorView }.first)
     var sent = false
     let timer = trackingTimer {
-      guard anchor.session?.tracking == true, !sent else { return }
+      guard anchor.session?.opened == true, !sent else { return }
       sent = true
       for (characters, code) in [("\u{f701}", UInt16(125)), ("\r", UInt16(36))] {
         let event = NSEvent.keyEvent(
@@ -311,6 +317,7 @@ final class MenuPresentationTests: XCTestCase {
     }
     let timeout = trackingTimer(after: 2, repeats: false) { session.cancel() }
     session.present(at: NSPoint(x: 10, y: 10), in: view)
+    settle { !session.tracking }
     timeout.invalidate()
     XCTAssertTrue(sent)
     XCTAssertEqual(calls, 1)
@@ -341,7 +348,7 @@ final class MenuPresentationTests: XCTestCase {
       let anchor = try XCTUnwrap(descendants(view).compactMap { $0 as? NativeMenuAnchorView }.first)
       var entered = false
       let timer = trackingTimer {
-        guard !entered, let session = anchor.session, session.tracking else { return }
+        guard !entered, let session = anchor.session, session.opened else { return }
         entered = true
         switch operation {
         case 0: model.presentation = .custom
@@ -420,9 +427,9 @@ final class MenuPresentationTests: XCTestCase {
       let geometry = anchor.frame
       var entered = false
       let timer = trackingTimer {
-        guard let session = anchor.session, session.tracking, !entered else { return }
+        guard let session = anchor.session, session.opened, !entered else { return }
         entered = true
-        session.menu.performActionForItem(at: kind == 1 ? 1 : 0)
+        session.appKitMenu.performActionForItem(at: kind == 1 ? 1 : 0)
         session.cancel()
       }
       let timeout = trackingTimer(after: 2, repeats: false) { anchor.cancel() }
@@ -434,6 +441,7 @@ final class MenuPresentationTests: XCTestCase {
       timeout.invalidate()
       XCTAssertTrue(entered, "Component \(kind) must enter native tracking")
       XCTAssertEqual(calls, 1, "Component \(kind) dispatches exactly once")
+      settle { anchor.session == nil }
       XCTAssertNil(anchor.session)
       model.presentation = .custom
       pump()
@@ -467,22 +475,19 @@ final class MenuPresentationTests: XCTestCase {
     XCTAssertEqual(anchors.count, 2)
     let first = anchors[0]
     let second = anchors[1]
+    let bar = NativeMenuBar()
+    bar.add(first)
+    bar.add(second)
     let window = try XCTUnwrap(view.window)
-    let oldPointer = NSEvent.mouseLocation
-    defer {
-      CGWarpMouseCursorPosition(
-        CGPoint(x: oldPointer.x, y: NSScreen.screens[0].frame.height - oldPointer.y))
-    }
     var switched = false
     var secondTracked = false
     let timer = trackingTimer {
-      if first.session?.tracking == true && !switched {
+      if first.session?.opened == true && !switched {
         switched = true
         let target = window.convertToScreen(second.convert(second.bounds, to: nil))
-        CGWarpMouseCursorPosition(
-          CGPoint(x: target.midX, y: NSScreen.screens[0].frame.height - target.midY))
+        bar.switchAtPointer(from: first, point: NSPoint(x: target.midX, y: target.midY))
       }
-      if let session = second.session, session.tracking {
+      if let session = second.session, session.opened {
         secondTracked = true
         session.cancel()
       }
@@ -496,6 +501,7 @@ final class MenuPresentationTests: XCTestCase {
     repeat { pump() } while !secondTracked && Date() < deadline
     timer.invalidate()
     timeout.invalidate()
+    settle { first.session == nil && second.session == nil }
     XCTAssertTrue(switched)
     XCTAssertTrue(secondTracked)
     XCTAssertNil(first.session)
@@ -554,6 +560,22 @@ final class MenuPresentationTests: XCTestCase {
     XCTAssertTrue(descendants(view).compactMap { $0 as? NativeMenuAnchorView }.isEmpty)
   }
 
+  func testNativeAPIQueuedOpenIsCancelledBeforeTracking() {
+    let view = host(Text("Host"))
+    let session = NativeMenuSession(entries: [.item(MenuItem("A"))], theme: .default)
+    var opened = false
+    var closed = 0
+    let listener = session.menu!.addListener { if case .opened = $0 { opened = true } }
+    defer { _ = session.menu!.removeListener(listener) }
+    session.didClose = { closed += 1 }
+    session.present(at: NSPoint(x: 10, y: 10), in: view)
+    session.cancel()
+    pump()
+    XCTAssertFalse(opened)
+    XCTAssertFalse(session.tracking)
+    XCTAssertEqual(closed, 1)
+  }
+
   func testPendingOpenCannotReappearAfterCancellation() {
     let anchor = NativeMenuAnchorView()
     _ = host(Text("Host"))
@@ -572,5 +594,12 @@ final class MenuPresentationTests: XCTestCase {
     XCTAssertFalse(session?.tracking ?? true)
     XCTAssertNil(anchor.session)
     XCTAssertEqual(dismissed, 0)
+  }
+}
+
+// AppKit is used only to drive/inspect the OS objects created by NativeAPI.
+private extension NativeMenuSession {
+  var appKitMenu: NSMenu {
+    Unmanaged<NSMenu>.fromOpaque(menu!.nativeObject!).takeUnretainedValue()
   }
 }

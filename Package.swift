@@ -24,6 +24,8 @@ let buildForWeb = ProcessInfo.processInfo.environment["SWIFTUI_PORT_WEB"] == "1"
   let useSwiftUIPort = buildForWeb
 #endif
 
+let nativeAPIPath = ProcessInfo.processInfo.environment["NATIVEAPI_SWIFT_PATH"]
+  ?? "../../libnativeapi/nativeapi/bindings/swift"
 let package: Package
 if useSwiftUIPort {
   let portPath =
@@ -32,6 +34,10 @@ if useSwiftUIPort {
   var dazzDependencies: [Target.Dependency] = [
     "FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort"),
   ]
+  if !buildForWeb {
+    dependencies.append(.package(name: "NativeAPI", path: nativeAPIPath))
+    dazzDependencies.append(.product(name: "NativeAPI", package: "NativeAPI"))
+  }
   if buildForWeb {
     dependencies.append(.package(url: "https://github.com/swiftwasm/JavaScriptKit.git", exact: "0.63.0"))
     dazzDependencies.append(.product(name: "JavaScriptKit", package: "JavaScriptKit"))
@@ -46,6 +52,11 @@ if useSwiftUIPort {
       dependencies: dazzDependencies,
       path: "packages/swift/DazzUI/Sources/DazzUI"),
   ]
+  if !buildForWeb {
+    targets.append(.testTarget(
+      name: "DazzUINativeMenuTests", dependencies: ["DazzUI", .product(name: "NativeAPI", package: "NativeAPI")],
+      path: "packages/swift/DazzUI/Tests/NativeMenus"))
+  }
   #if os(Windows)
     targets.append(.testTarget(
       name: "DazzUIWindowsTests", dependencies: ["DazzUI"],
@@ -69,6 +80,7 @@ if useSwiftUIPort {
       .library(name: "DazzMobileUI", targets: ["DazzMobileUI"]),
     ],
     dependencies: [
+      .package(name: "NativeAPI", path: nativeAPIPath),
       .package(
         url: "https://github.com/microsoft/fluentui-system-icons.git",
         revision: "21d5d02f724be2aaf586564775fff73a18a76eb6"
@@ -78,7 +90,8 @@ if useSwiftUIPort {
       .target(
         name: "DazzUI",
         dependencies: [
-          .product(name: "FluentIcons", package: "fluentui-system-icons")
+          .product(name: "FluentIcons", package: "fluentui-system-icons"),
+          .product(name: "NativeAPI", package: "NativeAPI", condition: .when(platforms: [.macOS]))
         ],
         path: "packages/swift/DazzUI/Sources/DazzUI"
       ),
