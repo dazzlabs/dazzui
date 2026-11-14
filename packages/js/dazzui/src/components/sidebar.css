@@ -432,6 +432,15 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
+/* The label is one box so the row can drop it cleanly when the column
+   becomes a rail. */
+.dz-sidebar__menu-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* A trailing label span truncates on one line. With plain-text children,
    the icon is the last element child, so keep its overflow visible. */
 .dz-sidebar__menu-button > span:last-child:not(.dz-sidebar__menu-icon) {
@@ -617,6 +626,10 @@
  * height on a side, which is what the icon width was sized around — with the
  * glyph centred and the label cut off past it.
  */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-label {
+  display: none;
+}
+
 .dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-button {
   width: var(--control-medium-size);
   height: var(--control-medium-size);
@@ -729,4 +742,50 @@
 .dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-badge,
 .dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-sub {
   display: none;
+}
+
+/* Comfortable --------------------------------------------------------------
+ * The workspace column the desktop shell uses: a 32px row on 8px gutters,
+ * with the icon rail keeping the same 32px mark. It is opt-in so the control
+ * scale stays the default for the rest of the kit.
+ */
+.dz-sidebar[data-density='comfortable'] {
+  --sidebar-gutter: var(--spacing-2);
+  --sidebar-item-size: calc(var(--icon-medium) + var(--spacing-2) * 2);
+}
+
+.dz-sidebar[data-density='comfortable'] .dz-sidebar__header,
+.dz-sidebar[data-density='comfortable'] .dz-sidebar__footer,
+.dz-sidebar[data-density='comfortable'] .dz-sidebar__group {
+  padding-inline: var(--sidebar-gutter);
+}
+
+.dz-sidebar[data-density='comfortable'] .dz-sidebar__group-label {
+  padding-inline: var(--sidebar-gutter);
+}
+
+.dz-sidebar[data-density='comfortable']
+  .dz-sidebar__menu-button[data-size='medium'] {
+  min-height: var(--sidebar-item-size);
+  padding-block: 0;
+  padding-inline: var(--sidebar-gutter);
+}
+
+.dz-sidebar[data-density='comfortable'][data-collapsible='icon']
+  .dz-sidebar__menu-button {
+  width: var(--sidebar-item-size);
+  height: var(--sidebar-item-size);
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+
+.dz-sidebar[data-density='comfortable'] .dz-sidebar__footer {
+  padding-block: var(--spacing-2);
+}
+
+/* Collapsed, the head belongs to the window's chrome band rather than the
+   column's content surface. */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__header {
+  background-color: var(--color-surface-chrome);
 }

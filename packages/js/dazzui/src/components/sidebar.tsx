@@ -43,6 +43,9 @@ export type SidebarVariant = 'sidebar' | 'floating' | 'inset'
 
 export type SidebarCollapsible = 'offcanvas' | 'icon' | 'none'
 
+/** How tightly the column packs its rows. */
+export type SidebarDensity = 'default' | 'comfortable'
+
 interface SidebarContextValue {
   state: 'expanded' | 'collapsed'
   open: boolean
@@ -154,6 +157,12 @@ export interface SidebarProps extends ComponentPropsWithoutRef<'div'> {
    * so one the reader has resized has to say what it is.
    */
   width?: string
+  /**
+   * The row and gutter density. `comfortable` is the 32px workspace column:
+   * 8px gutters, 32px rows and a 32px icon rail. `default` keeps the control
+   * scale the rest of the kit uses.
+   */
+  density?: SidebarDensity
 }
 
 /** The column. */
@@ -163,6 +172,7 @@ export function Sidebar({
   collapsible = 'offcanvas',
   collapsed,
   width,
+  density = 'default',
   className,
   children,
   ...props
@@ -187,6 +197,7 @@ export function Sidebar({
         data-side={side}
         data-variant={variant}
         data-collapsible="none"
+        data-density={density}
         style={style}
         className={cx('dz-sidebar', className)}
         {...props}
@@ -214,6 +225,7 @@ export function Sidebar({
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-variant={variant}
       data-side={side}
+      data-density={density}
       style={style}
       className="dz-sidebar"
     >
@@ -488,7 +500,7 @@ export function SidebarMenuButton({
               {icon}
             </span>
           ) : null}
-          {children}
+          <span className="dz-sidebar__menu-label">{children}</span>
         </>
       ),
       ...props,

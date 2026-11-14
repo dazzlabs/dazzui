@@ -151,3 +151,24 @@
 .dz-tree__item[data-selected='true'] > .dz-tree__meta {
   color: currentcolor;
 }
+
+/* Sidebar variant ----------------------------------------------------------
+ * A tree inside a navigation column is tighter than a file tree: one hairline
+ * between rows, a 12px step, and no empty disclosure column on leaves.
+ */
+.dz-tree[data-variant='sidebar'] {
+  gap: var(--spacing-px);
+}
+
+.dz-tree[data-variant='sidebar'] .dz-tree__item {
+  padding-inline-start: calc(
+    var(--spacing-1) + var(--tree-depth, 0) * var(--spacing-3)
+  );
+  padding-inline-end: var(--spacing-1);
+}
+
+.dz-tree[data-variant='sidebar']
+  .dz-tree__item[data-branch='false']
+  > .dz-tree__twisty {
+  display: none;
+}
