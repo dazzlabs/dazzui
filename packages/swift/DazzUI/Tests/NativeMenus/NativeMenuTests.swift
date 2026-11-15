@@ -15,9 +15,6 @@ import XCTest
 @MainActor
 final class NativeMenuTests: XCTestCase {
   override func setUp() {
-    #if os(Windows)
-      WindowsDrawingBackend.prepareApplication()
-    #endif
     _ = NativeAPI.Application.shared.isRunning()
   }
 
@@ -120,7 +117,7 @@ final class NativeMenuTests: XCTestCase {
           throw XCTSkip("Native popup requires an interactive foreground window")
         }
         var opened = false
-        let closer = NativeRunLoopTimer(milliseconds: 20) {
+        let closer = NativeAPI.RunLoopTimer(milliseconds: 20) {
           var info = GUITHREADINFO()
           info.cbSize = DWORD(MemoryLayout<GUITHREADINFO>.size)
           if GetGUIThreadInfo(GetCurrentThreadId(), &info), info.hwndMenuOwner == hwnd {
@@ -129,7 +126,7 @@ final class NativeMenuTests: XCTestCase {
           }
         }
         defer { closer.invalidate() }
-        let timeout = NativeRunLoopTimer(milliseconds: 1800) { EndMenu() }
+        let timeout = NativeAPI.RunLoopTimer(milliseconds: 1800) { EndMenu() }
         defer { timeout.invalidate() }
       #endif
       if kind == 2 {
@@ -223,7 +220,7 @@ final class NativeMenuTests: XCTestCase {
       session.cancel()
     }
     // A native timer also bounds the nested Win32 popup loop on regressions.
-    let timeout = NativeRunLoopTimer(milliseconds: 1800) { session.cancel() }
+    let timeout = NativeAPI.RunLoopTimer(milliseconds: 1800) { session.cancel() }
     defer { timeout.invalidate() }
     pump(until: { controller.session == nil })
     XCTAssertTrue(opened)

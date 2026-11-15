@@ -160,10 +160,10 @@ Web, iOS and HarmonyOS retain custom menu presentation.
 
 The NativeAPI source package is required on all three desktop platforms. Set
 `NATIVEAPI_SWIFT_PATH` to `nativeapi/bindings/swift`; the default assumes sibling
-`dazzlabs/dazzui` and `libnativeapi/nativeapi` checkouts. Windows/Linux additionally
-need `SWIFTUI_PORT_PATH` pointing to a port that supplies `nativeWindow`,
-`onSecondaryClick` and `NativeRunLoopTimer`. The example's theme panel offers
-**Use native menus** for live comparison.
+`dazzlabs/dazzui` and `libnativeapi/nativeapi` checkouts. Windows/Linux additionally need `SWIFTUI_PORT_PATH` pointing to a port that supplies
+`nativeWindow` and `onSecondaryClick`; `NativeAPI.RunLoopTimer` drives popup tracking
+across all three platforms. The example's theme panel offers **Use native menus** for
+live comparison.
 
 Menu regression checks: macOS uses the Example Xcode project's
 `MenuPresentationTests`; Windows/Linux use `swift test --filter NativeMenuTests`

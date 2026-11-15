@@ -18,13 +18,9 @@
     private var keepAlive: NativeMenuSession?
     private(set) var opened = false
     private var finished = false
+    private var timer: NativeAPI.RunLoopTimer?
     #if os(Windows) || os(Linux)
-      private var timer: NativeRunLoopTimer?
       private var pendingOpen: (() -> Void)?
-      private var pendingClose = false
-    #endif
-    #if canImport(AppKit)
-      private var timer: Timer?
     #endif
     private(set) var cancelled = false
     private(set) var selected = false
@@ -42,13 +38,7 @@
         case .opened:
           self.opened = true
         case .closed:
-          // GTK/AppKit may notify closure before the chosen item's callback.
-          // Keep the entire tree alive until that callback has been delivered.
-          #if canImport(AppKit)
-            DispatchQueue.main.async { self.finish() }
-          #elseif os(Linux)
-            self.pendingClose = true
-          #endif
+          self.finish()
         default: break
         }
       }
@@ -123,38 +113,22 @@
       tracking = true
       Self.trackingCount += 1
       keepAlive = self
+      timer = NativeAPI.RunLoopTimer(milliseconds: 20) { [weak self] in
+        MainActor.assumeIsolated { self?.tick() }
+      }
       #if canImport(AppKit)
-        let timer = Timer(timeInterval: 0.02, repeats: true) { [weak self] _ in
-          MainActor.assumeIsolated { self?.tick() }
-        }
-        self.timer = timer
-        RunLoop.main.add(timer, forMode: .common)
-        RunLoop.main.add(timer, forMode: .eventTracking)
+        if !menu.open(strategy, placement: placement) { finish() }
       #else
         // Leave the render transaction before entering Win32's nested menu loop.
         pendingOpen = { [weak self] in
           guard let self else { return }
-          let success = menu.open(strategy, placement: placement)
-          #if os(Windows)
-            self.finish()
-          #else
-            if !success { self.finish() }
-          #endif
+          if !menu.open(strategy, placement: placement) { self.finish() }
         }
-        timer = NativeRunLoopTimer(milliseconds: 20) { [weak self] in self?.tick() }
-        return
-      #endif
-      #if canImport(AppKit)
-        if !menu.open(strategy, placement: placement) { finish() }
       #endif
     }
 
     private func tick() {
       #if os(Windows) || os(Linux)
-        if pendingClose {
-          finish()
-          return
-        }
         if let open = pendingOpen {
           pendingOpen = nil
           if cancelled { finish() } else { open() }
@@ -184,10 +158,8 @@
       #if os(Windows) || os(Linux)
         pendingOpen = nil
       #endif
-      #if canImport(AppKit) || os(Windows) || os(Linux)
-        timer?.invalidate()
-        timer = nil
-      #endif
+      timer?.invalidate()
+      timer = nil
       didClose()
       keepAlive = nil
     }
