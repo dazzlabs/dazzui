@@ -126,9 +126,13 @@ focus rings, ratios and animation timings retain their design values. AppKit
 and SwiftUI handle display scaling separately.
 
 The modifier refreshes on application activation, font-set and accessibility
-display notifications. While its scene is active it also checks the public font
-APIs once per second, since AppKit has no dedicated preferred-text-size change
-notification. It updates the environment in place, preserving view identity and
+display notifications. While its scene is active it also checks the preferred
+body font size once per second on one shared timer, since AppKit has no
+dedicated preferred-text-size change notification; native buttons are measured
+again only when that size or one of those notifications says the reading is
+stale, and the reading is shared by every modifier in the process. Equal themes
+share one resolved token table, so an unchanged theme does not invalidate the
+views that read it. It updates the environment in place, preserving view identity and
 editing state. It reads the metrics reported by AppKit; it does not read private
 preference keys or change the user's system settings.
 

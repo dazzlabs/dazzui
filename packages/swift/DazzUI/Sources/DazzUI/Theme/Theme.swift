@@ -1,14 +1,16 @@
+import Foundation
 import SwiftUI
 
 /// The active theme: which one it is, and the variables it resolved to.
-public struct Theme: Sendable {
+///
+/// Equal themes share one resolved token table: a design theme is resolved
+/// once per name, a system-sized one once per name and metrics snapshot. So a
+/// `Theme(name)` rebuilt on every redraw hands the environment the same value
+/// as before, and the subtree reading it is not invalidated.
+public struct Theme: Sendable, Equatable {
   public let name: ThemeName
   public let sizing: ThemeSizing
-  private final class Resolved: Sendable {
-    let variables: ThemeVariables
-    init(_ variables: ThemeVariables) { self.variables = variables }
-  }
-  private let resolved: Resolved
+  private let resolved: ResolvedTheme
 
   // Each themed view captures the environment. Share the token table across
   // those captures, including the resolved system-sizing snapshot.
@@ -17,21 +19,91 @@ public struct Theme: Sendable {
   public init(_ name: ThemeName) {
     self.name = name
     self.sizing = .design
-    self.resolved = Resolved(name.variables)
+    self.resolved = ResolvedTheme.cache.design(name)
   }
 
   @MainActor public init(_ name: ThemeName, sizing: ThemeSizing) {
-    self.init(name, sizing: sizing, metrics: SystemSizingMetrics.read())
+    self.init(name, sizing: sizing, metrics: SystemSizingMetrics.current())
   }
 
   internal init(_ name: ThemeName, sizing: ThemeSizing, metrics: SystemSizingMetrics) {
     self.name = name
     self.sizing = sizing
-    self.resolved = Resolved(sizing == .system ? name.variables.resolvingSystemSizing(metrics) : name.variables)
+    self.resolved =
+      sizing == .system
+      ? ResolvedTheme.cache.system(name, metrics) : ResolvedTheme.cache.design(name)
+  }
+
+  public static func == (lhs: Theme, rhs: Theme) -> Bool {
+    lhs.resolved === rhs.resolved
+      || (lhs.name == rhs.name && lhs.sizing == rhs.sizing
+        && lhs.resolved.metrics == rhs.resolved.metrics)
   }
 
   /// The default is Bright Light, the same theme `:root` holds.
   public static let `default` = Theme(.brightLight)
+}
+
+private final class ResolvedTheme: Sendable {
+  let variables: ThemeVariables
+  /// The snapshot a system-sized table was resolved against; nil for design.
+  let metrics: SystemSizingMetrics?
+
+  init(_ variables: ThemeVariables, metrics: SystemSizingMetrics?) {
+    self.variables = variables
+    self.metrics = metrics
+  }
+
+  static let cache = ResolvedThemeCache()
+}
+
+/// Resolved tables, shared by every `Theme` that resolves to the same one.
+private final class ResolvedThemeCache: @unchecked Sendable {
+  private struct SystemKey: Hashable {
+    let name: ThemeName
+    let metrics: SystemSizingMetrics
+  }
+
+  /// Metrics change when the reader changes their text size, so only a
+  /// handful of snapshots are ever live; the bound only stops a test sweeping
+  /// scales from growing it without end.
+  private static let systemLimit = 64
+
+  private let lock = NSLock()
+  private var designTables: [ThemeName: ResolvedTheme] = [:]
+  private var systemTables: [SystemKey: ResolvedTheme] = [:]
+
+  func design(_ name: ThemeName) -> ResolvedTheme {
+    lock.lock()
+    if let hit = designTables[name] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+    let made = ResolvedTheme(name.variables, metrics: nil)
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = designTables[name] { return raced }
+    designTables[name] = made
+    return made
+  }
+
+  func system(_ name: ThemeName, _ metrics: SystemSizingMetrics) -> ResolvedTheme {
+    let key = SystemKey(name: name, metrics: metrics)
+    lock.lock()
+    if let hit = systemTables[key] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+    let made = ResolvedTheme(name.variables.resolvingSystemSizing(metrics), metrics: metrics)
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = systemTables[key] { return raced }
+    if systemTables.count >= Self.systemLimit { systemTables.removeAll() }
+    systemTables[key] = made
+    return made
+  }
 }
 
 private struct ThemeKey: EnvironmentKey {

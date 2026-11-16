@@ -142,22 +142,13 @@ private struct DrawerLayer<Panel: View>: View {
   }
 }
 
-/// Compare the theme's resolved sizing inputs together, then pass the new
-/// snapshot into onChange. Reading the modifier's captured environment there
-/// can otherwise replay the previous render's values into the portal.
+/// Compare the theme and presentation together, then pass the new snapshot
+/// into onChange. Reading the modifier's captured environment there can
+/// otherwise replay the previous render's values into the portal. A theme's
+/// equality covers its name, sizing and the metrics it was resolved against.
 private struct OverlayScope: Equatable {
   let theme: Theme
   let presentation: MenuPresentation
-
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.presentation == rhs.presentation && lhs.theme.name == rhs.theme.name
-      && lhs.theme.sizing == rhs.theme.sizing
-      && lhs.theme.vars.bodyMedium.size == rhs.theme.vars.bodyMedium.size
-      && ControlSize.allCases.allSatisfy {
-        lhs.theme.vars.metrics($0).size == rhs.theme.vars.metrics($0).size
-          && lhs.theme.vars.metrics($0).content.size == rhs.theme.vars.metrics($0).content.size
-      }
-  }
 }
 
 private struct Presenting<Layer: View>: ViewModifier {

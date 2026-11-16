@@ -1,16 +1,20 @@
+import Foundation
 import SwiftUI
 
 /// Runtime sizing is independent from the selected color family.
 #if os(macOS)
   import AppKit
 #endif
+#if canImport(Combine)
+  import Combine
+#endif
 
 public enum ThemeSizing: String, CaseIterable, Sendable {
   case design
   case system
 }
-internal struct SystemSizingMetrics: Sendable, Equatable {
-  struct Control: Sendable, Equatable {
+internal struct SystemSizingMetrics: Sendable, Hashable {
+  struct Control: Sendable, Hashable {
     let fontSize: CGFloat
     let height: CGFloat
   }
@@ -26,6 +30,8 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
     design.scaled(by: control(size).fontSize / design.size)
   }
 
+  /// Measures the platform afresh: eight native buttons laid out on macOS.
+  /// Views go through ``current()`` instead.
   @MainActor static func read() -> SystemSizingMetrics {
     #if os(macOS)
       let body = NSFont.preferredFont(forTextStyle: .body, options: [:]).pointSize
@@ -57,6 +63,65 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
         })
     #endif
   }
+
+  /// The process's last reading, measured again only when the preferred body
+  /// size has moved or a font, accessibility or activation notification has
+  /// cleared it. Checking the body size is one font lookup; the buttons are
+  /// laid out once per change rather than once per view, redraw or tick.
+  @MainActor static func current() -> SystemSizingMetrics {
+    let cache = SystemSizingCache.shared
+    cache.observe()
+    #if os(macOS)
+      let body = NSFont.preferredFont(forTextStyle: .body, options: [:]).pointSize
+      if let cached = cache.value, cached.bodyFontSize == body { return cached }
+    #else
+      if let cached = cache.value { return cached }
+    #endif
+    let fresh = read()
+    cache.value = fresh
+    return fresh
+  }
+}
+
+private final class SystemSizingCache: @unchecked Sendable {
+  static let shared = SystemSizingCache()
+
+  private let lock = NSLock()
+  private var stored: SystemSizingMetrics?
+  /// Touched only on the main actor.
+  private var observing = false
+
+  var value: SystemSizingMetrics? {
+    get {
+      lock.lock()
+      defer { lock.unlock() }
+      return stored
+    }
+    set {
+      lock.lock()
+      stored = newValue
+      lock.unlock()
+    }
+  }
+
+  /// Clears the reading the moment the platform says it may be stale. The
+  /// observers are synchronous, so they run before any modifier's own
+  /// subscription — delivered on the next run-loop pass — asks again.
+  @MainActor func observe() {
+    guard !observing else { return }
+    observing = true
+    #if os(macOS)
+      let clear: @Sendable (Notification) -> Void = { _ in SystemSizingCache.shared.value = nil }
+      let center = NotificationCenter.default
+      _ = center.addObserver(
+        forName: NSFont.fontSetChangedNotification, object: nil, queue: nil, using: clear)
+      _ = center.addObserver(
+        forName: NSApplication.didBecomeActiveNotification, object: nil, queue: nil, using: clear)
+      _ = NSWorkspace.shared.notificationCenter.addObserver(
+        forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil,
+        queue: nil, using: clear)
+    #endif
+  }
 }
 #if os(Windows) || os(Linux) || os(WASI)
   // AppKit system metrics are not available through SwiftUIPort. The desktop port uses
@@ -78,15 +143,24 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
     private let readMetrics: @MainActor () -> SystemSizingMetrics
     @State private var metrics: SystemSizingMetrics
     @Environment(\.scenePhase) private var scenePhase
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// One timer for every modifier in the process, rather than a publisher
+    /// made afresh each time SwiftUI rebuilds this struct.
+    private static let ticks = Timer.publish(every: 1, on: .main, in: .common)
+      .autoconnect()
+      .share()
 
     init(
       name: ThemeName, sizing: ThemeSizing,
-      readMetrics: @escaping @MainActor () -> SystemSizingMetrics = { SystemSizingMetrics.read() }
+      readMetrics: @escaping @MainActor () -> SystemSizingMetrics = {
+        SystemSizingMetrics.current()
+      }
     ) {
       self.name = name
       self.sizing = sizing
       self.readMetrics = readMetrics
+      // SwiftUI evaluates this on every rebuild and keeps only the first;
+      // `current()` makes the rest a cache hit.
       _metrics = State(initialValue: readMetrics())
     }
 
@@ -98,7 +172,7 @@ internal struct SystemSizingMetrics: Sendable, Equatable {
         .environment(\.colorScheme, name.colorScheme)
         .onAppear(perform: refresh)
         .onChange(of: sizing) { _ in refresh() }
-        .onReceive(timer) { _ in
+        .onReceive(Self.ticks) { _ in
           if scenePhase == .active { refresh() }
         }
         #if os(macOS)
