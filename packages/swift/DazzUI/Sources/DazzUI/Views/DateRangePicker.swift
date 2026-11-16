@@ -236,6 +236,7 @@ public struct DateRangePicker: View {
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
+  @Environment(\.dazzStretchedControl) private var stretchedControl
   @FocusState private var focused: Bool
   @State private var open = false
   @State private var draft: DateRangeDraft?
@@ -317,7 +318,13 @@ public struct DateRangePicker: View {
 
     return Pressable(action: toggle, enabled: enabled, cornerRadius: vars.controlFieldRadius) {
       _ in
-      HStack(spacing: vars.spacing2) {
+      DateRangeTriggerBox(
+        minWidth: vars.dateRangePickerTriggerMinWidth,
+        height: metrics.size,
+        paddingInline: vars.spacing3 + hairline,
+        gap: vars.spacing2,
+        stretch: stretchedControl
+      ) {
         // `CalendarLtr16Regular` on the web; the Swift icon package carries
         // the glyph only as `Calendar16Regular`.
         Icon(.calendar16Regular, size: vars.iconSmall)
@@ -331,15 +338,10 @@ public struct DateRangePicker: View {
         }
         .lineLimit(1)
         .truncationMode(.tail)
-        .frame(maxWidth: .infinity, alignment: .leading)
         Icon(.chevronDown12Regular, size: vars.iconSmall)
           .foregroundStyle(enabled ? vars.colorContentSubtle : vars.colorContentFaint)
       }
       .font(FieldStyle.font(size: metrics.content.size, mono: false, vars: vars))
-      .monospacedDigit()
-      .padding(.horizontal, vars.spacing3)
-      .frame(minWidth: 256)
-      .frame(height: metrics.size)
       .fieldChrome(
         FieldStyle(
           vars: vars,
@@ -392,6 +394,7 @@ public struct DateRangePicker: View {
         .rule(vars.colorBorder, edge: .top, width: hairline)
     }
     .font(vars.bodySmall.font)
+    .monospacedDigit()
     .foregroundStyle(vars.colorContent)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
@@ -553,26 +556,60 @@ private struct Summary: View {
 
   @Environment(\.theme) private var theme
 
-  var body: some View {
-    let faint = theme.vars.colorContentFaint
+  private var parts: [(text: String, separator: Bool)] {
     let oneDay = math.compareDay(value.start, value.end) == .orderedSame
-    let startDay = Text(strings.day(value.start))
-    let endDay = Text(strings.day(value.end))
-    let sep = { (glyph: String) in Text(" \(glyph) ").foregroundColor(faint) }
-
+    let startDay = strings.day(value.start)
+    let endDay = strings.day(value.end)
     if value.allDay {
       if oneDay {
-        startDay + sep("·") + Text(strings.allDay)
-      } else {
-        startDay + sep("→") + endDay
+        return [(startDay, false), ("·", true), (strings.allDay, false)]
       }
-    } else if oneDay {
-      startDay + sep("·") + Text(clock(value.start, math)) + sep("→")
-        + Text(clock(value.end, math))
-    } else {
-      startDay + Text(" \(clock(value.start, math))") + sep("→") + endDay
-        + Text(" \(clock(value.end, math))")
+      return [(startDay, false), ("→", true), (endDay, false)]
     }
+    if oneDay {
+      return [
+        (startDay, false),
+        ("·", true),
+        (clock(value.start, math), false),
+        ("→", true),
+        (clock(value.end, math), false),
+      ]
+    }
+    return [
+      ("\(startDay) \(clock(value.start, math))", false),
+      ("→", true),
+      ("\(endDay) \(clock(value.end, math))", false),
+    ]
+  }
+
+  var body: some View {
+    let vars = theme.vars
+    let segments = parts
+    #if canImport(AppKit) || canImport(UIKit)
+      var line = AttributedString()
+      for (index, segment) in segments.enumerated() where !segment.text.isEmpty {
+        var run = AttributedString(segment.text)
+        if segment.separator {
+          run.foregroundColor = vars.colorContentFaint
+        }
+        if index < segments.count - 1 {
+          let last = run.characters.index(before: run.characters.endIndex)
+          run[last..<run.endIndex].kern = vars.spacing1
+        }
+        line += run
+      }
+      return Text(line)
+    #else
+      return HStack(spacing: vars.spacing1) {
+        ForEach(Array(segments.enumerated()), id: \.offset) { _, segment in
+          if segment.separator {
+            Text(segment.text).foregroundStyle(vars.colorContentFaint)
+          } else {
+            Text(segment.text)
+          }
+        }
+      }
+    #endif
   }
 }
 
@@ -618,5 +655,59 @@ struct FlowRow: Layout {
       widest = Swift.max(widest, x - spacing)
     }
     return (CGSize(width: widest, height: y + rowHeight), origins)
+  }
+}
+
+/// CSS's `width: auto; min-width: var(--date-range-picker-trigger-min-width)`:
+/// intrinsic width when standing on its own, stretched to the offered width
+/// inside a stretched column or `FormField`.
+private struct DateRangeTriggerBox: Layout {
+  var minWidth: CGFloat
+  var height: CGFloat
+  var paddingInline: CGFloat
+  var gap: CGFloat
+  var stretch: Bool
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    guard subviews.count == 3 else { return CGSize(width: minWidth, height: height) }
+    let leading = subviews[0].sizeThatFits(.unspecified).width
+    let label = subviews[1].sizeThatFits(.unspecified).width
+    let trailing = subviews[2].sizeThatFits(.unspecified).width
+    let intrinsic = paddingInline * 2 + leading + gap + label + gap + trailing
+    let width: CGFloat
+    if stretch, let offered = proposal.width, offered.isFinite {
+      width = Swift.max(minWidth, offered)
+    } else if let offered = proposal.width, offered.isFinite {
+      width = Swift.max(minWidth, Swift.min(offered, intrinsic))
+    } else {
+      width = Swift.max(minWidth, intrinsic)
+    }
+    return CGSize(width: width, height: height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    guard subviews.count == 3 else { return }
+    let leading = subviews[0].sizeThatFits(.unspecified)
+    let label = subviews[1].sizeThatFits(.unspecified)
+    let trailing = subviews[2].sizeThatFits(.unspecified)
+    let leadingX = bounds.minX + paddingInline
+    let trailingX = bounds.maxX - paddingInline - trailing.width
+    let labelX = leadingX + leading.width + gap
+    let available = Swift.max(0, trailingX - gap - labelX)
+    subviews[0].place(
+      at: CGPoint(x: leadingX, y: bounds.midY),
+      anchor: .leading,
+      proposal: ProposedViewSize(leading)
+    )
+    subviews[1].place(
+      at: CGPoint(x: labelX, y: bounds.midY),
+      anchor: .leading,
+      proposal: ProposedViewSize(width: Swift.min(label.width, available), height: nil)
+    )
+    subviews[2].place(
+      at: CGPoint(x: trailingX, y: bounds.midY),
+      anchor: .leading,
+      proposal: ProposedViewSize(trailing)
+    )
   }
 }

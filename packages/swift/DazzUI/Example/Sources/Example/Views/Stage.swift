@@ -232,6 +232,7 @@ private struct StageRow: View {
       }
     }
     .layout(width: node["width"])
+    .environment(\.dazzStretchedControl, false)
   }
 }
 
@@ -251,9 +252,12 @@ private struct StageCol: View {
     let column = VStack(alignment: horizontal(align), spacing: gap) {
       ForEach(Array(node.children.enumerated()), id: \.offset) { _, child in
         if stretch {
-          NodeView(child).frame(maxWidth: .infinity, alignment: .leading)
+          NodeView(child)
+            .environment(\.dazzStretchedControl, true)
+            .frame(maxWidth: .infinity, alignment: .leading)
         } else {
           NodeView(child)
+            .environment(\.dazzStretchedControl, false)
         }
       }
     }
@@ -266,6 +270,7 @@ private struct StageCol: View {
       ShrinkToFit(spacing: gap) {
         ForEach(Array(node.children.enumerated()), id: \.offset) { _, child in
           NodeView(child)
+            .environment(\.dazzStretchedControl, true)
         }
       }
     } else {

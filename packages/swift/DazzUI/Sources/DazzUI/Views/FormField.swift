@@ -55,17 +55,19 @@ public struct FormField<Content: View>: View {
 
     VStack(alignment: .leading, spacing: vars.spacing15) {
       Text(label)
-        .font(.system(size: vars.labelSmall.size, weight: vars.labelSmall.weight))
+        .font(vars.labelSmall.font)
+        .lineBox(vars.labelSmall)
         .foregroundStyle(ink)
 
       content()
+        .environment(\.dazzStretchedControl, true)
 
       if let hint = error ?? hint {
         Text(hint)
-          .font(.system(size: vars.labelQuiet.size, weight: vars.labelQuiet.weight))
+          .font(vars.labelQuiet.font)
           // Prose leading rather than the label face's solid line: a hint is a
           // sentence and wraps like one.
-          .lineSpacing(vars.labelQuiet.size * (Self.proseLeading - 1))
+          .lineBox(vars.labelQuiet, lineHeight: vars.labelQuiet.size * vars.formFieldHintLeading)
           .fixedSize(horizontal: false, vertical: true)
           .foregroundStyle(ink)
       }

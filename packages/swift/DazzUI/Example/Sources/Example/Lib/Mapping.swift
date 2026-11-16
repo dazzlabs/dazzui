@@ -531,15 +531,7 @@ let components: [String: ComponentBuilder] = [
     }
   },
   "Sidebar": { n in AnyView(SidebarColumn(node: n)) },
-  "SidebarContent": { n in
-    AnyView(
-      ScrollView {
-        VStack(alignment: .leading, spacing: 0) { n.kids }
-          .frame(maxWidth: .infinity, alignment: .leading)
-      }
-      .frame(maxHeight: .infinity)
-    )
-  },
+  "SidebarContent": { n in AnyView(SidebarContentNode(node: n)) },
   "SidebarGroup": { n in AnyView(SidebarGroupNode(node: n)) },
   "SidebarGroupContent": { n in AnyView(VStack(alignment: .leading, spacing: 0) { n.kids }) },
   "SidebarGroupLabel": { n in AnyView(SidebarLabelNode(node: n)) },
@@ -1052,6 +1044,9 @@ private struct SidebarState {
   var open = true
   var toggle: () -> Void = {}
   var inset = false
+  var rail = false
+  var dropGroupTop = false
+  var dropGroupBottom = false
   var showsLabels = true
   var badge: Value?
 }
@@ -1105,6 +1100,7 @@ private struct SidebarColumn: View {
     let full = collapsible == "none" ? vars.frameRailWidth : vars.frameSidebarWidth
     let surface = collapsible == "none" ? vars.colorSurface : vars.colorSurfaceColumn
     var state = sidebar
+    state.rail = collapsible == "none"
     state.showsLabels = !icons
 
     // A plain sidebar's edge is a border, and a border takes its width from
@@ -1186,14 +1182,41 @@ private struct SidebarHeaderNode: View {
   }
 }
 
+private struct SidebarContentNode: View {
+  let node: Node
+  @Environment(\.sidebar) private var sidebar
+  @Environment(\.theme) private var theme
+
+  var body: some View {
+    let vars = theme.vars
+    let count = node.children.count
+    ScrollView {
+      VStack(alignment: .leading, spacing: 0) {
+        ForEach(Array(node.children.enumerated()), id: \.offset) { index, child in
+          var state = sidebar
+          state.dropGroupTop = sidebar.rail && index == 0
+          state.dropGroupBottom = sidebar.rail && index == count - 1
+          return NodeView(child)
+            .environment(\.sidebar, state)
+        }
+      }
+      .padding(.vertical, sidebar.rail ? vars.spacing25 : vars.spacing2)
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .frame(maxHeight: .infinity)
+  }
+}
+
 private struct SidebarGroupNode: View {
   let node: Node
+  @Environment(\.sidebar) private var sidebar
   @Environment(\.theme) private var theme
 
   var body: some View {
     let vars = theme.vars
     VStack(alignment: .leading, spacing: 0) { node.kids }
-      .padding(.vertical, vars.spacing15)
+      .padding(.top, sidebar.dropGroupTop ? 0 : vars.spacing15)
+      .padding(.bottom, sidebar.dropGroupBottom ? 0 : vars.spacing15)
       .padding(.horizontal, vars.spacing25)
       .frame(maxWidth: .infinity, alignment: .leading)
   }

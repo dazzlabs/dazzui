@@ -174,6 +174,19 @@ public extension View {
   }
 }
 
+private struct StretchedControlKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+public extension EnvironmentValues {
+  /// Whether an enclosing column stretches `width: auto` controls across its
+  /// cross axis, the way CSS's `align-items: stretch` does.
+  var dazzStretchedControl: Bool {
+    get { self[StretchedControlKey.self] }
+    set { self[StretchedControlKey.self] = newValue }
+  }
+}
+
 /// One shadow layer.
 ///
 /// Named against the token rather than `SwiftUI.ShadowStyle`, which is a
