@@ -57,12 +57,19 @@ public struct NumberField: View {
     let metrics = vars.metrics(size.controlSize)
     let ramp = tintFor(state, tint)
 
-    HStack(spacing: vars.spacing1) {
+    #if os(Windows) || os(Linux) || os(WASI)
+      let nativePlaceholder = placeholder
+    #else
+      let nativePlaceholder = ""
+    #endif
+    return HStack(spacing: vars.spacing1) {
       ZStack(alignment: .leading) {
-        if text.isEmpty {
-          Text(placeholder).foregroundStyle(vars.colorContentFaint)
-        }
-        SwiftUI.TextField("", text: $text)
+        #if !os(Windows) && !os(Linux) && !os(WASI)
+          if text.isEmpty {
+            Text(placeholder).foregroundStyle(vars.colorContentFaint)
+          }
+        #endif
+        SwiftUI.TextField(nativePlaceholder, text: $text)
           .textFieldStyle(.plain)
           .focused($focused)
           .disabled(!enabled)
