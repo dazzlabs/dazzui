@@ -62,33 +62,33 @@ public struct Palette: Sendable {
     self.nativeTintShade = nativeTintShade
   }
 
-  public let colorPrimary: ColorSwatch
-  public let colorNeutral: ColorSwatch
-  public let colorInfo: ColorSwatch
-  public let colorSuccess: ColorSwatch
-  public let colorWarning: ColorSwatch
-  public let colorDanger: ColorSwatch
-  public let colorCanvas: Color
-  public let colorSurface: Color
-  public let colorSurfaceMuted: Color
-  public let colorSurfaceSunken: Color
-  public let colorSurfaceSubtle: Color
-  public let colorSurfaceInset: Color
-  public let colorSurfaceRaised: Color
-  public let colorSurfaceOverlay: Color
-  public let colorSurfaceChrome: Color
-  public let colorSurfaceColumn: Color
-  public let colorContent: Color
-  public let colorContentSecondary: Color
-  public let colorContentNav: Color
-  public let colorContentMuted: Color
-  public let colorContentSubtle: Color
-  public let colorContentFaint: Color
-  public let colorBorder: Color
-  public let colorBorderStrong: Color
-  public let colorBorderMuted: Color
-  public let colorOnAccent: Color
-  public let nativeTintShade: Int
+  public var colorPrimary: ColorSwatch
+  public var colorNeutral: ColorSwatch
+  public var colorInfo: ColorSwatch
+  public var colorSuccess: ColorSwatch
+  public var colorWarning: ColorSwatch
+  public var colorDanger: ColorSwatch
+  public var colorCanvas: Color
+  public var colorSurface: Color
+  public var colorSurfaceMuted: Color
+  public var colorSurfaceSunken: Color
+  public var colorSurfaceSubtle: Color
+  public var colorSurfaceInset: Color
+  public var colorSurfaceRaised: Color
+  public var colorSurfaceOverlay: Color
+  public var colorSurfaceChrome: Color
+  public var colorSurfaceColumn: Color
+  public var colorContent: Color
+  public var colorContentSecondary: Color
+  public var colorContentNav: Color
+  public var colorContentMuted: Color
+  public var colorContentSubtle: Color
+  public var colorContentFaint: Color
+  public var colorBorder: Color
+  public var colorBorderStrong: Color
+  public var colorBorderMuted: Color
+  public var colorOnAccent: Color
+  public var nativeTintShade: Int
 
 
 }

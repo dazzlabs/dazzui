@@ -46,7 +46,9 @@ fields in the gallery's layout. Search suggestions remain custom.
 
 The Gallery builds the same `Sources/Example` and DazzUI components using
 SwiftUIPort and the bundled Fluent icon resources. It runs in GTK 3 on Wayland
-or X11. The Gallery uses DazzUI design sizing and custom menus on Linux.
+or X11. On an Omarchy machine it wears and follows the machine's current
+Omarchy theme and `shell.toml` sizes by default (offered under **This
+machine** in the theme panel) unless `-theme` is passed.
 
 Install Swift and the nativeapi build dependencies. On Ubuntu the packages are
 `pkg-config`, `libgtk-3-dev`, `libx11-dev` and `libxi-dev`; on Arch use

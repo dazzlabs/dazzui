@@ -372,7 +372,7 @@ private struct ToasterStack: View {
       .frame(width: 0, height: 0)
       .onAppear { publish() }
       .onChange(of: toaster.toasts.map(\.id)) { _ in publish() }
-      .onChange(of: theme.name) { _ in publish() }
+      .onChange(of: theme) { _ in publish() }
   }
 
   private func publish() {
@@ -402,7 +402,7 @@ private struct ToasterStack: View {
           }
         }
         .allowsHitTesting(!toasts.isEmpty)
-        .theme(theme.name)
+        .theme(theme)
       )
     )
   }

@@ -69,14 +69,105 @@ final class GalleryTests: XCTestCase {
     renderer.performTap(calendar.id)
     XCTAssertTrue(
       nodes(renderer.tree!).contains { $0.props.text == Stories.story("calendar")?.summary })
+    let wasDark = nodes(renderer.tree!).contains {
+      $0.props.accessibilityLabel == "Switch to light"
+    }
     let themeControl = try XCTUnwrap(
       nodes(renderer.tree!).first {
-        $0.props.accessibilityLabel == "Switch to dark"
+        $0.props.accessibilityLabel == (wasDark ? "Switch to light" : "Switch to dark")
       })
     let theme = try XCTUnwrap(nodes(themeControl).first { $0.kind == .styledButton })
     renderer.performTap(theme.id)
     XCTAssertTrue(
-      nodes(renderer.tree!).contains { $0.props.accessibilityLabel == "Switch to light" })
+      nodes(renderer.tree!).contains {
+        $0.props.accessibilityLabel == (wasDark ? "Switch to dark" : "Switch to light")
+      })
+  }
+
+  func testGalleryFollowsOmarchyDirectoryAndSwitchesAway() throws {
+    let current = FileManager.default.temporaryDirectory
+      .appendingPathComponent("dazzui-gallery-omarchy-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: current) }
+    let themeDir = current.appendingPathComponent("theme")
+    try FileManager.default.createDirectory(at: themeDir, withIntermediateDirectories: true)
+    try """
+    mode = "dark"
+    background = "#0c0b0c"
+    foreground = "#fafcfb"
+    accent = "#b59790"
+    """.write(
+      to: themeDir.appendingPathComponent("colors.toml"),
+      atomically: true,
+      encoding: .utf8
+    )
+    try "custom-horizon\n".write(
+      to: current.appendingPathComponent("theme.name"),
+      atomically: true,
+      encoding: .utf8
+    )
+
+    let renderer = render(AppView(omarchyDirectory: current.path))
+    let initial = nodes(try XCTUnwrap(renderer.tree))
+    XCTAssertTrue(initial.contains { $0.props.text == "This machine" })
+    XCTAssertTrue(initial.contains { $0.props.text == "Custom Horizon" })
+    XCTAssertTrue(initial.contains { $0.props.accessibilityLabel == "Switch to light" })
+
+    let studio = try XCTUnwrap(
+      initial.first {
+        $0.kind == .styledButton && nodes($0).contains { $0.props.text == "Studio" }
+      })
+    renderer.performTap(studio.id)
+    XCTAssertTrue(nodes(renderer.tree!).contains { $0.props.text == "This machine" })
+  }
+
+  func testOmarchyWatcherFollowsSwapAndShellToml() async throws {
+    let current = FileManager.default.temporaryDirectory
+      .appendingPathComponent("dazzui-watch-omarchy-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: current) }
+    let themeDir = current.appendingPathComponent("theme")
+    let configDir = current.appendingPathComponent("config")
+    try FileManager.default.createDirectory(at: themeDir, withIntermediateDirectories: true)
+    try FileManager.default.createDirectory(at: configDir, withIntermediateDirectories: true)
+
+    func wear(_ name: String, _ background: String) throws {
+      try """
+      background = "\(background)"
+      foreground = "#cdd6f4"
+      accent = "#89b4fa"
+      """.write(
+        to: themeDir.appendingPathComponent("colors.toml"),
+        atomically: true,
+        encoding: .utf8
+      )
+      try "\(name)\n".write(
+        to: current.appendingPathComponent("theme.name"),
+        atomically: true,
+        encoding: .utf8
+      )
+    }
+
+    try wear("catppuccin", "#1e1e2e")
+    let stream = watchOmarchyPalette(directory: current.path, config: configDir.path)
+    var iterator = stream.makeAsyncIterator()
+
+    let first = await iterator.next() ?? nil
+    XCTAssertEqual(first?.name, "catppuccin")
+    XCTAssertEqual(first?.shellStyle.fontBaseSize, 12)
+
+    try "[font]\nbase-size = 15\n".write(
+      to: configDir.appendingPathComponent("shell.toml"),
+      atomically: true,
+      encoding: .utf8
+    )
+    let second = await iterator.next() ?? nil
+    XCTAssertEqual(second?.shellStyle.fontBaseSize, 15)
+    XCTAssertEqual(second?.themeVariables.bodyMedium.size, 15)
+
+    try FileManager.default.removeItem(at: themeDir)
+    try FileManager.default.createDirectory(at: themeDir, withIntermediateDirectories: true)
+    try wear("tokyo-night", "#1a1b26")
+    let third = await iterator.next() ?? nil
+    XCTAssertEqual(third?.name, "tokyo-night")
   }
 
   func testThemePreviewInkIsStableAcrossCardHover() throws {

@@ -107,7 +107,12 @@ Pass `-Page calendar -Theme studio-dark` to the launcher to open a specific page
 ## Linux through swiftui-port
 
 The root and DazzUI package manifests build the full SwiftUI library with
-SwiftUIPort and the bundled Fluent glyphs on Linux. See the
+SwiftUIPort and the bundled Fluent glyphs on Linux. On an Omarchy machine,
+`readOmarchyPalette`, `watchOmarchyPalette` and `OmarchyTheme` (or
+`.omarchyTheme(fallback:)`) read `$XDG_STATE_HOME/omarchy/current/` (falling
+back to `~/.config/omarchy/current/`) and `shell.toml`, derive the full token
+table and shell typography/spacing at run time, and follow live theme switches
+and `shell.toml` edits, falling back off Omarchy. See the
 [Gallery instructions](Example/README.md#linux) for dependencies, running the
 Gallery and tests.
 
@@ -224,6 +229,7 @@ Sources/DazzUI/
   Views/       the components
   Foundation/  the types they are written against
   Theme/       the theme value and its environment key
+  Omarchy/     run-time Omarchy palette, shell style and watcher
   Generated/   what ds wrote
 ```
 

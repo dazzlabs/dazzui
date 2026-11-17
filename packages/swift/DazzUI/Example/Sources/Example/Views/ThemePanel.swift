@@ -1,12 +1,14 @@
 import DazzUI
-
-/// The theme, and nothing else: which half of it, then which family.
 import SwiftUI
 
+/// The theme, and nothing else: which half of it, then which family.
 struct ThemePanel: View {
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
   @Binding var menuPresentation: MenuPresentation
+  var omarchy: OmarchyPalette?
+  var followingOmarchy = false
+  var onFollowOmarchy: ((Bool) -> Void)?
 
   @Environment(\.theme) private var current
   @Environment(\.hairline) private var hairline
@@ -59,6 +61,27 @@ struct ThemePanel: View {
             .padding(.horizontal, vars.spacing4)
             .padding(.bottom, vars.spacing2)
           #endif
+          if let omarchy {
+            VStack(alignment: .leading, spacing: vars.spacing2) {
+              SectionLabel { Text("This machine") }
+                .font(vars.labelSmall.font)
+                .frame(height: vars.spacing5)
+              Grid(horizontalSpacing: vars.spacing2, verticalSpacing: vars.spacing2) {
+                GridRow {
+                  tile(
+                    vars: half(omarchy, dark: theme.dark).themeVariables,
+                    title: omarchy.title ?? "Omarchy",
+                    selected: followingOmarchy,
+                    action: { onFollowOmarchy?(true) }
+                  )
+                  Color.clear.gridCellUnsizedAxes([.vertical])
+                  Color.clear.gridCellUnsizedAxes([.vertical])
+                }
+              }
+            }
+            .padding(.vertical, vars.spacing2)
+            .padding(.horizontal, vars.spacing4)
+          }
           ForEach(themeFamilyGroups, id: \.title) { group in
             VStack(alignment: .leading, spacing: vars.spacing2) {
               SectionLabel { Text(group.title) }
@@ -69,7 +92,7 @@ struct ThemePanel: View {
                   GridRow {
                     ForEach(0..<3, id: \.self) { index in
                       if index < row.count {
-                        tile(row[index])
+                        familyTile(row[index])
                       } else {
                         Color.clear.gridCellUnsizedAxes([.vertical])
                       }
@@ -94,19 +117,41 @@ struct ThemePanel: View {
     }
   }
 
-  private func tile(_ family: ThemeFamily) -> some View {
-    let vars = current.vars
+  /// The Omarchy theme in the half asked for: as it ships, or its opposite.
+  private func half(_ palette: OmarchyPalette, dark: Bool) -> OmarchyPalette {
+    (palette.colorScheme == .dark) == dark ? palette : palette.opposite
+  }
+
+  private func familyTile(_ family: ThemeFamily) -> some View {
     var choice = theme
     choice.family = family.value
+    return tile(
+      vars: choice.name.variables,
+      title: family.title,
+      selected: !followingOmarchy && family.value == theme.family,
+      action: {
+        onFollowOmarchy?(false)
+        theme.family = family.value
+      }
+    )
+  }
+
+  private func tile(
+    vars previewVars: ThemeVariables,
+    title: String,
+    selected: Bool,
+    action: @escaping () -> Void
+  ) -> some View {
+    let vars = current.vars
     return OptionCard(
-      selected: family.value == theme.family,
+      selected: selected,
       padding: EdgeInsets(),
       cornerRadius: 8,
-      action: { theme.family = family.value },
+      action: action,
       title: {
         VStack(spacing: 0) {
-          ThemePreview(theme: choice, height: vars.spacing10, framed: false)
-          Text(family.title)
+          ThemePreview(vars: previewVars, height: vars.spacing10, framed: false)
+          Text(title)
             .font(vars.labelSmall.font)
             .lineLimit(1)
             .truncationMode(.tail)
@@ -117,6 +162,6 @@ struct ThemePanel: View {
       },
       description: { EmptyView() }
     )
-    .accessibilityLabel(family.title)
+    .accessibilityLabel(title)
   }
 }

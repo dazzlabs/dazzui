@@ -7,13 +7,13 @@ import Foundation
 #endif
 
 #if os(WASI)
-func readLocation() -> (page: String?, theme: ThemeChoice) {
+func readLocation() -> (page: String?, theme: ThemeChoice?) {
   let search = JSObject.global.location.search.string ?? ""
   let query = JSObject.global.URLSearchParams.object!.new(search)
   return resolveLocation { query.get!($0).string }
 }
 #else
-func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme: ThemeChoice) {
+func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme: ThemeChoice?) {
   func argument(_ name: String) -> String? {
     #if os(Windows) || os(Linux)
       let args = ProcessInfo.processInfo.arguments
@@ -27,13 +27,15 @@ func readLocation(_ defaults: UserDefaults = .standard) -> (page: String?, theme
 }
 #endif
 
-private func resolveLocation(_ argument: (String) -> String?) -> (page: String?, theme: ThemeChoice) {
+private func resolveLocation(
+  _ argument: (String) -> String?
+) -> (page: String?, theme: ThemeChoice?) {
   let page = argument("page").flatMap { $0.isEmpty ? nil : $0 }
   let id = argument("theme") ?? ""
-  guard let cut = id.lastIndex(of: "-") else { return (page, defaultTheme) }
+  guard let cut = id.lastIndex(of: "-") else { return (page, nil) }
   let family = String(id[..<cut])
   let mode = String(id[id.index(after: cut)...])
   let known = themeFamilyGroups.contains { $0.families.contains { $0.value == family } }
-  guard known, mode == "light" || mode == "dark" else { return (page, defaultTheme) }
+  guard known, mode == "light" || mode == "dark" else { return (page, nil) }
   return (page, ThemeChoice(family: family, dark: mode == "dark"))
 }

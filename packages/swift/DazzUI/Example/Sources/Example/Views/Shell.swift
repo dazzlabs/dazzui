@@ -15,6 +15,9 @@ struct Shell: View {
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
   @Binding var menuPresentation: MenuPresentation
+  var omarchy: OmarchyPalette?
+  var followingOmarchy = false
+  var onFollowOmarchy: ((Bool) -> Void)?
 
   @State private var query = ""
   @State private var listOpen = true
@@ -59,7 +62,14 @@ struct Shell: View {
       // The panel is never unmounted: putting it away sweeps it shut, so the
       // document beside it holds still while its edge slides over it.
       Aside(width: themes, collapsed: !themesOpen) {
-        ThemePanel(theme: $theme, sizing: $sizing, menuPresentation: $menuPresentation)
+        ThemePanel(
+          theme: $theme,
+          sizing: $sizing,
+          menuPresentation: $menuPresentation,
+          omarchy: omarchy,
+          followingOmarchy: followingOmarchy,
+          onFollowOmarchy: onFollowOmarchy
+        )
       }
       .overlay(alignment: .leading) {
         if themesOpen {

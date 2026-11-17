@@ -184,7 +184,7 @@ private struct Presenting<Layer: View>: ViewModifier {
     let drawn = layer(close)
       .environment(\.theme, resolved)
       .font(resolved.vars.bodyMedium.font)
-      .environment(\.colorScheme, resolved.name.colorScheme)
+      .environment(\.colorScheme, resolved.colorScheme)
       .menuPresentation(scope.presentation)
       .environment(\.closeOverlay, CloseOverlayAction(close))
     #if os(macOS)

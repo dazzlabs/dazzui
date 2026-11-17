@@ -8,7 +8,8 @@ import SwiftUI
 /// `Theme(name)` rebuilt on every redraw hands the environment the same value
 /// as before, and the subtree reading it is not invalidated.
 public struct Theme: Sendable, Equatable {
-  public let name: ThemeName
+  public let name: ThemeName?
+  public let colorScheme: ColorScheme
   public let sizing: ThemeSizing
   private let resolved: ResolvedTheme
 
@@ -18,6 +19,7 @@ public struct Theme: Sendable, Equatable {
 
   public init(_ name: ThemeName) {
     self.name = name
+    self.colorScheme = name.colorScheme
     self.sizing = .design
     self.resolved = ResolvedTheme.cache.design(name)
   }
@@ -28,16 +30,34 @@ public struct Theme: Sendable, Equatable {
 
   internal init(_ name: ThemeName, sizing: ThemeSizing, metrics: SystemSizingMetrics) {
     self.name = name
+    self.colorScheme = name.colorScheme
     self.sizing = sizing
     self.resolved =
       sizing == .system
       ? ResolvedTheme.cache.system(name, metrics) : ResolvedTheme.cache.design(name)
   }
 
+  public init(vars: ThemeVariables, colorScheme: ColorScheme) {
+    self.name = nil
+    self.colorScheme = colorScheme
+    self.sizing = .design
+    self.resolved = ResolvedTheme(vars, metrics: nil, omarchy: nil)
+  }
+
+  internal init(omarchy palette: OmarchyPalette) {
+    self.name = nil
+    self.colorScheme = palette.colorScheme
+    self.sizing = .design
+    self.resolved = ResolvedTheme.cache.omarchy(palette)
+  }
+
   public static func == (lhs: Theme, rhs: Theme) -> Bool {
-    lhs.resolved === rhs.resolved
-      || (lhs.name == rhs.name && lhs.sizing == rhs.sizing
-        && lhs.resolved.metrics == rhs.resolved.metrics)
+    if lhs.resolved === rhs.resolved { return lhs.colorScheme == rhs.colorScheme }
+    if let omarchy = lhs.resolved.omarchy {
+      return omarchy == rhs.resolved.omarchy && lhs.colorScheme == rhs.colorScheme
+    }
+    guard let name = lhs.name, name == rhs.name else { return false }
+    return lhs.sizing == rhs.sizing && lhs.resolved.metrics == rhs.resolved.metrics
   }
 
   /// The default is Bright Light, the same theme `:root` holds.
@@ -48,10 +68,13 @@ private final class ResolvedTheme: Sendable {
   let variables: ThemeVariables
   /// The snapshot a system-sized table was resolved against; nil for design.
   let metrics: SystemSizingMetrics?
+  /// The runtime Omarchy palette this table was derived from, if any.
+  let omarchy: OmarchyPalette?
 
-  init(_ variables: ThemeVariables, metrics: SystemSizingMetrics?) {
+  init(_ variables: ThemeVariables, metrics: SystemSizingMetrics?, omarchy: OmarchyPalette? = nil) {
     self.variables = variables
     self.metrics = metrics
+    self.omarchy = omarchy
   }
 
   static let cache = ResolvedThemeCache()
@@ -68,10 +91,12 @@ private final class ResolvedThemeCache: @unchecked Sendable {
   /// handful of snapshots are ever live; the bound only stops a test sweeping
   /// scales from growing it without end.
   private static let systemLimit = 64
+  private static let omarchyLimit = 64
 
   private let lock = NSLock()
   private var designTables: [ThemeName: ResolvedTheme] = [:]
   private var systemTables: [SystemKey: ResolvedTheme] = [:]
+  private var omarchyTables: [OmarchyPalette: ResolvedTheme] = [:]
 
   func design(_ name: ThemeName) -> ResolvedTheme {
     lock.lock()
@@ -104,6 +129,22 @@ private final class ResolvedThemeCache: @unchecked Sendable {
     systemTables[key] = made
     return made
   }
+
+  func omarchy(_ palette: OmarchyPalette) -> ResolvedTheme {
+    lock.lock()
+    if let hit = omarchyTables[palette] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+    let made = ResolvedTheme(palette.themeVariables, metrics: nil, omarchy: palette)
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = omarchyTables[palette] { return raced }
+    if omarchyTables.count >= Self.omarchyLimit { omarchyTables.removeAll() }
+    omarchyTables[palette] = made
+    return made
+  }
 }
 
 private struct ThemeKey: EnvironmentKey {
@@ -124,6 +165,12 @@ public extension View {
   func theme(_ name: ThemeName) -> some View {
     environment(\.theme, Theme(name))
       .environment(\.colorScheme, name.colorScheme)
+  }
+
+  /// Scopes an already-resolved theme to a subtree.
+  func theme(_ theme: Theme) -> some View {
+    environment(\.theme, theme)
+      .environment(\.colorScheme, theme.colorScheme)
   }
 
   /// Follows macOS typography and control metrics independently from color.

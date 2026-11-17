@@ -4,7 +4,7 @@ import SwiftUI
 /// A theme in miniature: a window of its own, drawn in that theme's colours
 /// — the column, the paper, two lines of its ink, a button in its accent.
 struct ThemePreview: View {
-  let theme: ThemeChoice
+  let vars: ThemeVariables
   var height: CGFloat?
   /// A framed preview has its own border and corner; an unframed one runs to
   /// its container's edge and draws only the rule under it.
@@ -15,7 +15,6 @@ struct ThemePreview: View {
 
   var body: some View {
     let outer = page.vars
-    let vars = theme.name.variables
     let content = GeometryReader { proxy in
       HStack(spacing: 0) {
         vars.colorSurfaceColumn

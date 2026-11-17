@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 #if os(macOS)
   import AppKit
@@ -113,6 +114,10 @@ public struct TypeStyle: Sendable, Equatable {
 
   internal func scaled(by scale: CGFloat) -> TypeStyle {
     TypeStyle(family: family, size: size * scale, weight: weight, lineHeight: lineHeight * scale)
+  }
+
+  internal func sized(_ size: CGFloat, lineHeight: CGFloat) -> TypeStyle {
+    TypeStyle(family: family, size: size, weight: weight, lineHeight: lineHeight)
   }
 
   /// The font this face resolves to.
@@ -244,6 +249,35 @@ public extension Color {
       blue: Double(argb & 0xff) / 255,
       opacity: Double((argb >> 24) & 0xff) / 255
     )
+  }
+}
+
+internal extension Color {
+  var srgbBytes: (a: UInt8, r: UInt8, g: UInt8, b: UInt8) {
+    func byte(_ v: Double) -> UInt8 {
+      let clamped = min(1, max(0, v))
+      return UInt8(clamping: Int(floor(clamped * 255 + 0.5)))
+    }
+    #if os(Windows) || os(Linux) || os(WASI)
+      return (byte(opacity), byte(red), byte(green), byte(blue))
+    #elseif os(macOS)
+      guard let c = NSColor(self).usingColorSpace(.sRGB) else { return (255, 0, 0, 0) }
+      return (
+        byte(Double(c.alphaComponent)),
+        byte(Double(c.redComponent)),
+        byte(Double(c.greenComponent)),
+        byte(Double(c.blueComponent))
+      )
+    #elseif canImport(UIKit)
+      var r: CGFloat = 0
+      var g: CGFloat = 0
+      var b: CGFloat = 0
+      var a: CGFloat = 0
+      UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+      return (byte(Double(a)), byte(Double(r)), byte(Double(g)), byte(Double(b)))
+    #else
+      return (255, 0, 0, 0)
+    #endif
   }
 }
 

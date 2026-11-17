@@ -234,7 +234,7 @@ ${assignments.join('\n')}
   }
 
 ${stored
-  .map(member => `${member.doc}  public let ${member.name}: ${member.type}`)
+  .map(member => `${member.doc}  public var ${member.name}: ${member.type}`)
   .join('\n')}
 
 ${computed

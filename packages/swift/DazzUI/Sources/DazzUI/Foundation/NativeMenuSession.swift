@@ -74,7 +74,7 @@
                 content:
                   icon.environment(\.dazzIconSize, NSFont.systemFontSize)
                   .foregroundStyle(Color(nsColor: .labelColor))
-                  .environment(\.theme, theme).environment(\.colorScheme, theme.name.colorScheme)
+                  .environment(\.theme, theme).environment(\.colorScheme, theme.colorScheme)
                   .fixedSize())
               renderer.scale = scale
               if let cgImage = renderer.cgImage,
