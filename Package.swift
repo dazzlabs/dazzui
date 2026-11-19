@@ -17,22 +17,22 @@ import Foundation
 
 import PackageDescription
 
-let buildForWeb = ProcessInfo.processInfo.environment["SWIFTUI_PORT_WEB"] == "1"
+let buildForWeb = ProcessInfo.processInfo.environment["CROSS_SWIFTUI_WEB"] == "1"
 #if os(Windows) || os(Linux)
-  let useSwiftUIPort = true
+  let useCrossSwiftUI = true
 #else
-  let useSwiftUIPort = buildForWeb
+  let useCrossSwiftUI = buildForWeb
 #endif
 
 let nativeAPIPath = ProcessInfo.processInfo.environment["NATIVEAPI_SWIFT_PATH"]
   ?? "../../libnativeapi/nativeapi/bindings/swift"
 let package: Package
-if useSwiftUIPort {
-  let portPath =
-    ProcessInfo.processInfo.environment["SWIFTUI_PORT_PATH"] ?? "../../libnativeapi/swiftui-port"
-  var dependencies: [Package.Dependency] = [.package(name: "SwiftUIPort", path: portPath)]
+if useCrossSwiftUI {
+  let crossSwiftPath =
+    ProcessInfo.processInfo.environment["CROSS_SWIFTUI_PATH"] ?? "../../libnativeapi/crossswift"
+  var dependencies: [Package.Dependency] = [.package(name: "CrossSwiftUI", path: crossSwiftPath)]
   var dazzDependencies: [Target.Dependency] = [
-    "FluentIcons", .product(name: "SwiftUI", package: "SwiftUIPort"),
+    "FluentIcons", .product(name: "SwiftUI", package: "CrossSwiftUI"),
   ]
   if !buildForWeb {
     dependencies.append(.package(name: "NativeAPI", path: nativeAPIPath))
@@ -44,7 +44,7 @@ if useSwiftUIPort {
   }
   var targets: [Target] = [
     .target(
-      name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "SwiftUIPort")],
+      name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "CrossSwiftUI")],
       path: "packages/swift/DazzUI/Windows/FluentIcons", exclude: buildForWeb ? ["Resources"] : [],
       resources: buildForWeb ? [] : [.process("Resources")]),
     .target(

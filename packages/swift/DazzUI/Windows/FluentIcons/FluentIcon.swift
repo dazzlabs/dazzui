@@ -53,7 +53,7 @@ public enum FluentIcon: String, CaseIterable, Sendable {
 }
 public extension Image {
   init(fluent icon: FluentIcon) {
-    #if os(WASI) || SWIFTUI_PORT_HARMONY
+    #if os(WASI) || CROSS_SWIFTUI_HARMONY
       self.init("fluent/\(icon.rawValue).svg")
     #else
       self.init(icon.rawValue, bundle: .module)

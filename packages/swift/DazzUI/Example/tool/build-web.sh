@@ -2,10 +2,10 @@
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 
-export SWIFTUI_PORT_WEB=1
-export SWIFTUI_PORT_PATH=${SWIFTUI_PORT_PATH:-"$PWD/../../../../../../libnativeapi/swiftui-port"}
-port=$(cd -- "$SWIFTUI_PORT_PATH" && pwd)
-export SWIFTUI_PORT_PATH="$port"
+export CROSS_SWIFTUI_WEB=1
+export CROSS_SWIFTUI_PATH=${CROSS_SWIFTUI_PATH:-"$PWD/../../../../../../libnativeapi/crossswift"}
+port=$(cd -- "$CROSS_SWIFTUI_PATH" && pwd)
+export CROSS_SWIFTUI_PATH="$port"
 sdk=${SWIFT_WASM_SDK:-swift-6.4.2-RELEASE_wasm}
 configuration=${1:-release}
 

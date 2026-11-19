@@ -9,7 +9,7 @@
 import Foundation
 import PackageDescription
 
-let buildForWeb = ProcessInfo.processInfo.environment["SWIFTUI_PORT_WEB"] == "1"
+let buildForWeb = ProcessInfo.processInfo.environment["CROSS_SWIFTUI_WEB"] == "1"
 var dependencies: [Package.Dependency] = [.package(name: "DazzUI", path: "..")]
 var exampleDependencies: [Target.Dependency] = ["DazzUI"]
 if buildForWeb {

@@ -124,7 +124,7 @@ private final class SystemSizingCache: @unchecked Sendable {
   }
 }
 #if os(Windows) || os(Linux) || os(WASI)
-  // AppKit system metrics are not available through SwiftUIPort. The desktop port uses
+  // AppKit system metrics are not available through CrossSwiftUI. The desktop port uses
   // design metrics; native display scaling is applied by the backend.
   internal struct SystemThemeModifier: ViewModifier {
     let name: ThemeName

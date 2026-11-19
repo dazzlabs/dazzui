@@ -1,4 +1,4 @@
-#if (os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY
+#if (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
   import Foundation
   import NativeAPI
   import SwiftUI

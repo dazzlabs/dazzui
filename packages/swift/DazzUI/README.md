@@ -31,14 +31,14 @@ struct ContentView: View {
 `theme(_:)` scopes a token set to a subtree, the way React's `data-theme`
 attribute does. Themes are per-subtree, so several can sit on screen at once.
 
-## Windows through swiftui-port
+## Windows through CrossSwiftUI
 
 The complete `Example/` gallery runs through
-[swiftui-port](https://github.com/libnativeapi/swiftui-port). Windows compiles
+[CrossSwiftUI](https://github.com/libnativeapi/crossswift). Windows compiles
 all shared DazzUI sources and generated tokens: 53 component stories, 192
 preview/example scenes and 72 theme values. The gallery includes its sidebar
 search, navigation, theme controls, scrollable examples and Fluent glyphs.
-DazzUI components, adapters and assets remain in this repository; swiftui-port
+DazzUI components, adapters and assets remain in this repository; CrossSwiftUI
 supplies generic SwiftUI layout, state, drawing, input and presentation APIs.
 `DazzMobileUI` is not exported on Windows.
 
@@ -47,17 +47,15 @@ editing, button activation, selection popups, dialogs, scrolling, slider
 interaction and asynchronous lifecycle updates. This is functional coverage,
 not a claim of React/macOS pixel conformance.
 
-Use local checkouts containing [swiftui-port #2](https://github.com/libnativeapi/swiftui-port/pull/2)
-and [nativeapi #34](https://github.com/libnativeapi/nativeapi/pull/34). While those changes are in review,
-use the PR branches or the tested revisions `9ac3ac6de`
-and `c6f38de82`, respectively. Initialize nativeapi's `core`
-submodule at the revision recorded in that checkout. The verified host uses
+Use local checkouts of [crossswift](https://github.com/libnativeapi/crossswift)
+and [nativeapi](https://github.com/libnativeapi/nativeapi). Initialize nativeapi's
+`core` submodule at the revision recorded in that checkout. The verified host uses
 Windows x64, Swift 6.4.2, Visual Studio C++ build tools and Windows SDK.
 Enable Developer Mode so the core source symlink can be prepared.
 From this repository's root:
 
 ```powershell
-$env:SWIFTUI_PORT_PATH = 'C:/src/swiftui-port'
+$env:CROSS_SWIFTUI_PATH = 'C:/src/crossswift'
 $env:NATIVEAPI_SWIFT_PATH = 'C:/src/nativeapi/bindings/swift'
 pnpm swiftui:windows:build
 pnpm swiftui:windows:test
@@ -68,20 +66,20 @@ pnpm swiftui:windows -Smoke          # opens and exits after three seconds
 
 Without pnpm, run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File
 packages/swift/DazzUI/scripts/run-windows.ps1` with `-BuildOnly`, `-Test`,
-`-Smoke`, `-SwiftUIPortPath` or `-NativeApiSwiftPath` as needed. Defaults assume
-sibling `dazzlabs/dazzui` and `libnativeapi/{swiftui-port,nativeapi}` checkouts.
+`-Smoke`, `-CrossSwiftUIPath` or `-NativeApiSwiftPath` as needed. Defaults assume
+sibling `dazzlabs/dazzui` and `libnativeapi/{crossswift,nativeapi}` checkouts.
 Both the repository root and package manifest support Windows path consumers.
 Library tests and the gallery use separate build caches to keep SwiftPM's root-package test plans independent.
 The launcher builds/runs **release** by default; tests default to debug.
 Use `-Configuration debug` for a debugger or `-Test -Configuration release`
 to verify the optimized build. The optional `testRenderingBenchmark` records
 hover, scroll and theme timings (including native painting) when
-`SWIFTUI_PORT_BENCHMARK_PATH` names an output JSON file; it is skipped otherwise.
+`CROSS_SWIFTUI_BENCHMARK_PATH` names an output JSON file; it is skipped otherwise.
 `pnpm swiftui:windows:benchmark` sets it automatically; use `-Configuration debug`
 for a comparable debug run and `-BenchmarkOutput <file.json>` to choose the report.
 The benchmark defaults to 120 hover transitions and 120 scroll ticks, following
 four separately recorded warmup transitions. `-BenchmarkSamples <count>` changes
-the length; direct SwiftPM runs use `SWIFTUI_PORT_BENCHMARK_SAMPLES`. The launcher
+the length; direct SwiftPM runs use `CROSS_SWIFTUI_BENCHMARK_SAMPLES`. The launcher
 prints mean/P50/P95/P99/max and the fraction within 16.67 ms, and writes a sibling
 `.summary.json`. Samples include input processing, renderer updates and native
 painting. They measure CPU/update-to-paint latency, not DWM presentation FPS.
@@ -92,7 +90,7 @@ deprecation warning for that flag.
 Windows currently uses design sizing, including when `.system` is requested;
 it does not subscribe to Windows text-size settings. DPI scaling is native.
 The compatibility layer draws text with Windows fonts, approximates shadows
-and supports basic rotation/scale/opacity/offset animations. See swiftui-port's
+and supports basic rotation/scale/opacity/offset animations. See CrossSwiftUI's
 compatibility and divergence documents for details. Windows uses custom menus
 and in-window popovers. Native menus are available on all three desktop platforms;
 the system-sizing toggle remains macOS-only. Apple platforms use the Xcode build
@@ -104,10 +102,10 @@ with Microsoft's MIT license. After adding a glyph, run
 `pnpm swiftui:windows:icons --check` verifies generated assets without writing.
 Pass `-Page calendar -Theme studio-dark` to the launcher to open a specific page.
 
-## Linux through swiftui-port
+## Linux through CrossSwiftUI
 
 The root and DazzUI package manifests build the full SwiftUI library with
-SwiftUIPort and the bundled Fluent glyphs on Linux. On an Omarchy machine,
+CrossSwiftUI and the bundled Fluent glyphs on Linux. On an Omarchy machine,
 `readOmarchyPalette`, `watchOmarchyPalette` and `OmarchyTheme` (or
 `.omarchyTheme(fallback:)`) read `$XDG_STATE_HOME/omarchy/current/` (falling
 back to `~/.config/omarchy/current/`) and `shell.toml`, derive the full token
@@ -169,7 +167,7 @@ Web, iOS and HarmonyOS retain custom menu presentation.
 
 The NativeAPI source package is required on all three desktop platforms. Set
 `NATIVEAPI_SWIFT_PATH` to `nativeapi/bindings/swift`; the default assumes sibling
-`dazzlabs/dazzui` and `libnativeapi/nativeapi` checkouts. Windows/Linux additionally need `SWIFTUI_PORT_PATH` pointing to a port that supplies
+`dazzlabs/dazzui` and `libnativeapi/nativeapi` checkouts. Windows/Linux additionally need `CROSS_SWIFTUI_PATH` pointing to a CrossSwiftUI checkout that supplies
 `nativeWindow` and `onSecondaryClick`; `NativeAPI.RunLoopTimer` drives popup tracking
 across all three platforms. The example's theme panel offers **Use native menus** for
 live comparison.

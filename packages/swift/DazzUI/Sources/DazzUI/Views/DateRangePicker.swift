@@ -585,7 +585,7 @@ private struct Summary: View {
   var body: some View {
     let vars = theme.vars
     let segments = parts
-    #if canImport(AppKit) || canImport(UIKit)
+    #if os(macOS) || canImport(UIKit)
       var line = AttributedString()
       for (index, segment) in segments.enumerated() where !segment.text.isEmpty {
         var run = AttributedString(segment.text)

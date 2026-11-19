@@ -84,13 +84,13 @@ public static class InteractionDriver {
 $prefix=[IO.Path]::GetFullPath($OutputPrefix)
 $treePath=$prefix+'-tree.json'
 $previousNativeTrace=$env:NATIVEAPI_MESSAGE_TRACE_PATH
-$previousTrace=$env:SWIFTUI_PORT_TRACE_PATH
-$previousTree=$env:SWIFTUI_PORT_TREE_PATH
+$previousTrace=$env:CROSS_SWIFTUI_TRACE_PATH
+$previousTree=$env:CROSS_SWIFTUI_TREE_PATH
 $gallery=$null; $probe=$null
 try {
   $env:NATIVEAPI_MESSAGE_TRACE_PATH=$prefix+'-native.csv'
-  $env:SWIFTUI_PORT_TRACE_PATH=$prefix+'-trace.csv'
-  $env:SWIFTUI_PORT_TREE_PATH=$treePath
+  $env:CROSS_SWIFTUI_TRACE_PATH=$prefix+'-trace.csv'
+  $env:CROSS_SWIFTUI_TREE_PATH=$treePath
   $gallery=Start-Process -FilePath $exe -ArgumentList '-design-sizing','-page','button' -WorkingDirectory $exampleRoot -WindowStyle Hidden -PassThru
   for($attempt=0;$attempt -lt 100;$attempt++) {
     Start-Sleep -Milliseconds 100
@@ -123,8 +123,8 @@ try {
   Start-Sleep -Milliseconds 1200
 } finally {
   $env:NATIVEAPI_MESSAGE_TRACE_PATH=$previousNativeTrace
-  $env:SWIFTUI_PORT_TRACE_PATH=$previousTrace
-  $env:SWIFTUI_PORT_TREE_PATH=$previousTree
+  $env:CROSS_SWIFTUI_TRACE_PATH=$previousTrace
+  $env:CROSS_SWIFTUI_TREE_PATH=$previousTree
   if($gallery -and !$gallery.HasExited) {
     $gallery.CloseMainWindow() | Out-Null
     if(!$gallery.WaitForExit(10000)) { throw 'Gallery did not exit cleanly; trace is incomplete' }

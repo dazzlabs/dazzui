@@ -39,7 +39,7 @@ struct Resizer: View {
     .frame(width: vars.spacing2)
     .onHover { inside in
       hovered = inside
-      #if canImport(AppKit)
+      #if os(macOS)
         if inside { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
       #endif
     }

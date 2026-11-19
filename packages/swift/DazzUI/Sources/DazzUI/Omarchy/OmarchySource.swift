@@ -3,9 +3,9 @@ import SwiftUI
 #if !os(WASI)
   import Dispatch
 #endif
-#if canImport(Darwin)
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
   import Darwin
-#elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+#elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
   import Glibc
 
   @_silgen_name("inotify_init")
@@ -97,7 +97,7 @@ public func watchOmarchyPalette(
 #if !os(WASI)
   private func omarchyCandidates(_ directory: String?) -> [String] {
     if let directory { return [directory] }
-    #if os(Linux) && !SWIFTUI_PORT_HARMONY
+    #if os(Linux) && !CROSS_SWIFTUI_HARMONY
       let env = ProcessInfo.processInfo.environment
       let home = env["HOME"]
       let xdgState = env["XDG_STATE_HOME"].flatMap { $0.isEmpty ? nil : $0 }
@@ -113,7 +113,7 @@ public func watchOmarchyPalette(
 
   private func omarchyConfigDirectory(directory: String?, config: String?) -> String? {
     if config != nil || directory != nil { return config }
-    #if os(Linux) && !SWIFTUI_PORT_HARMONY
+    #if os(Linux) && !CROSS_SWIFTUI_HARMONY
       guard let home = ProcessInfo.processInfo.environment["HOME"], !home.isEmpty else {
         return nil
       }
@@ -178,14 +178,14 @@ public func watchOmarchyPalette(
     private var stopped = false
     private var settle: DispatchWorkItem?
 
-    #if canImport(Darwin)
+    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
       private struct Entry {
         let dev: Int
         let ino: UInt64
         let source: any DispatchSourceFileSystemObject
       }
       private var entries: [String: Entry] = [:]
-    #elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+    #elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
       private var inotifyFd: CInt = -1
       private var readSource: (any DispatchSourceRead)?
       private var fallbackTimer: (any DispatchSourceTimer)?
@@ -212,9 +212,9 @@ public func watchOmarchyPalette(
     func start() {
       queue.sync {
         guard !stopped else { return }
-        #if canImport(Darwin)
+        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
           syncDarwinWatches()
-        #elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+        #elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
           startLinuxWatches()
         #else
           startPolling()
@@ -228,12 +228,12 @@ public func watchOmarchyPalette(
         stopped = true
         settle?.cancel()
         settle = nil
-        #if canImport(Darwin)
+        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
           for entry in entries.values {
             entry.source.cancel()
           }
           entries.removeAll()
-        #elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+        #elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
           readSource?.cancel()
           readSource = nil
           fallbackTimer?.cancel()
@@ -257,9 +257,9 @@ public func watchOmarchyPalette(
 
     private func refresh() {
       guard !stopped else { return }
-      #if canImport(Darwin)
+      #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
         syncDarwinWatches()
-      #elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+      #elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
         syncLinuxWatches()
       #endif
       let palette = readOmarchyPalette(directory: directory, config: config)
@@ -268,7 +268,7 @@ public func watchOmarchyPalette(
       emit(palette)
     }
 
-    #if canImport(Darwin)
+    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS) || os(visionOS)
       private func watchedPaths() -> [String] {
         var paths: [String] = []
         for dir in candidates {
@@ -333,7 +333,7 @@ public func watchOmarchyPalette(
           source.resume()
         }
       }
-    #elseif os(Linux) && !SWIFTUI_PORT_HARMONY
+    #elseif os(Linux) && !CROSS_SWIFTUI_HARMONY
       // Universal Linux UAPI `<linux/inotify.h>` event mask bits.
       private static let inotifyMask: UInt32 =
         0x0000_0002  // IN_MODIFY
@@ -349,7 +349,7 @@ public func watchOmarchyPalette(
       private func startLinuxWatches() {
         let fd = linux_inotify_init()
         guard fd >= 0 else {
-          let timer = DispatchSource.makeTimerSource(queue: queue)
+          let timer = DispatchSource.makeTimerSource(flags: [], queue: queue)
           timer.schedule(deadline: .now() + .milliseconds(250), repeating: .milliseconds(250))
           timer.setEventHandler { [weak self] in self?.refresh() }
           fallbackTimer = timer
@@ -398,7 +398,7 @@ public func watchOmarchyPalette(
       }
     #else
       private func startPolling() {
-        let timer = DispatchSource.makeTimerSource(queue: queue)
+        let timer = DispatchSource.makeTimerSource(flags: [], queue: queue)
         timer.schedule(deadline: .now() + .milliseconds(150), repeating: .milliseconds(150))
         timer.setEventHandler { [weak self] in self?.refresh() }
         pollTimer = timer

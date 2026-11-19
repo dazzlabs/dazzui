@@ -161,8 +161,6 @@ private struct DrawerShape: Shape {
       case .bottom: return .init(topLeading: corner, topTrailing: corner)
       }
     }()
-    return Path(
-      UnevenRoundedRectangle(cornerRadii: radii, style: .circular).path(in: rect).cgPath
-    )
+    return UnevenRoundedRectangle(cornerRadii: radii, style: .circular).path(in: rect)
   }
 }

@@ -1,8 +1,8 @@
-#if os(macOS) || ((os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY)
+#if os(macOS) || ((os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY)
   import Foundation
   import NativeAPI
   import SwiftUI
-  #if canImport(AppKit)
+  #if os(macOS)
     import AppKit
   #endif
 
@@ -68,7 +68,7 @@
           }
           item.setEnabled(!choice.disabled)
           item.setState(choice.checked == true ? .checked : .unchecked)
-          #if canImport(AppKit)
+          #if os(macOS)
             if let icon = choice.icon {
               let renderer = ImageRenderer(
                 content:
@@ -116,7 +116,7 @@
       timer = NativeAPI.RunLoopTimer(milliseconds: 20) { [weak self] in
         MainActor.assumeIsolated { self?.tick() }
       }
-      #if canImport(AppKit)
+      #if os(macOS)
         if !menu.open(strategy, placement: placement) { finish() }
       #else
         // Leave the render transaction before entering Win32's nested menu loop.
@@ -140,7 +140,7 @@
 
     func cancel() {
       cancelled = true
-      #if canImport(AppKit)
+      #if os(macOS)
         _ = menu?.close()
         if !opened { finish() }
       #else
@@ -170,7 +170,7 @@
     }
   }
 
-  #if canImport(AppKit)
+  #if os(macOS)
     extension NativeMenuSession {
       func present(at point: NSPoint, in view: NSView, align: MenuAlign = .start) {
         guard let window = view.window else { return }

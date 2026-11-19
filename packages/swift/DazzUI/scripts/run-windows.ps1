@@ -10,20 +10,21 @@ param(
   [string]$Theme,
   [ValidateSet('debug', 'release')]
   [string]$Configuration,
-  [string]$SwiftUIPortPath = $env:SWIFTUI_PORT_PATH,
+  [Alias('SwiftUIPortPath')]
+  [string]$CrossSwiftUIPath = $env:CROSS_SWIFTUI_PATH,
   [string]$NativeApiSwiftPath = $env:NATIVEAPI_SWIFT_PATH
 )
 $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path -Parent $PSScriptRoot
-if (!$SwiftUIPortPath) {
-  $SwiftUIPortPath = Join-Path $packageRoot '../../../../../libnativeapi/swiftui-port'
+if (!$CrossSwiftUIPath) {
+  $CrossSwiftUIPath = Join-Path $packageRoot '../../../../../libnativeapi/crossswift'
 }
-$env:SWIFTUI_PORT_PATH = (Resolve-Path -LiteralPath $SwiftUIPortPath).Path
+$env:CROSS_SWIFTUI_PATH = (Resolve-Path -LiteralPath $CrossSwiftUIPath).Path
 if (!$NativeApiSwiftPath) {
-  $NativeApiSwiftPath = Join-Path $env:SWIFTUI_PORT_PATH '../nativeapi/bindings/swift'
+  $NativeApiSwiftPath = Join-Path $env:CROSS_SWIFTUI_PATH '../nativeapi/bindings/swift'
 }
 $env:NATIVEAPI_SWIFT_PATH = (Resolve-Path -LiteralPath $NativeApiSwiftPath).Path
-foreach ($dependency in @($env:SWIFTUI_PORT_PATH, $env:NATIVEAPI_SWIFT_PATH)) {
+foreach ($dependency in @($env:CROSS_SWIFTUI_PATH, $env:NATIVEAPI_SWIFT_PATH)) {
   if (!(Test-Path -LiteralPath (Join-Path $dependency 'Package.swift'))) {
     throw "Missing Swift package: $dependency"
   }
@@ -46,11 +47,11 @@ if ($Benchmark) {
   if (!$BenchmarkOutput) {
     $BenchmarkOutput = Join-Path $example ".build/render-benchmark-$Configuration.json"
   }
-  $previousBenchmarkOutput = $env:SWIFTUI_PORT_BENCHMARK_PATH
-  $previousBenchmarkSamples = $env:SWIFTUI_PORT_BENCHMARK_SAMPLES
+  $previousBenchmarkOutput = $env:CROSS_SWIFTUI_BENCHMARK_PATH
+  $previousBenchmarkSamples = $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES
   try {
-    $env:SWIFTUI_PORT_BENCHMARK_PATH = [IO.Path]::GetFullPath($BenchmarkOutput)
-    $env:SWIFTUI_PORT_BENCHMARK_SAMPLES = "$BenchmarkSamples"
+    $env:CROSS_SWIFTUI_BENCHMARK_PATH = [IO.Path]::GetFullPath($BenchmarkOutput)
+    $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES = "$BenchmarkSamples"
     & $swift test @galleryCommon --package-path $example --filter testRenderingBenchmark
     $benchmarkExit = $LASTEXITCODE
     if ($benchmarkExit -eq 0) {
@@ -72,8 +73,8 @@ if ($Benchmark) {
       $summary | ConvertTo-Json | Set-Content -LiteralPath ($BenchmarkOutput + '.summary.json') -Encoding UTF8
     }
   } finally {
-    $env:SWIFTUI_PORT_BENCHMARK_PATH = $previousBenchmarkOutput
-    $env:SWIFTUI_PORT_BENCHMARK_SAMPLES = $previousBenchmarkSamples
+    $env:CROSS_SWIFTUI_BENCHMARK_PATH = $previousBenchmarkOutput
+    $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES = $previousBenchmarkSamples
   }
   exit $benchmarkExit
 }

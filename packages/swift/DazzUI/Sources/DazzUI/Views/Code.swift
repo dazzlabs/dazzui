@@ -7,7 +7,7 @@ import SwiftUI
 /// A wash and a face, not a box: the chip corner and the half-step inset keep
 /// it separable from the prose around it without breaking the line's rhythm,
 /// which is what a border at this size always does.
-#if os(Windows) || os(Linux) || SWIFTUI_PORT_HARMONY
+#if os(Windows) || os(Linux) || CROSS_SWIFTUI_HARMONY
   import class NativeAPI.Clipboard
 #elseif os(WASI)
   import JavaScriptKit
@@ -229,10 +229,10 @@ public struct CodeBlock<Actions: View>: View {
   }
 
   private func copy() {
-    #if canImport(AppKit)
+    #if os(macOS)
       NSPasteboard.general.clearContents()
       NSPasteboard.general.setString(body_, forType: .string)
-    #elseif os(Windows) || os(Linux) || SWIFTUI_PORT_HARMONY
+    #elseif os(Windows) || os(Linux) || CROSS_SWIFTUI_HARMONY
       guard NativeAPI.Clipboard.shared.writeText(body_) else { return }
     #elseif os(WASI)
       guard let clipboard = JSObject.global.navigator.clipboard.object,

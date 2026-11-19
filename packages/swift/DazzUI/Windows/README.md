@@ -9,4 +9,4 @@ checked-in Swift enum and SVG files without writing.
 Artwork: Microsoft Fluent UI System Icons, copyright Microsoft Corporation,
 [MIT licensed](https://github.com/microsoft/fluentui-system-icons/blob/main/LICENSE).
 The license is included in the resource bundle at `FluentIcons/Resources/LICENSE.txt`.
-These application-owned assets are independent of swiftui-port.
+These application-owned assets are independent of CrossSwiftUI.

@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if canImport(AppKit)
+#if os(macOS)
   import AppKit
 #endif
 
@@ -88,7 +88,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
       }
     }
 
-    #if canImport(AppKit)
+    #if os(macOS)
       let margin = Self.margin(theme.vars.shadowLg)
       measured.background(
         FloatingPanelAnchor(
@@ -144,7 +144,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
     shadows.map { $0.blur + $0.spread + max(abs($0.x), abs($0.y)) }.max() ?? 0
   }
 }
-#if canImport(AppKit)
+#if os(macOS)
   /// Where the sheet goes against the anchor, in screen coordinates — AppKit's,
   /// whose origin is the bottom-left.
   private struct Placement {

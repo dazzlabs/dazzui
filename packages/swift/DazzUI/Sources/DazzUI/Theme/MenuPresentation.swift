@@ -6,7 +6,7 @@ public enum MenuPresentation: String, CaseIterable, Sendable {
   case native
 
   internal var usesNativeMenus: Bool {
-    #if os(macOS) || ((os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY)
+    #if os(macOS) || ((os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY)
       self == .native
     #else
       false

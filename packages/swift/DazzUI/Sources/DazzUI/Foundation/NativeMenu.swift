@@ -1,9 +1,9 @@
 import SwiftUI
-#if (os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY
+#if (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
 import NativeAPI
 #endif
 
-#if canImport(AppKit)
+#if os(macOS)
   import AppKit
 #endif
 
@@ -41,12 +41,12 @@ private struct NativeMenuModifier: ViewModifier {
   func body(content: Content) -> some SwiftUI.View {
     content
       .background {
-        #if canImport(AppKit)
+        #if os(macOS)
           NativeMenuAnchor(
             isPresented: $isPresented, presentation: presentation,
             entries: entries, theme: theme, align: align, point: point,
             bar: bar, menuID: menuID, switchMenu: switchMenu)
-        #elseif (os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY
+        #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
           PortNativeMenuAnchor(
             isPresented: $isPresented, presentation: presentation,
             entries: entries, theme: theme, align: align, point: point,
@@ -60,7 +60,7 @@ private struct NativeMenuModifier: ViewModifier {
 
 /// One coordinator per in-window menubar, never the application's main menu.
 internal final class NativeMenuBar: ObservableObject {
-  #if canImport(AppKit)
+  #if os(macOS)
     private let anchors = NSHashTable<NativeMenuAnchorView>.weakObjects()
     func add(_ anchor: NativeMenuAnchorView) { anchors.add(anchor) }
     @MainActor func switchAtPointer(from current: NativeMenuAnchorView, point: NSPoint? = nil) {
@@ -76,7 +76,7 @@ internal final class NativeMenuBar: ObservableObject {
       current.cancel()
       next.switchMenu()
     }
-  #elseif (os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY
+  #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
     private struct WeakAnchor { weak var value: PortNativeMenuController? }
     private var anchors: [WeakAnchor] = []
     @MainActor func add(_ anchor: PortNativeMenuController) {
@@ -99,7 +99,7 @@ internal final class NativeMenuBar: ObservableObject {
   #endif
 }
 
-#if canImport(AppKit)
+#if os(macOS)
   private struct NativeMenuAnchor: NSViewRepresentable {
     @Binding var isPresented: Bool
     let presentation: MenuPresentation

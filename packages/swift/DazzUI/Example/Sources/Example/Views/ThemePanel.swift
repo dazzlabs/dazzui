@@ -39,7 +39,7 @@ struct ThemePanel: View {
       }
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
-          #if canImport(AppKit)
+          #if os(macOS)
             DazzUI.Toggle(
               pressed: sizing == .system, size: .small,
               accessibilityName: "Follow system sizing",
@@ -50,7 +50,7 @@ struct ThemePanel: View {
             .padding(.horizontal, vars.spacing4)
             .padding(.bottom, vars.spacing2)
           #endif
-          #if os(macOS) || ((os(Windows) || os(Linux)) && !SWIFTUI_PORT_HARMONY)
+          #if os(macOS) || ((os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY)
             DazzUI.Toggle(
               pressed: menuPresentation == .native, size: .small,
               accessibilityName: "Use native menus",

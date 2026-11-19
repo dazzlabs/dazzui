@@ -12,7 +12,7 @@
 /// door.
 import SwiftUI
 
-#if canImport(AppKit)
+#if os(macOS)
   import AppKit
 #endif
 
@@ -40,7 +40,7 @@ public struct ContextMenu<Content: View>: View {
   }
 
   public var body: some View {
-    #if os(WASI) || SWIFTUI_PORT_HARMONY
+    #if os(WASI) || CROSS_SWIFTUI_HARMONY
       content().contextMenu {
         MenuSheet {
           MenuRows(items: items, tint: tint) { open = false }
@@ -87,7 +87,7 @@ public struct ContextMenu<Content: View>: View {
     #endif
   }
 }
-#if canImport(AppKit)
+#if os(macOS)
   /// Catches the secondary click SwiftUI has no gesture for.
   ///
   /// It draws nothing and sits behind the region, so what it changes is only

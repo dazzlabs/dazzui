@@ -45,7 +45,7 @@ fields in the gallery's layout. Search suggestions remain custom.
 ## Linux
 
 The Gallery builds the same `Sources/Example` and DazzUI components using
-SwiftUIPort and the bundled Fluent icon resources. It runs in GTK 3 on Wayland
+CrossSwiftUI and the bundled Fluent icon resources. It runs in GTK 3 on Wayland
 or X11. On an Omarchy machine it wears and follows the machine's current
 Omarchy theme and `shell.toml` sizes by default (offered under **This
 machine** in the theme panel) unless `-theme` is passed.
@@ -56,7 +56,7 @@ Install Swift and the nativeapi build dependencies. On Ubuntu the packages are
 Set the package paths and run these commands in this directory.
 
 ```bash
-export SWIFTUI_PORT_PATH=/path/to/swiftui-port
+export CROSS_SWIFTUI_PATH=/path/to/crossswift
 export NATIVEAPI_SWIFT_PATH=/path/to/nativeapi/bindings/swift
 swift build
 swift run -c release Example -page calendar -theme studio-dark
@@ -71,9 +71,9 @@ and exercise search, navigation and theme switching through the shared runtime.
 
 Build the SwiftUI gallery with the Swift.org Swift 6.4.2 toolchain, its matching
 [WebAssembly SDK](https://www.swift.org/documentation/articles/wasm-getting-started.html),
-and Node.js with npm. Use a SwiftUIPort checkout with Web support. The build
-script finds the sibling `libnativeapi/swiftui-port` checkout or uses
-`SWIFTUI_PORT_PATH` if set.
+and Node.js with npm. Use a CrossSwiftUI checkout with Web support. The build
+script finds the sibling `libnativeapi/crossswift` checkout or uses
+`CROSS_SWIFTUI_PATH` if set.
 
 Run these commands from the Example directory.
 

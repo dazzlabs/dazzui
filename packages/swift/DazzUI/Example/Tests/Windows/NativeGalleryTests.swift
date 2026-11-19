@@ -94,8 +94,8 @@ final class NativeGalleryTests: XCTestCase {
   }
 
   func testDisplayScrollBenchmark() throws {
-    guard let path = ProcessInfo.processInfo.environment["SWIFTUI_PORT_DISPLAY_PATH"] else {
-      throw XCTSkip("Set SWIFTUI_PORT_DISPLAY_PATH and run the desktop frame probe")
+    guard let path = ProcessInfo.processInfo.environment["CROSS_SWIFTUI_DISPLAY_PATH"] else {
+      throw XCTSkip("Set CROSS_SWIFTUI_DISPLAY_PATH and run the desktop frame probe")
     }
     try withWindow(AppView(page: "button")) { renderer, backend in
       let control = try XCTUnwrap(button(renderer, "filled"))
@@ -184,9 +184,9 @@ final class NativeGalleryTests: XCTestCase {
       "DazzUI display frame test".withCString(encodedAs: UTF16.self) { SetWindowTextW(host, $0) }
       var frequency = LARGE_INTEGER()
       QueryPerformanceFrequency(&frequency)
-      let hz = Double(ProcessInfo.processInfo.environment["SWIFTUI_PORT_DISPLAY_HZ"] ?? "60") ?? 60
+      let hz = Double(ProcessInfo.processInfo.environment["CROSS_SWIFTUI_DISPLAY_HZ"] ?? "60") ?? 60
       let count =
-        Int(ProcessInfo.processInfo.environment["SWIFTUI_PORT_DISPLAY_SAMPLES"] ?? "1200") ?? 1200
+        Int(ProcessInfo.processInfo.environment["CROSS_SWIFTUI_DISPLAY_SAMPLES"] ?? "1200") ?? 1200
       // SYNCHRONIZE | TIMER_MODIFY_STATE; compound SDK macros are not imported.
       let timer = try XCTUnwrap(CreateWaitableTimerExW(nil, nil, DWORD(2), DWORD(0x0010_0002)))
       defer { CloseHandle(timer) }
@@ -271,8 +271,8 @@ final class NativeGalleryTests: XCTestCase {
     }
   }
   func testRenderingBenchmark() throws {
-    guard let path = ProcessInfo.processInfo.environment["SWIFTUI_PORT_BENCHMARK_PATH"] else {
-      throw XCTSkip("Set SWIFTUI_PORT_BENCHMARK_PATH to record rendering timings")
+    guard let path = ProcessInfo.processInfo.environment["CROSS_SWIFTUI_BENCHMARK_PATH"] else {
+      throw XCTSkip("Set CROSS_SWIFTUI_BENCHMARK_PATH to record rendering timings")
     }
     try withWindow(AppView(page: "button")) { renderer, backend in
       let control = try XCTUnwrap(button(renderer, "filled"))
@@ -287,7 +287,7 @@ final class NativeGalleryTests: XCTestCase {
         UINT(SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE))
       var samples: [[String: Any]] = []
       let sustained = Int(
-        ProcessInfo.processInfo.environment["SWIFTUI_PORT_BENCHMARK_SAMPLES"] ?? "")
+        ProcessInfo.processInfo.environment["CROSS_SWIFTUI_BENCHMARK_SAMPLES"] ?? "")
       var phase = sustained == nil ? "steady" : "warmup"
       func sample(_ name: String, _ action: () -> Void) {
         let start = Date.timeIntervalSinceReferenceDate

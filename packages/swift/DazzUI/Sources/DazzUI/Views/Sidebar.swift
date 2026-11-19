@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if canImport(AppKit)
+#if os(macOS)
 import AppKit
 #endif
 
@@ -156,7 +156,7 @@ public struct Sidebar<Header: View, Content: View>: View {
         // column is cut out from under the pointer rather than unmounted, so
         // no hover exit follows to take it.
         if hoveringResizer {
-          #if canImport(AppKit)
+          #if os(macOS)
           NSCursor.pop()
           #endif
           hoveringResizer = false
@@ -256,7 +256,7 @@ public struct Sidebar<Header: View, Content: View>: View {
         .gesture(drag)
         .onHover { inside in
           hoveringResizer = inside
-          #if canImport(AppKit)
+          #if os(macOS)
           // The cursor belongs to whatever the pointer is over, so it is
           // pinned for as long as the pointer is over the handle.
           if inside {
