@@ -33,19 +33,14 @@ attribute does. Themes are per-subtree, so several can sit on screen at once.
 
 ## Windows through CrossSwiftUI
 
-The complete `Example/` gallery runs through
-[CrossSwiftUI](https://github.com/libnativeapi/crossswift). Windows compiles
-all shared DazzUI sources and generated tokens: 53 component stories, 192
-preview/example scenes and 72 theme values. The gallery includes its sidebar
-search, navigation, theme controls, scrollable examples and Fluent glyphs.
-DazzUI components, adapters and assets remain in this repository; CrossSwiftUI
-supplies generic SwiftUI layout, state, drawing, input and presentation APIs.
-`DazzMobileUI` is not exported on Windows.
-
-The Windows test targets render every story and theme and exercise native
-editing, button activation, selection popups, dialogs, scrolling, slider
-interaction and asynchronous lifecycle updates. This is functional coverage,
-not a claim of React/macOS pixel conformance.
+The complete `Example/` gallery builds directly from `Example/Example.xcodeproj`
+through [CrossSwiftUI](https://github.com/libnativeapi/crossswift)'s
+`xcodebuild` driver (`CrossXcodeBuild`). Windows compiles all shared DazzUI
+sources, generated tokens, and tree-shaken icons directly from upstream
+`microsoft/fluentui-system-icons`: 53 component stories, 192 preview/example
+scenes and 72 theme values. DazzUI components remain in this repository;
+CrossSwiftUI supplies generic SwiftUI layout, state, drawing, input and
+presentation APIs. `DazzMobileUI` is not exported on Windows.
 
 Use local checkouts of [crossswift](https://github.com/libnativeapi/crossswift)
 and [nativeapi](https://github.com/libnativeapi/nativeapi). Initialize nativeapi's
@@ -58,34 +53,16 @@ From this repository's root:
 $env:CROSS_SWIFTUI_PATH = 'C:/src/crossswift'
 $env:NATIVEAPI_SWIFT_PATH = 'C:/src/nativeapi/bindings/swift'
 pnpm swiftui:windows:build
-pnpm swiftui:windows:test
-pnpm swiftui:windows:benchmark      # release timings, including native paint
 pnpm swiftui:windows                 # opens the native window
 pnpm swiftui:windows -Smoke          # opens and exits after three seconds
 ```
 
 Without pnpm, run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File
-packages/swift/DazzUI/scripts/run-windows.ps1` with `-BuildOnly`, `-Test`,
-`-Smoke`, `-CrossSwiftUIPath` or `-NativeApiSwiftPath` as needed. Defaults assume
-sibling `dazzlabs/dazzui` and `libnativeapi/{crossswift,nativeapi}` checkouts.
-Both the repository root and package manifest support Windows path consumers.
-Library tests and the gallery use separate build caches to keep SwiftPM's root-package test plans independent.
-The launcher builds/runs **release** by default; tests default to debug.
-Use `-Configuration debug` for a debugger or `-Test -Configuration release`
-to verify the optimized build. The optional `testRenderingBenchmark` records
-hover, scroll and theme timings (including native painting) when
-`CROSS_SWIFTUI_BENCHMARK_PATH` names an output JSON file; it is skipped otherwise.
-`pnpm swiftui:windows:benchmark` sets it automatically; use `-Configuration debug`
-for a comparable debug run and `-BenchmarkOutput <file.json>` to choose the report.
-The benchmark defaults to 120 hover transitions and 120 scroll ticks, following
-four separately recorded warmup transitions. `-BenchmarkSamples <count>` changes
-the length; direct SwiftPM runs use `CROSS_SWIFTUI_BENCHMARK_SAMPLES`. The launcher
-prints mean/P50/P95/P99/max and the fraction within 16.67 ms, and writes a sibling
-`.summary.json`. Samples include input processing, renderer updates and native
-painting. They measure CPU/update-to-paint latency, not DWM presentation FPS.
-Paint timings and reused pixel counts help distinguish raster work from copies.
-It uses the tested `--build-system native` builder; Swift 6.4 emits a
-deprecation warning for that flag.
+packages/swift/DazzUI/scripts/run-windows.ps1` with `-BuildOnly`, `-Smoke`,
+`-Configuration debug|release`, `-CrossSwiftUIPath` or `-NativeApiSwiftPath` as
+needed. Defaults assume sibling `dazzlabs/dazzui` and
+`libnativeapi/{crossswift,nativeapi}` checkouts. Pass `-Page calendar -Theme
+studio-dark` to open a specific page.
 
 Windows currently uses design sizing, including when `.system` is requested;
 it does not subscribe to Windows text-size settings. DPI scaling is native.
@@ -96,23 +73,18 @@ and in-window popovers. Native menus are available on all three desktop platform
 the system-sizing toggle remains macOS-only. Apple platforms use the Xcode build
 path, with NativeAPI supplying macOS menus.
 
-The 47 used Fluent glyphs are checked in under `Windows/FluentIcons/Resources`,
-with Microsoft's MIT license. After adding a glyph, run
-`pnpm swiftui:windows:icons` from the root (requires `pnpm install`).
-`pnpm swiftui:windows:icons --check` verifies generated assets without writing.
-Pass `-Page calendar -Theme studio-dark` to the launcher to open a specific page.
-
 ## Linux through CrossSwiftUI
 
-The root and DazzUI package manifests build the full SwiftUI library with
-CrossSwiftUI and the bundled Fluent glyphs on Linux. On an Omarchy machine,
+`Example/Example.xcodeproj` builds the full SwiftUI library and gallery on Linux
+through CrossSwiftUI's `xcodebuild` driver (`CrossXcodeBuild`), tree-shaking
+upstream `microsoft/fluentui-system-icons` automatically. On an Omarchy machine,
 `readOmarchyPalette`, `watchOmarchyPalette` and `OmarchyTheme` (or
 `.omarchyTheme(fallback:)`) read `$XDG_STATE_HOME/omarchy/current/` (falling
 back to `~/.config/omarchy/current/`) and `shell.toml`, derive the full token
 table and shell typography/spacing at run time, and follow live theme switches
 and `shell.toml` edits, falling back off Omarchy. See the
-[Gallery instructions](Example/README.md#linux) for dependencies, running the
-Gallery and tests.
+[Gallery instructions](Example/README.md#linux) for dependencies and build
+commands.
 
 ## System sizing on macOS
 

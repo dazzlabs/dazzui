@@ -44,8 +44,9 @@ fields in the gallery's layout. Search suggestions remain custom.
 
 ## Linux
 
-The Gallery builds the same `Sources/Example` and DazzUI components using
-CrossSwiftUI and the bundled Fluent icon resources. It runs in GTK 3 on Wayland
+The Gallery builds directly from `Example.xcodeproj` using CrossSwiftUI's
+`xcodebuild` driver (`CrossXcodeBuild`), which tree-shakes upstream
+`microsoft/fluentui-system-icons` automatically. It runs in GTK 3 on Wayland
 or X11. On an Omarchy machine it wears and follows the machine's current
 Omarchy theme and `shell.toml` sizes by default (offered under **This
 machine** in the theme panel) unless `-theme` is passed.
@@ -58,35 +59,34 @@ Set the package paths and run these commands in this directory.
 ```bash
 export CROSS_SWIFTUI_PATH=/path/to/crossswift
 export NATIVEAPI_SWIFT_PATH=/path/to/nativeapi/bindings/swift
-swift build
-swift run -c release Example -page calendar -theme studio-dark
-swift test
+swift run --package-path "$CROSS_SWIFTUI_PATH" xcodebuild \
+  -project Example.xcodeproj -scheme Example -configuration Release \
+  -derivedDataPath .build/linux CODE_SIGNING_ALLOWED=NO build
+.build/linux/Build/Products/Release/Example/Example -page calendar -theme studio-dark
 ```
 
-`swift run Example --smoke` opens the window and exits after three seconds.
-The SwiftPM tests render all generated scenes, all story pages and every theme,
-and exercise search, navigation and theme switching through the shared runtime.
+Pass `--smoke` to open the window and exit after three seconds.
 
 ## WebAssembly
 
-Build the SwiftUI gallery with the Swift.org Swift 6.4.2 toolchain, its matching
+Build the SwiftUI gallery from `Example.xcodeproj` via CrossSwiftUI's
+`xcodebuild` driver with the Swift.org Swift 6.4.2 toolchain, its matching
 [WebAssembly SDK](https://www.swift.org/documentation/articles/wasm-getting-started.html),
-and Node.js with npm. Use a CrossSwiftUI checkout with Web support. The build
-script finds the sibling `libnativeapi/crossswift` checkout or uses
-`CROSS_SWIFTUI_PATH` if set.
+and Node.js with npm. The build script finds the sibling
+`libnativeapi/crossswift` checkout or uses `CROSS_SWIFTUI_PATH` if set.
 
 Run these commands from the Example directory.
 
 ```bash
-swiftly run ./tool/build-web.sh +6.4.2
+./tool/build-web.sh
 python3 -m http.server 8766 --bind 127.0.0.1 --directory .build/web
 ```
 
-Use `./tool/build-web.sh` directly when the Swift.org toolchain is already
-selected. Open [the gallery](http://127.0.0.1:8766/) or start on a specific page
+Pass `debug` (`./tool/build-web.sh debug`) for a faster unoptimised build.
+Open [the gallery](http://127.0.0.1:8766/) or start on a specific page
 with [`?page=button&theme=ember-dark`](http://127.0.0.1:8766/?page=button&theme=ember-dark).
-The static output includes the compiled Swift app, browser runtime and Fluent
-icons. It uses design sizing and custom menus.
+The static output includes the compiled Swift app, browser runtime, and
+tree-shaken Fluent SVG icons. It uses design sizing and custom menus.
 
 ## How it is organised
 

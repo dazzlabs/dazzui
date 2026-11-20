@@ -9,8 +9,7 @@ param(
   [string]$Page,
   [string]$Theme,
   [ValidateSet('debug', 'release')]
-  [string]$Configuration,
-  [Alias('SwiftUIPortPath')]
+  [string]$Configuration = 'release',
   [string]$CrossSwiftUIPath = $env:CROSS_SWIFTUI_PATH,
   [string]$NativeApiSwiftPath = $env:NATIVEAPI_SWIFT_PATH
 )
@@ -29,67 +28,29 @@ foreach ($dependency in @($env:CROSS_SWIFTUI_PATH, $env:NATIVEAPI_SWIFT_PATH)) {
     throw "Missing Swift package: $dependency"
   }
 }
-$prepare = Join-Path $env:NATIVEAPI_SWIFT_PATH 'scripts/prepare-windows.ps1'
-if (Test-Path -LiteralPath $prepare) {
-  & $prepare
-  if ($LASTEXITCODE -ne 0) { throw 'NativeAPI source preparation failed.' }
+if ($Test -or $Benchmark) {
+  throw 'CrossXcodeBuild currently builds Example.xcodeproj and does not yet run XCTest targets.'
 }
 $swift = (Get-Command swift -ErrorAction Stop).Source
-if (!$Configuration) {
-  if ($Test) { $Configuration = 'debug' } else { $Configuration = 'release' }
-}
-# Each package needs its own cache: SwiftPM's native builder can otherwise
-# reuse the other root package's test plan and silently run the wrong suite.
-$common = @('--build-system', 'native', '--configuration', $Configuration, '--scratch-path', (Join-Path $packageRoot '.build'))
+$xcodeConfig = if ($Configuration -eq 'debug') { 'Debug' } else { 'Release' }
 $example = Join-Path $packageRoot 'Example'
-$galleryCommon = @('--build-system', 'native', '--configuration', $Configuration, '--scratch-path', (Join-Path $example '.build'))
-if ($Benchmark) {
-  if (!$BenchmarkOutput) {
-    $BenchmarkOutput = Join-Path $example ".build/render-benchmark-$Configuration.json"
-  }
-  $previousBenchmarkOutput = $env:CROSS_SWIFTUI_BENCHMARK_PATH
-  $previousBenchmarkSamples = $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES
-  try {
-    $env:CROSS_SWIFTUI_BENCHMARK_PATH = [IO.Path]::GetFullPath($BenchmarkOutput)
-    $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES = "$BenchmarkSamples"
-    & $swift test @galleryCommon --package-path $example --filter testRenderingBenchmark
-    $benchmarkExit = $LASTEXITCODE
-    if ($benchmarkExit -eq 0) {
-      $samples = Get-Content -Raw -LiteralPath $BenchmarkOutput | ConvertFrom-Json
-      $summary = foreach ($group in ($samples | Where-Object phase -eq 'steady' | Group-Object operation)) {
-        $times = @($group.Group.total | Sort-Object)
-        [pscustomobject]@{
-          operation = $group.Name
-          samples = $times.Count
-          mean_ms = [Math]::Round(($times | Measure-Object -Average).Average, 2)
-          p50_ms = [Math]::Round($times[[Math]::Ceiling($times.Count * 0.50) - 1], 2)
-          p95_ms = [Math]::Round($times[[Math]::Ceiling($times.Count * 0.95) - 1], 2)
-          p99_ms = [Math]::Round($times[[Math]::Ceiling($times.Count * 0.99) - 1], 2)
-          max_ms = [Math]::Round($times[-1], 2)
-          within_60fps_percent = [Math]::Round(100 * @($times | Where-Object { $_ -le (1000 / 60) }).Count / $times.Count, 1)
-        }
-      }
-      $summary | Format-Table -AutoSize
-      $summary | ConvertTo-Json | Set-Content -LiteralPath ($BenchmarkOutput + '.summary.json') -Encoding UTF8
-    }
-  } finally {
-    $env:CROSS_SWIFTUI_BENCHMARK_PATH = $previousBenchmarkOutput
-    $env:CROSS_SWIFTUI_BENCHMARK_SAMPLES = $previousBenchmarkSamples
-  }
-  exit $benchmarkExit
-}
-if ($Test) {
-  & $swift test @common --package-path $packageRoot
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-  & $swift test @galleryCommon --package-path $example
-  exit $LASTEXITCODE
-}
-& $swift build @galleryCommon --package-path $example --product Example
+$project = Join-Path $example 'Example.xcodeproj'
+$derivedData = Join-Path $example '.build/windows'
+
+& $swift run --package-path $env:CROSS_SWIFTUI_PATH xcodebuild `
+  -project $project `
+  -scheme Example `
+  -configuration $xcodeConfig `
+  -derivedDataPath $derivedData `
+  CODE_SIGNING_ALLOWED=NO `
+  build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($BuildOnly) { exit 0 }
-$bin = & $swift build @galleryCommon --package-path $example --show-bin-path
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-$executable = Join-Path ($bin | Select-Object -Last 1) 'Example.exe'
+
+$executable = Join-Path $derivedData "Build/Products/$xcodeConfig/Example/Example.exe"
+if (!(Test-Path -LiteralPath $executable)) {
+  throw "Built executable not found: $executable"
+}
 $launchArgs = @('-design-sizing')
 if ($Page) { $launchArgs += @('-page', $Page) }
 if ($Theme) { $launchArgs += @('-theme', $Theme) }
@@ -97,4 +58,4 @@ if ($Smoke) {
   & $executable @launchArgs --smoke
   exit $LASTEXITCODE
 }
-Start-Process -FilePath $executable -ArgumentList $launchArgs -WorkingDirectory $example -WindowStyle Hidden | Out-Null
+Start-Process -FilePath $executable -ArgumentList $launchArgs -WorkingDirectory (Split-Path -Parent $executable) -WindowStyle Hidden | Out-Null

@@ -23,82 +23,33 @@ import Foundation
 
 import PackageDescription
 
-let buildForWeb = ProcessInfo.processInfo.environment["CROSS_SWIFTUI_WEB"] == "1"
-#if os(Windows) || os(Linux)
-  let useCrossSwiftUI = true
-#else
-  let useCrossSwiftUI = buildForWeb
-#endif
-
 let nativeAPIPath = ProcessInfo.processInfo.environment["NATIVEAPI_SWIFT_PATH"]
   ?? "../../../../../libnativeapi/nativeapi/bindings/swift"
-let package: Package
-if useCrossSwiftUI {
-  let crossSwiftPath =
-    ProcessInfo.processInfo.environment["CROSS_SWIFTUI_PATH"]
-    ?? "../../../../../libnativeapi/crossswift"
-  var dependencies: [Package.Dependency] = [.package(name: "CrossSwiftUI", path: crossSwiftPath)]
-  var dazzDependencies: [Target.Dependency] = [
-    "FluentIcons", .product(name: "SwiftUI", package: "CrossSwiftUI"),
-  ]
-  if !buildForWeb {
-    dependencies.append(.package(name: "NativeAPI", path: nativeAPIPath))
-    dazzDependencies.append(.product(name: "NativeAPI", package: "NativeAPI"))
-  }
-  if buildForWeb {
-    dependencies.append(.package(url: "https://github.com/swiftwasm/JavaScriptKit.git", exact: "0.63.0"))
-    dazzDependencies.append(.product(name: "JavaScriptKit", package: "JavaScriptKit"))
-  }
-  var targets: [Target] = [
-    .target(
-      name: "FluentIcons", dependencies: [.product(name: "SwiftUI", package: "CrossSwiftUI")],
-      path: "Windows/FluentIcons", exclude: buildForWeb ? ["Resources"] : [],
-      resources: buildForWeb ? [] : [.process("Resources")]),
+
+let package = Package(
+  name: "DazzUI",
+  platforms: [.macOS(.v13), .iOS(.v16)],
+  products: [
+    .library(name: "DazzUI", targets: ["DazzUI"])
+  ],
+  dependencies: [
+    .package(name: "NativeAPI", path: nativeAPIPath),
+    .package(
+      url: "https://github.com/microsoft/fluentui-system-icons.git",
+      revision: "21d5d02f724be2aaf586564775fff73a18a76eb6"
+    ),
+  ],
+  targets: [
     .target(
       name: "DazzUI",
-      dependencies: dazzDependencies,
-      path: "Sources/DazzUI"),
+      dependencies: [
+        .product(name: "FluentIcons", package: "fluentui-system-icons"),
+        .product(
+          name: "NativeAPI",
+          package: "NativeAPI",
+          condition: .when(platforms: [.macOS, .windows, .linux])
+        ),
+      ]
+    )
   ]
-  if !buildForWeb {
-    targets.append(.testTarget(
-      name: "DazzUINativeMenuTests", dependencies: ["DazzUI", .product(name: "NativeAPI", package: "NativeAPI")],
-      path: "Tests/NativeMenus"))
-  }
-  #if os(Windows)
-    targets.append(.testTarget(
-      name: "DazzUIWindowsTests", dependencies: ["DazzUI"], path: "Tests/Windows"))
-  #endif
-  package = Package(
-    name: "DazzUI",
-    products: [
-      .library(name: "DazzUI", targets: ["DazzUI"]),
-      .library(name: "FluentIcons", targets: ["FluentIcons"]),
-    ],
-    dependencies: dependencies,
-    targets: targets
-  )
-} else {
-  package = Package(
-    name: "DazzUI",
-    platforms: [.macOS(.v13), .iOS(.v16)],
-    products: [
-      .library(name: "DazzUI", targets: ["DazzUI"])
-    ],
-    dependencies: [
-      .package(name: "NativeAPI", path: nativeAPIPath),
-      .package(
-        url: "https://github.com/microsoft/fluentui-system-icons.git",
-        revision: "21d5d02f724be2aaf586564775fff73a18a76eb6"
-      )
-    ],
-    targets: [
-      .target(
-        name: "DazzUI",
-        dependencies: [
-          .product(name: "FluentIcons", package: "fluentui-system-icons"),
-          .product(name: "NativeAPI", package: "NativeAPI", condition: .when(platforms: [.macOS]))
-        ]
-      )
-    ]
-  )
-}
+)
