@@ -22,7 +22,7 @@
   --dzm-font-rounded:
     ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont,
     system-ui, sans-serif;
-  --dzm-background: var(--color-canvas);
+  --dzm-background: var(--color-surface);
   --dzm-ink: var(--color-content);
   --dzm-glyph-contrast: var(--color-surface);
 
@@ -56,9 +56,9 @@
     transparent
   );
 
-  /* Grouped content: the canvas behind, the surface as each cell. */
-  --ios-grouped-background: var(--color-canvas);
-  --ios-grouped-cell: var(--color-surface);
+  /* Grouped content: the paper behind, the muted surface as each cell. */
+  --ios-grouped-background: var(--color-surface);
+  --ios-grouped-cell: var(--color-surface-muted);
 
   /* The Dynamic Type styles at Large: size, leading, weight. */
   --ios-large-title: 700 34px/41px var(--dzm-font);
@@ -87,10 +87,14 @@
   --ios-touch: 44px;
 
   /* Liquid Glass. */
-  --ios-glass-fill: color-mix(in srgb, var(--color-surface) 58%, transparent);
+  --ios-glass-fill: color-mix(
+    in srgb,
+    var(--color-surface-overlay) 58%,
+    transparent
+  );
   --ios-glass-fill-thick: color-mix(
     in srgb,
-    var(--color-surface) 82%,
+    var(--color-surface-overlay) 82%,
     transparent
   );
   --ios-glass-blur: blur(22px) saturate(1.8);
@@ -101,10 +105,15 @@
   --ios-glass-shadow: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
   --ios-glass-edge:
     inset 0 1px 0 0 var(--ios-glass-highlight),
-    inset 0 0 0 0.5px color-mix(in srgb, var(--color-surface) 45%, transparent),
+    inset 0 0 0 0.5px
+      color-mix(in srgb, var(--color-surface-overlay) 45%, transparent),
     0 10px 30px -6px var(--ios-glass-shadow),
     0 1px 3px 0 rgb(0 0 0 / 0.06);
-  --ios-lens-fill: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  --ios-lens-fill: color-mix(
+    in srgb,
+    var(--color-surface-overlay) 92%,
+    transparent
+  );
 
   /* Motion: iOS springs, and the press scale a glass control takes. */
   --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);

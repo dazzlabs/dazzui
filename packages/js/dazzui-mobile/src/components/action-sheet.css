@@ -150,7 +150,7 @@
 }
 
 .dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__cancel {
-  --dzm-action-sheet-fill: var(--color-surface);
+  --dzm-action-sheet-fill: var(--color-surface-overlay);
 }
 
 /* Android: a modal bottom sheet of 56dp list rows with a leading glyph,

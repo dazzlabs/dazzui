@@ -50,7 +50,7 @@ p {
 }
 
 /*
- * A theme in miniature: a phone's canvas with a card on it. Every colour
+ * A theme in miniature: a phone's paper with a card on it. Every colour
  * is the theme's own, asked for by the `data-family` and `data-appearance`
  * the preview carries, read off the mobile sheet.
  */
@@ -61,7 +61,7 @@ p {
   height: var(--spacing-14);
   border: var(--stroke-hairline) solid var(--color-border-strong);
   border-radius: var(--spacing-1-5);
-  background: var(--color-canvas);
+  background: var(--color-surface);
 }
 
 .g-preview__paper {
@@ -72,7 +72,7 @@ p {
   margin: var(--spacing-1-5);
   padding: var(--spacing-2);
   border-radius: var(--spacing-2);
-  background: var(--color-surface);
+  background: var(--color-surface-muted);
 }
 
 .g-preview__ink {

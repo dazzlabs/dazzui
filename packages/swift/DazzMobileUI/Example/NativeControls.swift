@@ -10,7 +10,9 @@ struct NativeControls: View {
     Group {
       if let id = ProcessInfo.processInfo.environment["PLAYGROUND_STORY"],
          let story = mobileStories.first(where: { $0.id == id }) {
-        ScrollView { story.build().padding() }.id(story.id)
+        ScrollView { story.build().padding() }
+          .mobileBackground()
+          .id(story.id)
       } else {
         ControlsForm(family: $family, appearance: $appearance)
       }
@@ -31,6 +33,7 @@ private enum Appearance: String, CaseIterable, Identifiable {
 }
 
 private struct ControlsForm: View {
+  @Environment(\.mobilePalette) private var palette
   @Binding var family: ThemeFamily
   @Binding var appearance: Appearance
   @State private var search = ""
@@ -46,18 +49,22 @@ private struct ControlsForm: View {
             ForEach(Appearance.allCases) { Text($0.rawValue.capitalized).tag($0) }
           }
         }
+        .listRowBackground(palette.colorSurfaceMuted)
         ForEach(Array(Set(mobileStories.map(\.title))).sorted(), id: \.self) { title in
           Section(title) {
             ForEach(mobileStories.filter { $0.title == title && (search.isEmpty || "\($0.title) \($0.name)".localizedCaseInsensitiveContains(search)) }) { story in
               NavigationLink(story.name) {
                 ScrollView { story.build().padding() }
+                  .mobileBackground()
                   .id(story.id)
                   .navigationTitle(story.name)
               }.accessibilityIdentifier(story.id)
             }
           }
+          .listRowBackground(palette.colorSurfaceMuted)
         }
       }
+      .mobileBackground()
       .searchable(text: $search, prompt: "Find a story")
       .navigationTitle("Playground")
     }

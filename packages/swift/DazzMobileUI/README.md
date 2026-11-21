@@ -26,12 +26,16 @@ struct ContentView: View {
 }
 ```
 
-`mobileTheme` applies the ds action colour through SwiftUI's `.tint`, and
-publishes the palette as `@Environment(\.mobilePalette)`. Studio, Bright,
-Frost, Graphite, Ember and Nocturne each have light and dark palettes. The
-modifier follows the system by default; use
+`mobileTheme` applies the ds action colour through SwiftUI's `.tint`, paints
+the theme's `colorSurface` ground and `colorContent` ink ladder, hides default
+scroll backgrounds, and publishes the palette as `@Environment(\.mobilePalette)`.
+Studio, Bright, Frost, Graphite, Ember and Nocturne each have light and dark
+palettes. The modifier follows the system by default; use
 `.mobileTheme(.bright, colorScheme: .dark)` to choose an appearance. Place it
-on the scene's root view so navigation and presentations inherit it.
+on the scene's root view so navigation and presentations inherit it. Inside a
+`NavigationStack` or sheet, apply `.mobileBackground()` to paint the inner
+screen with `palette.colorSurface` and `.listRowBackground(palette.colorSurfaceMuted)`
+for grouped rows.
 
 Buttons, toggles, pickers, lists, forms, navigation, menus and sheets are
 SwiftUI components. Use their native styles, roles and accessibility APIs.
@@ -41,10 +45,10 @@ There are no replacement controls, custom control styles or icon dependencies;
 use SF Symbols through `Image(systemName:)`.
 
 For app-owned content, read semantic colours such as
-`palette.colorContent` and `palette.colorSurfaceMuted` and apply them with
-standard modifiers (`foregroundStyle`, `background`, `listRowBackground`).
-System backgrounds and text colours are preserved unless the host explicitly
-sets them. No global UIKit appearance proxy is changed.
+`palette.colorContent`, `palette.colorSurfaceMuted`, and
+`palette.colorSurfaceOverlay` and apply them with standard modifiers
+(`foregroundStyle`, `background`, `listRowBackground`). No global UIKit
+appearance proxy is changed.
 
 ## Generation and validation
 

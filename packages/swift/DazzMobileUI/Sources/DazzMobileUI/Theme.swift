@@ -22,7 +22,24 @@ private struct MobileThemeModifier: ViewModifier {
     content
       .environment(\.mobilePalette, palette)
       .tint(palette.accent)
+      .foregroundStyle(
+        palette.colorContent,
+        palette.colorContentSecondary,
+        palette.colorContentSubtle
+      )
+      .background(palette.colorSurface.ignoresSafeArea())
+      .scrollContentBackground(.hidden)
       .preferredColorScheme(colorScheme)
+  }
+}
+
+private struct MobileBackgroundModifier: ViewModifier {
+  @Environment(\.mobilePalette) private var palette
+
+  func body(content: Content) -> some View {
+    content
+      .background(palette.colorSurface.ignoresSafeArea())
+      .scrollContentBackground(.hidden)
   }
 }
 
@@ -34,5 +51,12 @@ public extension View {
     colorScheme: ColorScheme? = nil
   ) -> some View {
     modifier(MobileThemeModifier(family: family, colorScheme: colorScheme))
+  }
+
+  /// Paint a screen or scrollable container with the active theme's
+  /// `colorSurface`, hiding the system scroll background. Useful inside a
+  /// `NavigationStack` or sheet where the container draws its own backdrop.
+  func mobileBackground() -> some View {
+    modifier(MobileBackgroundModifier())
   }
 }

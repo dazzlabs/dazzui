@@ -189,7 +189,7 @@
   --dzm-sheet-top-gap: calc(var(--dzm-inset-top) + 10px);
   --dzm-sheet-inset: 8px;
   --dzm-sheet-radius: var(--ios-sheet-radius);
-  --dzm-sheet-fill: var(--color-surface);
+  --dzm-sheet-fill: var(--color-surface-overlay);
   --dzm-sheet-ink: var(--ios-label);
   --dzm-sheet-edge: none;
   --dzm-sheet-grabber-w: 36px;

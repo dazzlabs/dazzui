@@ -104,7 +104,7 @@
   --dzm-context-menu-lift-scale: 1.03;
   --dzm-context-menu-lift-shadow: 0 10px 30px var(--ios-glass-shadow);
   --dzm-context-menu-platter-radius: var(--ios-menu-radius);
-  --dzm-context-menu-platter-fill: var(--color-surface);
+  --dzm-context-menu-platter-fill: var(--color-surface-overlay);
   --dzm-context-menu-platter-edge: 0 10px 30px -6px var(--ios-glass-shadow);
   --dzm-context-menu-platter-from: 0.85;
 }
