@@ -1,5 +1,23 @@
 import SwiftUI
 
+/// The appearance mode an app lets a user choose: following the OS, light, or dark.
+public enum AppearanceMode: String, CaseIterable, Identifiable, Codable, Hashable, Sendable {
+  case system
+  case light
+  case dark
+
+  public var id: String { rawValue }
+
+  /// The `ColorScheme` override passed to SwiftUI, or `nil` to follow the OS.
+  public var colorScheme: ColorScheme? {
+    switch self {
+    case .system: return nil
+    case .light: return .light
+    case .dark: return .dark
+    }
+  }
+}
+
 private struct MobilePaletteKey: EnvironmentKey {
   static let defaultValue = Palette.brightLight
 }
@@ -51,6 +69,15 @@ public extension View {
     colorScheme: ColorScheme? = nil
   ) -> some View {
     modifier(MobileThemeModifier(family: family, colorScheme: colorScheme))
+  }
+
+  /// Apply ds colours to native controls using an ``AppearanceMode``.
+  /// Install at a scene's root so sheets and navigation inherit the theme.
+  func mobileTheme(
+    _ family: ThemeFamily = .bright,
+    mode: AppearanceMode
+  ) -> some View {
+    mobileTheme(family, colorScheme: mode.colorScheme)
   }
 
   /// Paint a screen or scrollable container with the active theme's

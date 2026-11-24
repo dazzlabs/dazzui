@@ -29,6 +29,7 @@
 
 .dzm-select__label {
   color: var(--dzm-select-label);
+  text-align: start;
 }
 
 .dzm-select__value {

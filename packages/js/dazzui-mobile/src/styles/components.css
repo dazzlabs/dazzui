@@ -44,6 +44,7 @@
 @import '../components/page-control.css';
 @import '../components/carousel.css';
 @import '../components/date-picker.css';
+@import '../components/time-picker.css';
 @import '../components/progress.css';
 @import '../components/spinner.css';
 @import '../components/screen.css';

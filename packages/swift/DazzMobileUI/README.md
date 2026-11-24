@@ -31,11 +31,12 @@ the theme's `colorSurface` ground and `colorContent` ink ladder, hides default
 scroll backgrounds, and publishes the palette as `@Environment(\.mobilePalette)`.
 Studio, Bright, Frost, Graphite, Ember and Nocturne each have light and dark
 palettes. The modifier follows the system by default; use
-`.mobileTheme(.bright, colorScheme: .dark)` to choose an appearance. Place it
+`.mobileTheme(.bright, colorScheme: .dark)` or `.mobileTheme(.bright, mode: .dark)`
+(via ``AppearanceMode``) to choose an appearance. Place it
 on the scene's root view so navigation and presentations inherit it. Inside a
 `NavigationStack` or sheet, apply `.mobileBackground()` to paint the inner
-screen with `palette.colorSurface` and `.listRowBackground(palette.colorSurfaceMuted)`
-for grouped rows.
+screen with `palette.grouped` (`palette.colorSurface`) and `.listRowBackground(palette.cell)`
+(`palette.colorSurfaceMuted`) for grouped rows.
 
 Buttons, toggles, pickers, lists, forms, navigation, menus and sheets are
 SwiftUI components. Use their native styles, roles and accessibility APIs.
@@ -45,10 +46,12 @@ There are no replacement controls, custom control styles or icon dependencies;
 use SF Symbols through `Image(systemName:)`.
 
 For app-owned content, read semantic colours such as
-`palette.colorContent`, `palette.colorSurfaceMuted`, and
-`palette.colorSurfaceOverlay` and apply them with standard modifiers
-(`foregroundStyle`, `background`, `listRowBackground`). No global UIKit
-appearance proxy is changed.
+`palette.colorContent`, `palette.accentText`, `palette.accentSurface`,
+`palette.dangerSurface`, `palette.dangerHairline`, `palette.warnSurface`,
+`palette.successSurface`, `palette.separator`, `palette.grouped`, and
+`palette.cell` (plus `family.swatchColors(for:)` for swatch colour roles)
+and apply them with standard modifiers (`foregroundStyle`, `background`,
+`listRowBackground`). No global UIKit appearance proxy is changed.
 
 ## Generation and validation
 

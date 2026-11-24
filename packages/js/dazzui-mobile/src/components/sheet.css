@@ -226,6 +226,7 @@
 .dzm-sheet[data-platform='ios'] .dzm-sheet__action[data-confirm] {
   --dzm-sheet-action-fill: var(--ios-tint);
   --dzm-sheet-action-ink: var(--ios-on-tint);
+  background: var(--dzm-sheet-action-fill);
 }
 
 .dzm-sheet[data-platform='ios'] .dzm-sheet__action:active {

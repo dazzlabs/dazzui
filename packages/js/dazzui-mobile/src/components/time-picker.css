@@ -1,0 +1,386 @@
+.dzm-time-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--dzm-time-picker-pad);
+  border-radius: var(--dzm-time-picker-radius, 0);
+  background: var(--dzm-time-picker-fill, transparent);
+  color: var(--dzm-time-picker-ink);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-time-picker-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--dzm-time-trigger-height);
+  padding: var(--dzm-time-trigger-pad);
+  border: 0;
+  border-radius: var(--dzm-time-trigger-radius);
+  background: var(--dzm-time-trigger-fill);
+  box-shadow: var(--dzm-time-trigger-edge, none);
+  color: var(--dzm-time-trigger-ink);
+  font: var(--dzm-time-trigger-font);
+  letter-spacing: var(--dzm-time-trigger-tracking, normal);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-time-picker-trigger:focus-visible {
+  outline: 2px solid var(--dzm-time-picker-focus);
+  outline-offset: 2px;
+}
+
+.dzm-time-picker-trigger:disabled {
+  cursor: default;
+}
+
+.dzm-time-picker-popup {
+  border-radius: var(--dzm-time-popup-radius);
+  padding: var(--dzm-time-popup-pad);
+  background: var(--dzm-time-popup-fill);
+  color: var(--dzm-time-popup-ink);
+  box-shadow: var(--dzm-time-popup-edge);
+  outline: none;
+  transform-origin: var(--transform-origin);
+  transition:
+    transform var(--dzm-time-popup-motion),
+    opacity var(--dzm-time-popup-motion);
+}
+
+.dzm-time-picker-popup[data-starting-style],
+.dzm-time-picker-popup[data-ending-style] {
+  opacity: 0;
+  transform: scale(var(--dzm-time-popup-from));
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * UIDatePicker in its wheels and compact styles. Three columns behind a
+ * 36pt selection band in the tertiary fill: hours, minutes and the day
+ * period when the locale is 12-hour. The selected row sits in title-2
+ * tabular numerals, neighbors fade into the tertiary label, and the
+ * compact trigger is a 34pt rounded pill that turns tinted while open.
+ */
+.dzm-time-picker[data-platform='ios'] {
+  --dzm-time-picker-pad: 4px 8px;
+  --dzm-time-picker-ink: var(--ios-label);
+  --dzm-time-picker-focus: var(--ios-tint);
+}
+
+.dzm-time-picker[data-platform='ios'][data-disabled] {
+  opacity: var(--ios-disabled-opacity);
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__wheels {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__lens {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--ios-fill-tertiary);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__wheel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__wheel--period {
+  min-width: 60px;
+  margin-inline-start: 6px;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__neighbor,
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__spacer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 34px;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--ios-label-tertiary);
+  font: 400 17px/22px var(--dzm-font);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition:
+    color var(--ios-duration-fast) var(--ios-ease),
+    transform var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__neighbor:active:not(:disabled) {
+  color: var(--ios-label-secondary);
+  transform: scale(var(--ios-press-scale));
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__neighbor:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 8px;
+  color: var(--ios-label);
+  font: 500 22px/28px var(--dzm-font);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.dzm-time-picker[data-platform='ios']
+  .dzm-time-picker__wheel--period
+  .dzm-time-picker__current {
+  font: 500 17px/22px var(--dzm-font);
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__current:focus-visible {
+  outline: 2px solid var(--ios-tint);
+  outline-offset: -2px;
+}
+
+.dzm-time-picker[data-platform='ios'] .dzm-time-picker__colon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  color: var(--ios-label);
+  font: 600 20px/25px var(--dzm-font);
+}
+
+.dzm-time-picker-trigger[data-platform='ios'] {
+  --dzm-time-trigger-height: 34px;
+  --dzm-time-trigger-pad: 0 11px;
+  --dzm-time-trigger-radius: 10px;
+  --dzm-time-trigger-fill: var(--ios-fill-tertiary);
+  --dzm-time-trigger-ink: var(--ios-label);
+  --dzm-time-trigger-font: var(--ios-body);
+  --dzm-time-trigger-tracking: -0.41px;
+  --dzm-time-picker-focus: var(--ios-tint);
+  transition:
+    color var(--ios-duration-fast) var(--ios-ease),
+    transform var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-time-picker-trigger[data-platform='ios'][data-popup-open] {
+  --dzm-time-trigger-ink: var(--ios-tint);
+}
+
+.dzm-time-picker-trigger[data-platform='ios']:active:not(:disabled) {
+  transform: scale(var(--ios-press-scale));
+}
+
+.dzm-time-picker-trigger[data-platform='ios']:disabled {
+  opacity: var(--ios-disabled-opacity);
+}
+
+.dzm-time-picker-popup[data-platform='ios'] {
+  --dzm-time-popup-radius: var(--ios-menu-radius);
+  --dzm-time-popup-pad: 12px 16px;
+  --dzm-time-popup-fill: var(--ios-glass-fill-thick);
+  --dzm-time-popup-ink: var(--ios-label);
+  --dzm-time-popup-edge: var(--ios-glass-edge);
+  --dzm-time-popup-motion: var(--ios-duration) var(--ios-spring);
+  --dzm-time-popup-from: 0.85;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material 3's TimeInput: two 96 by 72dp display-medium numeric fields at
+ * the 8dp corner separated by a 24dp colon, switching to primary-container
+ * with a 2dp primary border on focus, beside a 52 by 72dp stacked AM/PM
+ * period toggle outlined in 1dp outline and filled in tertiary-container.
+ * With `surface`, the picker sits on the high surface container at 28dp.
+ */
+.dzm-time-picker[data-platform='android'] {
+  --dzm-time-picker-pad: 0;
+  --dzm-time-picker-ink: var(--m3-on-surface);
+  --dzm-time-picker-focus: var(--m3-primary);
+}
+
+.dzm-time-picker[data-platform='android'][data-surface] {
+  --dzm-time-picker-pad: 24px;
+  --dzm-time-picker-fill: var(--m3-surface-container-high);
+  --dzm-time-picker-radius: var(--m3-corner-xl);
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__fields {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__field {
+  flex: 1;
+  min-width: 64px;
+  max-width: 96px;
+  height: 72px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--m3-corner-sm);
+  background: var(--m3-surface-container-highest);
+  color: var(--m3-on-surface);
+  font: var(--m3-display-medium);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  outline: none;
+  appearance: none;
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__field:focus {
+  background: var(--m3-primary-container);
+  color: var(--m3-on-primary-container);
+  box-shadow: inset 0 0 0 2px var(--m3-primary);
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__field:disabled {
+  background: var(--m3-disabled-container);
+  color: var(--m3-disabled-content);
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__colon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  color: var(--m3-on-surface);
+  font: var(--m3-display-medium);
+}
+
+.dzm-time-picker[data-platform='android'][data-disabled]
+  .dzm-time-picker__colon {
+  color: var(--m3-disabled-content);
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__period {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 52px;
+  height: 72px;
+  margin-inline-start: 12px;
+  border-radius: var(--m3-corner-sm);
+  box-shadow: inset 0 0 0 1px var(--m3-outline);
+  overflow: hidden;
+}
+
+.dzm-time-picker[data-platform='android'] .dzm-time-picker__period-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--m3-on-surface-variant);
+  font: var(--m3-title-medium);
+  letter-spacing: var(--m3-title-medium-tracking);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  --m3-layer: var(--m3-on-surface-variant);
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-time-picker[data-platform='android']
+  .dzm-time-picker__period-option
+  + .dzm-time-picker__period-option {
+  border-top: 1px solid var(--m3-outline);
+}
+
+.dzm-time-picker[data-platform='android']
+  .dzm-time-picker__period-option[data-selected] {
+  background: var(--m3-tertiary-container);
+  color: var(--m3-on-tertiary-container);
+  --m3-layer: var(--m3-on-tertiary-container);
+}
+
+.dzm-time-picker[data-platform='android']
+  .dzm-time-picker__period-option:focus-visible {
+  outline: 2px solid var(--m3-primary);
+  outline-offset: -2px;
+}
+
+.dzm-time-picker[data-platform='android']
+  .dzm-time-picker__period-option:disabled {
+  cursor: default;
+  color: var(--m3-disabled-content);
+}
+
+.dzm-time-picker-trigger[data-platform='android'] {
+  --dzm-time-trigger-height: 36px;
+  --dzm-time-trigger-pad: 0 12px;
+  --dzm-time-trigger-radius: var(--m3-corner-sm);
+  --dzm-time-trigger-fill: var(--m3-surface-container-highest);
+  --dzm-time-trigger-ink: var(--m3-on-surface);
+  --dzm-time-trigger-font: var(--m3-body-large);
+  --dzm-time-trigger-tracking: var(--m3-body-large-tracking);
+  --dzm-time-picker-focus: var(--m3-primary);
+  --m3-layer: var(--m3-on-surface);
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-time-picker-trigger[data-platform='android'][data-popup-open] {
+  --dzm-time-trigger-fill: var(--m3-primary-container);
+  --dzm-time-trigger-ink: var(--m3-on-primary-container);
+  --dzm-time-trigger-edge: inset 0 0 0 2px var(--m3-primary);
+  --m3-layer: var(--m3-on-primary-container);
+}
+
+.dzm-time-picker-trigger[data-platform='android']:disabled {
+  --dzm-time-trigger-fill: var(--m3-disabled-container);
+  --dzm-time-trigger-ink: var(--m3-disabled-content);
+}
+
+.dzm-time-picker-popup[data-platform='android'] {
+  --dzm-time-popup-radius: var(--m3-corner-xl);
+  --dzm-time-popup-pad: 20px;
+  --dzm-time-popup-fill: var(--m3-surface-container-high);
+  --dzm-time-popup-ink: var(--m3-on-surface);
+  --dzm-time-popup-edge: var(--m3-elevation-3);
+  --dzm-time-popup-motion: 150ms cubic-bezier(0, 0, 0.2, 1);
+  --dzm-time-popup-from: 0.8;
+}
