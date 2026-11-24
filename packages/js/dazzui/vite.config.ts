@@ -9,6 +9,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(import.meta.dirname, 'src/index.ts'),
+        postcss: resolve(import.meta.dirname, 'src/postcss.ts'),
         // Separate entry so the stylesheet is emitted without the component
         // bundle carrying a CSS side effect.
         styles: resolve(import.meta.dirname, 'src/styles.ts'),

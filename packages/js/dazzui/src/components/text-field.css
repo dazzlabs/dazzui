@@ -22,6 +22,7 @@
  * and their own sheets add only what that furniture costs.
  */
 .dz-text-field,
+.dz-text-field__group,
 .dz-field-value,
 .dz-select,
 .dz-number-field__group,
@@ -37,13 +38,20 @@
     box-shadow var(--motion-duration) var(--motion-easing);
 }
 
-.dz-text-field::placeholder {
+.dz-text-field[data-full-width='false'],
+.dz-text-field__group[data-full-width='false'] {
+  width: auto;
+}
+
+.dz-text-field::placeholder,
+.dz-text-field__input::placeholder {
   color: var(--color-content-faint);
 }
 
 /* The select is a button, so it lifts while its list is open as well as while
    it holds the focus — the trigger of an open popup is not idle. */
 .dz-text-field:focus,
+.dz-text-field__group:focus-within,
 .dz-select:focus-visible,
 .dz-select[data-popup-open],
 .dz-number-field__group:focus-within,
@@ -55,6 +63,7 @@
 }
 
 .dz-text-field[aria-invalid='true'],
+.dz-text-field__group:has([aria-invalid='true']),
 .dz-select[aria-invalid='true'],
 .dz-number-field[data-invalid] .dz-number-field__group,
 .dz-combobox__group:has([aria-invalid='true']) {
@@ -64,6 +73,7 @@
 }
 
 .dz-text-field:disabled,
+.dz-text-field__group[data-disabled],
 .dz-select[data-disabled],
 .dz-number-field[data-disabled] .dz-number-field__group,
 .dz-combobox__group[data-disabled] {
@@ -74,9 +84,50 @@
 
 /* Set the mono face where the value is a key, an ID, or a URL. */
 .dz-text-field[data-mono='true'],
+.dz-text-field__group[data-mono='true'],
 .dz-field-value[data-mono='true'],
 .dz-select[data-mono='true'] {
-  font-family: var(--base-font-code);
+  font-family: var(--font-code);
+}
+
+/* An adorned text field puts its leading/trailing slots inside the same box
+   as the input, matching NumberField and Combobox. */
+.dz-text-field__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--control-gap);
+}
+
+.dz-text-field__input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: 0;
+  font: inherit;
+}
+
+.dz-text-field__input:disabled {
+  cursor: not-allowed;
+}
+
+.dz-text-field__leading,
+.dz-text-field__trailing {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-content-faint);
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-text-field__leading > svg,
+.dz-text-field__trailing > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
 }
 
 /* The trigger is a button laid out as a field: the value takes the room and
@@ -126,6 +177,7 @@
  * regular control corner, one step above the buttons'.
  */
 .dz-text-field,
+.dz-text-field__group,
 .dz-field-value,
 .dz-select,
 .dz-number-field__group,
@@ -162,6 +214,7 @@
    content instead, so it is excluded here rather than handed a height and
    then given it back. */
 .dz-text-field:not([data-multiline]),
+.dz-text-field__group,
 .dz-field-value,
 .dz-select,
 .dz-number-field__group,

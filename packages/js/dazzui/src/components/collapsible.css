@@ -81,6 +81,10 @@
 .dz-disclosure__title {
   flex: 1;
   min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.dz-disclosure__title[data-truncate] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

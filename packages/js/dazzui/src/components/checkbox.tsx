@@ -1,7 +1,7 @@
 import { Checkbox as Base } from '@base-ui/react/checkbox'
 import { CheckboxGroup as BaseGroup } from '@base-ui/react/checkbox-group'
 import { Checkmark12Filled, Subtract12Filled } from '@fluentui/react-icons'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -14,6 +14,8 @@ export interface CheckboxProps extends Omit<
 > {
   size?: CheckboxSize
   tint?: Tint
+  /** Custom accent colour override for data-coloured checkboxes (e.g. calendar or tag colours). */
+  color?: string
   /** A de-emphasised aside on the label — a count, a size. */
   note?: ReactNode
   className?: string
@@ -27,16 +29,30 @@ export interface CheckboxProps extends Omit<
 export function Checkbox({
   size = 'medium',
   tint = 'primary',
+  color,
   note,
   className,
+  style,
   children,
   ...props
 }: CheckboxProps) {
+  const mergedStyle: CheckboxProps['style'] = color
+    ? typeof style === 'function'
+      ? state =>
+          ({
+            '--dz-checkbox-color': color,
+            ...style(state),
+          }) as CSSProperties
+      : ({ '--dz-checkbox-color': color, ...style } as CSSProperties)
+    : style
+
   return (
     <Base.Root
+      data-custom-color={color ? '' : undefined}
       data-size={size}
       data-tint={tint}
       className={cx('dz-checkbox', className)}
+      style={mergedStyle}
       {...props}
     >
       <span aria-hidden className="dz-checkbox__box">

@@ -34,7 +34,7 @@
    a row of meters keeps its numbers on one column. */
 .dz-meter__value {
   color: var(--color-content-muted);
-  font-family: var(--base-font-code);
+  font-family: var(--font-code);
   font-size: var(--label-small-font-size);
   font-variant-numeric: tabular-nums;
   line-height: 1;

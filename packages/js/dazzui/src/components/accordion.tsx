@@ -50,6 +50,8 @@ export interface AccordionItemProps extends Omit<
   icon?: ReactNode
   /** A trailing aside on the header — a count, a duration, a `Badge`. */
   meta?: ReactNode
+  /** Clamp the title to a single line with an ellipsis instead of wrapping. */
+  truncate?: boolean
   className?: string
 }
 
@@ -58,6 +60,7 @@ export function AccordionItem({
   title,
   icon,
   meta,
+  truncate = false,
   className,
   children,
   ...props
@@ -70,7 +73,12 @@ export function AccordionItem({
             <ChevronRight12Regular />
           </span>
           {icon ? <span className="dz-disclosure__icon">{icon}</span> : null}
-          <span className="dz-disclosure__title">{title}</span>
+          <span
+            data-truncate={truncate || undefined}
+            className="dz-disclosure__title"
+          >
+            {title}
+          </span>
           {meta ? <span className="dz-disclosure__meta">{meta}</span> : null}
         </Base.Trigger>
       </Base.Header>

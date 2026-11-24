@@ -40,9 +40,19 @@ type ControlBase = {
 export type TextFieldProps =
   | (ControlBase & {
       multiline?: false
+      /** Leading visual inside the field — an icon or prefix. */
+      leading?: ReactNode
+      /** Trailing visual or control inside the field — an action, badge, or unit. */
+      trailing?: ReactNode
+      /** Whether the field fills its container width. Defaults to `true`. */
+      fullWidth?: boolean
     } & Omit<Input.Props, 'size' | 'className' | 'render'>)
   | (ControlBase & {
       multiline: true
+      leading?: never
+      trailing?: never
+      /** Whether the field fills its container width. Defaults to `true`. */
+      fullWidth?: boolean
     } & Omit<ComponentPropsWithoutRef<'textarea'>, 'size' | 'className'>)
 
 /**
@@ -58,14 +68,51 @@ export function TextField({
   tint = 'primary',
   mono = false,
   multiline,
+  leading,
+  trailing,
+  fullWidth,
   className,
   ...props
 }: TextFieldProps) {
+  const resolvedTint = tintFor(state, tint)
+
+  if (!multiline && (leading !== undefined || trailing !== undefined)) {
+    const { style, disabled, ...inputProps } = props as Input.Props
+    const groupStyle = typeof style === 'function' ? undefined : style
+    const inputStyle = typeof style === 'function' ? style : undefined
+    return (
+      <div
+        data-disabled={disabled ? '' : undefined}
+        data-full-width={fullWidth}
+        data-mono={mono}
+        data-size={size}
+        data-tint={resolvedTint}
+        className={cx('dz-text-field__group', className)}
+        style={groupStyle}
+      >
+        {leading !== undefined ? (
+          <span className="dz-text-field__leading">{leading}</span>
+        ) : null}
+        <Input
+          aria-invalid={state === 'error' || undefined}
+          disabled={disabled}
+          className="dz-text-field__input"
+          style={inputStyle}
+          {...inputProps}
+        />
+        {trailing !== undefined ? (
+          <span className="dz-text-field__trailing">{trailing}</span>
+        ) : null}
+      </div>
+    )
+  }
+
   const shared = {
     'aria-invalid': state === 'error' || undefined,
+    'data-full-width': fullWidth,
     'data-mono': mono,
     'data-size': size,
-    'data-tint': tintFor(state, tint),
+    'data-tint': resolvedTint,
     className: cx('dz-text-field', className),
   }
 

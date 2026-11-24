@@ -1,11 +1,5 @@
 /*
- * The code face, at two scales.
- *
- * Both read `--base-font-code` directly, which is the one place in this
- * package a base primitive is named — the same exception `text-field.css`
- * takes for a `mono` field. There is no semantic role above it to alias,
- * because the code face is not a role: it is the face, and a component that
- * asked for it by any other name would be asking for something else.
+ * The code face, at two scales, reading the semantic `--font-code` token.
  */
 
 /* Inline ------------------------------------------------------------------
@@ -19,7 +13,7 @@
   background-color: var(--color-surface-sunken);
   border-radius: var(--radius-tiny);
   color: var(--color-content);
-  font-family: var(--base-font-code);
+  font-family: var(--font-code);
   /* A step under the prose it sits in: a monospace face at the same nominal
      size always reads larger, and the run would ride above the line. */
   font-size: var(--caption-small-font-size);
@@ -63,7 +57,7 @@
   color: var(--color-content-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--base-font-code);
+  font-family: var(--font-code);
   font-size: var(--caption-small-font-size);
   line-height: var(--caption-small-line-height);
 }
@@ -105,7 +99,7 @@
    box holding both. */
 .dz-code-block__scroll,
 .dz-code-block__pre {
-  font-family: var(--base-font-code);
+  font-family: var(--font-code);
   font-size: var(--caption-small-font-size);
   line-height: var(--body-small-line-height);
 }

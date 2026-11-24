@@ -4,15 +4,22 @@ import {
   type ComponentPropsWithoutRef,
   type CSSProperties,
   createContext,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
+import {
+  SPLITTER_KEY_COARSE_STEP,
+  SPLITTER_KEY_STEP,
+} from '../generated/runtime'
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 import { Divider, type DividerProps } from './divider'
@@ -54,6 +61,9 @@ interface SidebarContextValue {
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null)
+const SidebarResizeContext = createContext<
+  ((resizing: boolean) => void) | null
+>(null)
 
 export function useSidebar(): SidebarContextValue {
   const context = useContext(SidebarContext)
@@ -84,6 +94,7 @@ export function SidebarProvider({
   ...props
 }: SidebarProviderProps) {
   const [ownOpen, setOwnOpen] = useState(defaultOpen)
+  const [resizing, setResizing] = useState(false)
   const open = openProp ?? ownOpen
 
   const setOpen = useCallback(
@@ -119,16 +130,25 @@ export function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={value}>
-      {/* One delay for every tooltip in the window, so moving down a column
-          of icons opens each one at once after the first. */}
-      <TooltipProvider delay={0}>
-        <div className={cx('dz-sidebar-wrapper', className)} {...props}>
-          {children}
-        </div>
-      </TooltipProvider>
+      <SidebarResizeContext.Provider value={setResizing}>
+        {/* One delay for every tooltip in the window, so moving down a column
+            of icons opens each one at once after the first. */}
+        <TooltipProvider delay={0}>
+          <div
+            data-resizing={resizing || undefined}
+            className={cx('dz-sidebar-wrapper', className)}
+            {...props}
+          >
+            {children}
+          </div>
+        </TooltipProvider>
+      </SidebarResizeContext.Provider>
     </SidebarContext.Provider>
   )
 }
+
+/** How far past `minWidth` a pointer drag travels before collapsing the column. */
+const SIDEBAR_COLLAPSE_THRESHOLD = 64
 
 export interface SidebarProps extends ComponentPropsWithoutRef<'div'> {
   side?: SidebarSide
@@ -153,10 +173,25 @@ export interface SidebarProps extends ComponentPropsWithoutRef<'div'> {
   collapsed?: boolean
   /**
    * The width the column has of its own, written into `--sidebar-width` on
-   * the element. A trailing column takes the frame's aside width by default,
-   * so one the reader has resized has to say what it is.
+   * the element. Pass a number (px) for controlled resizing, or a CSS length.
    */
-  width?: string
+  width?: string | number
+  /** Enables pointer and keyboard resizing along the column's inner edge. */
+  resizable?: boolean
+  /** Initial pixel width (and double-click reset target) when `resizable` is set. */
+  defaultWidth?: number
+  /** Narrowest width in px when `resizable` is set. */
+  minWidth?: number
+  /** Widest width in px when `resizable` is set. */
+  maxWidth?: number
+  /** Called with the new width in px while resizing. */
+  onWidthChange?: (width: number) => void
+  /** Called when a drag past `minWidth` collapses the column. Defaults to closing the provider. */
+  onCollapse?: () => void
+  /** Pixels past `minWidth` a drag must pass to collapse; set `0` to disable drag-to-collapse. */
+  collapseThreshold?: number
+  /** Accessible name of the resize handle. */
+  resizeLabel?: string
   /**
    * The row and gutter density. `comfortable` is the 32px workspace column:
    * 8px gutters, 32px rows and a 32px icon rail. `default` keeps the control
@@ -172,37 +207,182 @@ export function Sidebar({
   collapsible = 'offcanvas',
   collapsed,
   width,
+  resizable = false,
+  defaultWidth,
+  minWidth = 180,
+  maxWidth = 400,
+  onWidthChange,
+  onCollapse,
+  collapseThreshold = SIDEBAR_COLLAPSE_THRESHOLD,
+  resizeLabel = 'Resize sidebar',
   density = 'default',
   className,
+  style: styleProp,
   children,
   ...props
 }: SidebarProps) {
   const sidebar = useSidebar()
+  const setProviderResizing = useContext(SidebarResizeContext)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ x: number; width: number } | null>(null)
+  const initialMeasured = useRef<number | undefined>(defaultWidth)
+  const [ownWidth, setOwnWidth] = useState<number | undefined>(defaultWidth)
+  const [resizing, setResizing] = useState(false)
+
+  useEffect(() => () => setProviderResizing?.(false), [setProviderResizing])
+
   const state =
     collapsed === undefined
       ? sidebar.state
       : collapsed
         ? 'collapsed'
         : 'expanded'
+
+  const controlledPx = typeof width === 'number' ? width : undefined
+  const currentWidth = controlledPx ?? ownWidth
+  const resolvedWidth =
+    typeof width === 'string'
+      ? width
+      : currentWidth !== undefined
+        ? `${currentWidth}px`
+        : undefined
+
   /* The width belongs to the column's own element, not to whatever holds it:
      a trailing column's width is set by the frame's token unless the column
      says otherwise, and an inherited value would never reach it. */
-  const style = width
-    ? ({ '--sidebar-width': width } as CSSProperties)
+  const widthStyle = resolvedWidth
+    ? ({ '--sidebar-width': resolvedWidth } as CSSProperties)
     : undefined
+
+  const clamp = (value: number) =>
+    Math.round(Math.min(maxWidth, Math.max(minWidth, value)))
+
+  const measureWidth = () => {
+    if (currentWidth !== undefined) return currentWidth
+    const measured = rootRef.current?.offsetWidth
+    if (measured && measured > 0) {
+      initialMeasured.current ??= measured
+      return measured
+    }
+    return defaultWidth ?? minWidth
+  }
+
+  const commitWidth = (next: number) => {
+    if (controlledPx === undefined) setOwnWidth(next)
+    onWidthChange?.(next)
+  }
+
+  const updateResizing = (next: boolean) => {
+    setResizing(next)
+    setProviderResizing?.(next)
+  }
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    const startWidth = measureWidth()
+    drag.current = { x: event.clientX, width: startWidth }
+    event.currentTarget.setPointerCapture(event.pointerId)
+    updateResizing(true)
+  }
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const origin = drag.current
+    if (!origin) return
+    const delta =
+      side === 'left' ? event.clientX - origin.x : origin.x - event.clientX
+    const raw = origin.width + delta
+    if (
+      collapsible !== 'none' &&
+      collapseThreshold > 0 &&
+      raw < minWidth - collapseThreshold
+    ) {
+      drag.current = null
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }
+      updateResizing(false)
+      commitWidth(origin.width)
+      if (onCollapse) onCollapse()
+      else sidebar.setOpen(false)
+      return
+    }
+    commitWidth(clamp(raw))
+  }
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return
+    drag.current = null
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+    updateResizing(false)
+  }
+
+  const handleDoubleClick = () => {
+    const reset = defaultWidth ?? initialMeasured.current
+    if (reset !== undefined) {
+      commitWidth(clamp(reset))
+    } else if (controlledPx === undefined) {
+      setOwnWidth(undefined)
+    }
+  }
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const step = event.shiftKey ? SPLITTER_KEY_COARSE_STEP : SPLITTER_KEY_STEP
+    const base = measureWidth()
+    const shrink = side === 'left' ? 'ArrowLeft' : 'ArrowRight'
+    const grow = side === 'left' ? 'ArrowRight' : 'ArrowLeft'
+    if (event.key === shrink) commitWidth(clamp(base - step))
+    else if (event.key === grow) commitWidth(clamp(base + step))
+    else if (event.key === 'Home') commitWidth(minWidth)
+    else if (event.key === 'End') commitWidth(maxWidth)
+    else return
+    event.preventDefault()
+  }
+
+  const resizer =
+    resizable && state !== 'collapsed' ? (
+      <div
+        role="separator"
+        tabIndex={0}
+        aria-orientation="vertical"
+        aria-label={resizeLabel}
+        aria-valuenow={
+          currentWidth !== undefined ? Math.round(currentWidth) : undefined
+        }
+        aria-valuemin={minWidth}
+        aria-valuemax={maxWidth}
+        data-tint="primary"
+        data-dragging={resizing || undefined}
+        className="dz-sidebar__resizer"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={endDrag}
+        onDoubleClick={handleDoubleClick}
+        onKeyDown={handleKeyDown}
+      >
+        <span aria-hidden className="dz-sidebar__resizer-grip" />
+      </div>
+    ) : null
 
   if (collapsible === 'none') {
     return (
       <div
+        ref={rootRef}
         data-side={side}
         data-variant={variant}
         data-collapsible="none"
         data-density={density}
-        style={style}
+        data-resizing={resizing || undefined}
+        style={widthStyle ? { ...widthStyle, ...styleProp } : styleProp}
         className={cx('dz-sidebar', className)}
         {...props}
       >
         {children}
+        {resizer}
       </div>
     )
   }
@@ -221,20 +401,24 @@ export function Sidebar({
 
   return (
     <div
+      ref={rootRef}
       data-state={state}
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-variant={variant}
       data-side={side}
       data-density={density}
-      style={style}
+      data-resizing={resizing || undefined}
+      style={widthStyle}
       className="dz-sidebar"
     >
       <div
         aria-hidden={away || undefined}
+        style={styleProp}
         className={cx('dz-sidebar__container', className)}
         {...props}
       >
         <div className="dz-sidebar__inner">{children}</div>
+        {resizer}
       </div>
     </div>
   )

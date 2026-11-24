@@ -18,6 +18,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./postcss": {
+      "types": "./dist/postcss.d.ts",
+      "import": "./dist/postcss.js"
+    },
     "./style.css": "./src/generated/style.css",
     "./components.css": "./dist/components.css",
     "./package.json": "./package.json"

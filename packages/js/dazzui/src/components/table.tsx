@@ -6,12 +6,20 @@ import type { Tint } from '../lib/tint'
 export interface TableProps extends ComponentPropsWithoutRef<'div'> {
   /** Which ramp a selected row is picked out with. */
   tint?: Tint
+  /** Draws a framed border and rounded container around the table. */
+  bordered?: boolean
 }
 
-export function Table({ tint = 'primary', className, ...props }: TableProps) {
+export function Table({
+  tint = 'primary',
+  bordered = false,
+  className,
+  ...props
+}: TableProps) {
   return (
     <div
       role="table"
+      data-bordered={bordered || undefined}
       data-tint={tint}
       className={cx('dz-table', className)}
       {...props}

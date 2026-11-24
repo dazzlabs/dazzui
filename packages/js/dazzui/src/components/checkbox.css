@@ -60,6 +60,17 @@
   color: var(--control-color-filled-content-normal);
 }
 
+.dz-checkbox[data-custom-color] .dz-checkbox__box {
+  border-color: var(--dz-checkbox-color);
+}
+
+.dz-checkbox[data-custom-color][data-checked] .dz-checkbox__box,
+.dz-checkbox[data-custom-color][data-indeterminate] .dz-checkbox__box {
+  background-color: var(--dz-checkbox-color);
+  border-color: var(--dz-checkbox-color);
+  color: var(--control-color-filled-content-normal);
+}
+
 /* The glyph sits a step under the label so it clears the box's corners. */
 .dz-checkbox__box {
   font-size: var(--label-small-font-size);

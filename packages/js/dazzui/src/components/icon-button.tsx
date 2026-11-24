@@ -1,4 +1,5 @@
-import type { ComponentProps, ReactNode } from 'react'
+import { useRender } from '@base-ui/react/use-render'
+import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -14,7 +15,9 @@ export interface IconButtonProps extends Omit<
   size?: ButtonSize
   variant?: ButtonVariant
   tint?: Tint
-  children: ReactNode
+  /** Render as another element — an `<a>` or router `<Link>` where the button navigates. */
+  render?: useRender.RenderProp
+  children?: ReactNode
 }
 
 /**
@@ -35,25 +38,33 @@ export function IconButton({
   // Neutral by default: a toolbar of these should read as chrome, not as a row
   // of accented actions. Pass a tint where one button genuinely leads.
   tint = 'neutral',
+  render,
+  ref,
   className,
   children,
-  type = 'button',
+  type,
   ...props
 }: IconButtonProps) {
+  const element = useRender({
+    render,
+    ref,
+    defaultTagName: 'button',
+    props: {
+      type: render ? type : (type ?? 'button'),
+      'aria-label': label,
+      'data-control': '',
+      'data-size': size,
+      'data-tint': tint,
+      'data-variant': variant,
+      className: cx('dz-icon-button', className),
+      ...(children !== undefined ? { children } : {}),
+      ...props,
+    },
+  })
+
   return (
     <Tooltip label={label}>
-      <button
-        type={type}
-        aria-label={label}
-        data-control=""
-        data-size={size}
-        data-tint={tint}
-        data-variant={variant}
-        className={cx('dz-icon-button', className)}
-        {...props}
-      >
-        {children}
-      </button>
+      {element as ReactElement<Record<string, unknown>>}
     </Tooltip>
   )
 }

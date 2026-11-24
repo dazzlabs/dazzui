@@ -1,19 +1,19 @@
-import type { ComponentType, SVGProps } from 'react'
+import type { ComponentType, SVGAttributes } from 'react'
 
 import { cx } from '../lib/cx'
 
 /**
- * Any component that renders an `<svg>` — the Fluent set the beyondtranslate
- * apps use satisfies this, and so does every other icon library. The system
+ * Any component that renders an `<svg>` — Fluent icons (`SVGAttributes<SVGElement>`)
+ * and icon libraries typed against `SVGSVGElement` both satisfy this. The system
  * deliberately does not depend on a specific set: an icon is the one thing a
  * product replaces wholesale, and a design system that hard-codes a set makes
  * that a fork rather than a prop.
  */
-export type IconGlyph = ComponentType<SVGProps<SVGSVGElement>>
+export type IconGlyph = ComponentType<SVGAttributes<SVGElement>>
 
 export interface IconProps extends Omit<
-  SVGProps<SVGSVGElement>,
-  'width' | 'height' | 'ref'
+  SVGAttributes<SVGElement>,
+  'width' | 'height'
 > {
   icon: IconGlyph
   /** Rendered edge length. Defaults to the enclosing component's size or the theme's medium icon. */

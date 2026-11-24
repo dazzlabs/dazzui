@@ -1,3 +1,4 @@
+import { useRender } from '@base-ui/react/use-render'
 import {
   Children,
   type ComponentProps,
@@ -37,6 +38,8 @@ export interface ButtonProps extends ComponentProps<'button'> {
   fullWidth?: boolean
   /** Trailing hint — the key that also triggers this action. */
   shortcut?: ReactNode
+  /** Render as another element — an `<a>` or router `<Link>` where the button navigates. */
+  render?: useRender.RenderProp
 }
 
 /** Whether a child is a glyph: the kit's `Icon`, or a bare `<svg>`. */
@@ -65,27 +68,42 @@ export function Button({
   tint = 'primary',
   fullWidth = false,
   shortcut,
+  render,
+  ref,
   className,
   children,
-  type = 'button',
+  type,
   ...props
 }: ButtonProps) {
-  return (
-    <button
-      type={type}
-      data-control=""
-      data-full-width={fullWidth}
-      data-icon={glyphEnds(children)}
-      data-size={size}
-      data-tint={tint}
-      data-variant={variant}
-      className={cx('dz-button', className)}
-      {...props}
-    >
+  const resolvedChildren =
+    children ??
+    (isValidElement<{ children?: ReactNode }>(render)
+      ? render.props.children
+      : undefined)
+  const content = shortcut ? (
+    <>
       {children}
-      {shortcut ? (
-        <span className="dz-button__shortcut">{shortcut}</span>
-      ) : null}
-    </button>
+      <span className="dz-button__shortcut">{shortcut}</span>
+    </>
+  ) : (
+    children
   )
+
+  return useRender({
+    render,
+    ref,
+    defaultTagName: 'button',
+    props: {
+      type: render ? type : (type ?? 'button'),
+      'data-control': '',
+      'data-full-width': fullWidth,
+      'data-icon': glyphEnds(resolvedChildren),
+      'data-size': size,
+      'data-tint': tint,
+      'data-variant': variant,
+      className: cx('dz-button', className),
+      ...(content !== undefined ? { children: content } : {}),
+      ...props,
+    },
+  })
 }

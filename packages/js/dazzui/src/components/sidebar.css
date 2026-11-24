@@ -231,6 +231,63 @@
   inset-inline-start: calc(var(--spacing-2) * -1);
 }
 
+.dz-sidebar-wrapper[data-resizing] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.dz-sidebar[data-resizing],
+.dz-sidebar[data-resizing] > .dz-sidebar__container,
+.dz-sidebar-wrapper[data-resizing] .dz-sidebar-inset {
+  transition: none;
+}
+
+/* The resizer ---------------------------------------------------------------
+ * The drag seam on the column's inner edge. The column already draws a
+ * hairline there, so the grip rests transparent and lights in the accent when
+ * hovered, dragged, or focused — matching Splitter's handle.
+ */
+.dz-sidebar__resizer {
+  position: absolute;
+  inset-block: 0;
+  z-index: var(--layer-sidebar-rail);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-2);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.dz-sidebar[data-side='left'] .dz-sidebar__resizer {
+  inset-inline-end: calc(var(--spacing-2) / -2);
+}
+
+.dz-sidebar[data-side='right'] .dz-sidebar__resizer {
+  inset-inline-start: calc(var(--spacing-2) / -2);
+}
+
+.dz-sidebar__resizer:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-offset) - var(--spacing-px));
+}
+
+.dz-sidebar__resizer-grip {
+  width: var(--stroke-hairline);
+  height: 100%;
+  background-color: transparent;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    transform var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar__resizer:hover .dz-sidebar__resizer-grip,
+.dz-sidebar__resizer[data-dragging] .dz-sidebar__resizer-grip,
+.dz-sidebar__resizer:focus-visible .dz-sidebar__resizer-grip {
+  background-color: var(--control-color-filled-surface-normal);
+  transform: scaleX(2);
+}
+
 /* The inset --------------------------------------------------------------- */
 
 .dz-sidebar-inset {
@@ -666,6 +723,17 @@
   opacity: 1;
 }
 
+/* A row's badge gives way to a sibling showOnHover action while the row is
+   hovered, focused, or holding its menu open. */
+.dz-sidebar__menu-item:has(> .dz-sidebar__menu-action[data-show-on-hover]):is(
+    :hover,
+    :focus-within,
+    :has(> .dz-sidebar__menu-action[data-show-on-hover][data-popup-open])
+  )
+  > .dz-sidebar__menu-badge {
+  opacity: 0;
+}
+
 /* The count follows the row's colour, so a selected row's count turns with
    it rather than staying grey on accent. It carries a `data-tint` of its
    own because it is the row's sibling rather than its child, and a ramp
@@ -685,7 +753,9 @@
   font-variant-numeric: tabular-nums;
   pointer-events: none;
   user-select: none;
-  transition: color var(--motion-duration) var(--motion-easing);
+  transition:
+    color var(--motion-duration) var(--motion-easing),
+    opacity var(--motion-duration) var(--motion-easing);
 }
 
 .dz-sidebar__menu-button:hover:not(:disabled) ~ .dz-sidebar__menu-badge {

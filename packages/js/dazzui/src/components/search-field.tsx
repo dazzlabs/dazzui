@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useRef } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
+import { KeyCap } from './key-cap'
 import type { TextFieldSize } from './text-field'
 
 export interface SearchFieldProps {
@@ -12,6 +13,11 @@ export interface SearchFieldProps {
   placeholder?: string
   /** Trailing hint shown while the field is empty — usually a `KeyCap`. */
   hint?: ReactNode
+  /**
+   * Keyboard shortcut hint (e.g. `"⌘K"` or a `KeyCap`) shown while the field
+   * is empty and automatically hidden while focused.
+   */
+  shortcut?: ReactNode
   size?: TextFieldSize
   tint?: Tint
   /** Focus on mount, for a field opened by a shortcut. */
@@ -30,6 +36,7 @@ export function SearchField({
   onValueChange,
   placeholder = 'Search',
   hint,
+  shortcut,
   size = 'medium',
   tint = 'primary',
   autoFocus = false,
@@ -43,6 +50,15 @@ export function SearchField({
   useEffect(() => {
     if (autoFocus) input.current?.focus()
   }, [autoFocus])
+
+  const trailingHint =
+    shortcut !== undefined && shortcut !== '' ? (
+      <span aria-hidden className="dz-search-field__shortcut">
+        {typeof shortcut === 'string' ? <KeyCap>{shortcut}</KeyCap> : shortcut}
+      </span>
+    ) : (
+      hint
+    )
 
   return (
     <div
@@ -78,7 +94,7 @@ export function SearchField({
           <Dismiss12Regular />
         </button>
       ) : (
-        hint
+        trailingHint
       )}
     </div>
   )

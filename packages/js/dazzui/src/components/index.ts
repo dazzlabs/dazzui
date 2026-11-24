@@ -32,7 +32,15 @@ export {
   type DateRange,
 } from './calendar'
 export { Callout, type CalloutProps, type CalloutSize } from './callout'
-export { Card, type CardProps, type CardSize, type CardVariant } from './card'
+export {
+  Card,
+  CardHeader,
+  type CardHeaderProps,
+  type CardPadding,
+  type CardProps,
+  type CardSize,
+  type CardVariant,
+} from './card'
 export {
   Checkbox,
   CheckboxGroup,
@@ -114,14 +122,20 @@ export { OtpField, type OtpFieldProps } from './otp-field'
 export { PillTabs, type PillTabItem, type PillTabsProps } from './pill-tabs'
 export { Popover, PopoverClose, type PopoverProps } from './popover'
 export {
+  PreferenceBackButton,
+  type PreferenceBackButtonProps,
+  PreferenceDivider,
+  type PreferenceDividerProps,
   PreferenceGroup,
   type PreferenceGroupProps,
   PreferenceRow,
+  type PreferenceRowAlign,
   type PreferenceRowProps,
   Preferences,
   type PreferencesProps,
   PreferenceSection,
   type PreferenceSectionProps,
+  type PreferenceSectionVariant,
   type PreferenceThemeOption,
   PreferenceThemeSwatches,
   type PreferenceThemeSwatchesProps,
@@ -228,6 +242,12 @@ export {
   type SelectOption,
   type SelectProps,
 } from './text-field'
+export {
+  ThemeProvider,
+  type ThemeContextValue,
+  type ThemeProviderProps,
+  useTheme,
+} from './theme-provider'
 export {
   Toast,
   type ToastAction,

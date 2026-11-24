@@ -1,3 +1,4 @@
+import { ChevronLeft16Regular } from '@fluentui/react-icons'
 import {
   type ComponentPropsWithoutRef,
   type CSSProperties,
@@ -7,6 +8,7 @@ import {
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
+import { Divider, type DividerProps } from './divider'
 import { SectionLabel } from './section-label'
 import { Tooltip } from './tooltip'
 
@@ -25,6 +27,8 @@ export function Preferences({ className, ...props }: PreferencesProps) {
   return <div className={cx('dz-preferences', className)} {...props} />
 }
 
+export type PreferenceSectionVariant = 'plain' | 'card'
+
 export interface PreferenceSectionProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'title'
@@ -35,6 +39,8 @@ export interface PreferenceSectionProps extends Omit<
   action?: ReactNode
   /** A muted note under the rows, for what the section cannot fit. */
   footer?: ReactNode
+  /** `'card'` wraps the rows in a bordered inset surface, suited for dialogs. */
+  variant?: PreferenceSectionVariant
 }
 
 /** A labelled run of preference rows. */
@@ -42,12 +48,17 @@ export function PreferenceSection({
   label,
   action,
   footer,
+  variant = 'plain',
   className,
   children,
   ...props
 }: PreferenceSectionProps) {
   return (
-    <div className={cx('dz-preference-section', className)} {...props}>
+    <div
+      data-variant={variant === 'card' ? 'card' : undefined}
+      className={cx('dz-preference-section', className)}
+      {...props}
+    >
       {label || action ? (
         <div className="dz-preference-section__heading">
           {label ? <SectionLabel>{label}</SectionLabel> : <span />}
@@ -61,6 +72,40 @@ export function PreferenceSection({
         <span className="dz-preference-section__footer">{footer}</span>
       ) : null}
     </div>
+  )
+}
+
+export interface PreferenceDividerProps extends DividerProps {}
+
+/** A hairline rule separating preference sections or groups. */
+export function PreferenceDivider(props: PreferenceDividerProps) {
+  return <Divider {...props} />
+}
+
+export interface PreferenceBackButtonProps extends ComponentPropsWithoutRef<'button'> {
+  /** The page name it returns to (e.g. `"General"`). */
+  children: ReactNode
+}
+
+/** The way back out of a pushed preference sub-page. */
+export function PreferenceBackButton({
+  className,
+  children,
+  type = 'button',
+  ...props
+}: PreferenceBackButtonProps) {
+  return (
+    <button
+      type={type}
+      className={cx('dz-preference-back', className)}
+      {...props}
+    >
+      <ChevronLeft16Regular
+        aria-hidden
+        className="dz-preference-back__chevron"
+      />
+      <span>{children}</span>
+    </button>
   )
 }
 
@@ -109,6 +154,8 @@ export function PreferenceGroup({
   )
 }
 
+export type PreferenceRowAlign = 'center' | 'top'
+
 export interface PreferenceRowProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'title' | 'onClick'
@@ -118,6 +165,14 @@ export interface PreferenceRowProps extends Omit<
   subtitle?: ReactNode
   /** A glyph or avatar before the title, for rows that name a thing. */
   icon?: ReactNode
+  /** Vertical alignment of the leading, text, and trailing columns. */
+  align?: PreferenceRowAlign
+  /** Renders the row as an interactive link with a trailing disclosure chevron. */
+  href?: string
+  /** Link target when `href` is set. */
+  target?: string
+  /** Link rel when `href` is set. */
+  rel?: string
   /**
    * Makes the row open something. It becomes a button and grows the hover wash
    * that says so; rows that only carry a control leave this off and stay inert.
@@ -131,12 +186,17 @@ export function PreferenceRow({
   title,
   subtitle,
   icon,
+  align = 'center',
+  href,
+  target,
+  rel,
   onOpen,
   tint = 'neutral',
   className,
   children,
   ...props
 }: PreferenceRowProps) {
+  const interactive = Boolean(onOpen || href)
   const body = (
     <>
       {icon ? <span className="dz-preference-row__icon">{icon}</span> : null}
@@ -146,19 +206,37 @@ export function PreferenceRow({
           <span className="dz-preference-row__subtitle">{subtitle}</span>
         ) : null}
       </div>
-      {children || onOpen ? (
+      {children || interactive ? (
         <div className="dz-preference-row__trailing">
           {children}
-          {onOpen ? <span aria-hidden>›</span> : null}
+          {interactive ? <span aria-hidden>›</span> : null}
         </div>
       ) : null}
     </>
   )
 
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={target}
+        rel={rel}
+        data-align={align === 'top' ? 'top' : undefined}
+        data-interactive="true"
+        data-tint={tint}
+        className={cx('dz-preference-row', className)}
+        onClick={onOpen}
+      >
+        {body}
+      </a>
+    )
+  }
+
   if (onOpen) {
     return (
       <button
         type="button"
+        data-align={align === 'top' ? 'top' : undefined}
         data-interactive="true"
         data-tint={tint}
         className={cx('dz-preference-row', className)}
@@ -171,6 +249,7 @@ export function PreferenceRow({
 
   return (
     <div
+      data-align={align === 'top' ? 'top' : undefined}
       data-interactive="false"
       data-tint={tint}
       className={cx('dz-preference-row', className)}

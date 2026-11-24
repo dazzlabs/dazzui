@@ -8,6 +8,16 @@
   flex-direction: column;
 }
 
+.dz-table[data-bordered] {
+  overflow: hidden;
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-large);
+}
+
+.dz-table[data-bordered] > .dz-table__row:last-child {
+  border-bottom: 0;
+}
+
 .dz-table__head {
   display: flex;
   padding-inline: var(--spacing-5);

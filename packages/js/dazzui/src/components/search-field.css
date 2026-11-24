@@ -74,6 +74,17 @@
   outline-offset: var(--focus-offset);
 }
 
+.dz-search-field__shortcut {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  pointer-events: none;
+}
+
+.dz-search-field:focus-within .dz-search-field__shortcut {
+  display: none;
+}
+
 /* Sizes -------------------------------------------------------------------
  * Geometry and type come off the shared size profile that `[data-size]`
  * binds. */
