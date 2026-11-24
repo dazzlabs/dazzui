@@ -21,7 +21,11 @@ public enum DialogTone: String, CaseIterable, Sendable {
 public struct Dialog<Content: View>: View {
   /// Overrides the token width for a sheet that needs more or less room.
   public var width: CGFloat?
+  /// Optional fixed height for dialogs with internally scrolling layouts.
+  public var height: CGFloat?
   public var tone: DialogTone
+  /// Optional Escape-to-dismiss handler invoked on cancel command.
+  public var onDismiss: (() -> Void)?
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
@@ -29,26 +33,45 @@ public struct Dialog<Content: View>: View {
 
   public init(
     width: CGFloat? = nil,
+    height: CGFloat? = nil,
     tone: DialogTone = .default,
+    onDismiss: (() -> Void)? = nil,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.width = width
+    self.height = height
     self.tone = tone
+    self.onDismiss = onDismiss
     self.content = content
   }
 
   public var body: some View {
     let vars = theme.vars
-
-    VStack(spacing: 0) {
+    let box = VStack(spacing: 0) {
       content()
     }
-    .frame(width: width ?? vars.dialogWidth)
+    .frame(width: width ?? vars.dialogWidth, height: height)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.frameWindowRadius, style: .circular))
     .border(border, width: hairline, cornerRadius: vars.frameWindowRadius)
     .tokenShadow(vars.shadowLg)
     .accessibilityAddTraits(.isModal)
+
+    if let onDismiss {
+      #if os(macOS)
+        box.onExitCommand { onDismiss() }
+      #else
+        box.background {
+          SwiftUI.Button("") { onDismiss() }
+            .keyboardShortcut(.cancelAction)
+            .opacity(0)
+            .frame(width: 0, height: 0)
+            .accessibilityHidden(true)
+        }
+      #endif
+    } else {
+      box
+    }
   }
 
   private var border: Color {
@@ -62,11 +85,16 @@ public struct Dialog<Content: View>: View {
   private let dangerEdgeAlpha: CGFloat = 0.34
 }
 
-/// The chrome above the body: a title, an optional subtitle, and whatever the
-/// host hangs beside them.
-public struct DialogHeader<Accessory: View>: View {
+/// The chrome above the body: an optional leading visual (icon or thumbnail),
+/// a title, an optional subtitle (proportional or monospaced), and an optional
+/// accessory view.
+public struct DialogHeader<Leading: View, Accessory: View>: View {
   public var title: String
   public var subtitle: String?
+  /// Renders `subtitle` in the monospaced code face (for IDs, addresses, paths).
+  public var monoSubtitle: Bool
+  /// Optional leading view (thumbnail, avatar, or glyph) beside the title stack.
+  public var leading: (() -> Leading)?
   @ViewBuilder public var accessory: () -> Accessory
 
   @Environment(\.theme) private var theme
@@ -75,16 +103,59 @@ public struct DialogHeader<Accessory: View>: View {
   public init(
     title: String,
     subtitle: String? = nil,
+    monoSubtitle: Bool = false,
+    @ViewBuilder leading: @escaping () -> Leading,
     @ViewBuilder accessory: @escaping () -> Accessory
   ) {
     self.title = title
     self.subtitle = subtitle
+    self.monoSubtitle = monoSubtitle
+    self.leading = leading
+    self.accessory = accessory
+  }
+
+  init(
+    title: String,
+    subtitle: String?,
+    monoSubtitle: Bool,
+    leadingBuilder: (() -> Leading)?,
+    accessory: @escaping () -> Accessory
+  ) {
+    self.title = title
+    self.subtitle = subtitle
+    self.monoSubtitle = monoSubtitle
+    self.leading = leadingBuilder
     self.accessory = accessory
   }
 
   public var body: some View {
     let vars = theme.vars
 
+    Group {
+      if let leading {
+        HStack(alignment: .center, spacing: vars.spacing35) {
+          leading()
+          titleStack(vars: vars)
+          Spacer(minLength: 0)
+          accessory()
+        }
+      } else {
+        VStack(alignment: .leading, spacing: vars.spacing1) {
+          titleStack(vars: vars)
+          accessory()
+        }
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    // Floored so a subtitle-less header still balances the footer.
+    .padding(.vertical, leading != nil ? vars.spacing4 : vars.spacing3)
+    .padding(.horizontal, vars.spacing5)
+    .frame(minHeight: vars.spacing11)
+    .rule(vars.colorBorder, edge: .bottom, width: hairline)
+  }
+
+  @ViewBuilder
+  private func titleStack(vars: ThemeVariables) -> some View {
     VStack(alignment: .leading, spacing: vars.spacing1) {
       Text(title)
         // The title takes the label's weight at the title face's size, and
@@ -93,19 +164,18 @@ public struct DialogHeader<Accessory: View>: View {
         .tracking(titleTracking * vars.titleSmall.size)
         .foregroundStyle(vars.colorContent)
       if let subtitle {
-        Text(subtitle)
-          .font(vars.captionSmall.font)
-          .lineBox(vars.captionSmall)
-          .foregroundStyle(vars.colorContentSubtle)
+        if monoSubtitle {
+          Text(subtitle)
+            .font(vars.codeFont(size: vars.captionSmall.size))
+            .foregroundStyle(vars.colorContentSubtle)
+        } else {
+          Text(subtitle)
+            .font(vars.captionSmall.font)
+            .lineBox(vars.captionSmall)
+            .foregroundStyle(vars.colorContentSubtle)
+        }
       }
-      accessory()
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    // Floored so a subtitle-less header still balances the footer.
-    .padding(.vertical, vars.spacing3)
-    .padding(.horizontal, vars.spacing5)
-    .frame(minHeight: vars.spacing11)
-    .rule(vars.colorBorder, edge: .bottom, width: hairline)
   }
 
   /// The CSS `letter-spacing: -0.01em`, which is a ratio of the face rather
@@ -113,10 +183,52 @@ public struct DialogHeader<Accessory: View>: View {
   private let titleTracking: CGFloat = -0.01
 }
 
+public extension DialogHeader where Leading == EmptyView {
+  /// A header with a title, optional subtitle, and trailing/below accessory.
+  init(
+    title: String,
+    subtitle: String? = nil,
+    monoSubtitle: Bool = false,
+    @ViewBuilder accessory: @escaping () -> Accessory
+  ) {
+    self.init(
+      title: title,
+      subtitle: subtitle,
+      monoSubtitle: monoSubtitle,
+      leadingBuilder: nil,
+      accessory: accessory
+    )
+  }
+}
+
 public extension DialogHeader where Accessory == EmptyView {
+  /// A header with a leading view, title, and optional subtitle.
+  init(
+    _ title: String,
+    subtitle: String? = nil,
+    monoSubtitle: Bool = false,
+    @ViewBuilder leading: @escaping () -> Leading
+  ) {
+    self.init(
+      title: title,
+      subtitle: subtitle,
+      monoSubtitle: monoSubtitle,
+      leadingBuilder: leading,
+      accessory: { EmptyView() }
+    )
+  }
+}
+
+public extension DialogHeader where Leading == EmptyView, Accessory == EmptyView {
   /// A header that is only its title and subtitle.
-  init(_ title: String, subtitle: String? = nil) {
-    self.init(title: title, subtitle: subtitle, accessory: { EmptyView() })
+  init(_ title: String, subtitle: String? = nil, monoSubtitle: Bool = false) {
+    self.init(
+      title: title,
+      subtitle: subtitle,
+      monoSubtitle: monoSubtitle,
+      leadingBuilder: nil,
+      accessory: { EmptyView() }
+    )
   }
 }
 
@@ -199,5 +311,84 @@ public struct DialogScrim<Content: View>: View {
         .opacity(vars.dialogScrimAlpha)
         .ignoresSafeArea()
     )
+  }
+}
+
+public extension View {
+  /// Presents a window-scoped modal dialog directly over this view on a
+  /// ``DialogScrim`` without requiring a separate `.overlayHost()` ancestor.
+  ///
+  /// Clicking the scrim or pressing Escape dismisses the dialog when
+  /// `dismissible` is true, and `\.closeOverlay` is injected into `content`.
+  func windowDialog<Panel: View>(
+    isPresented: Binding<Bool>,
+    dismissible: Bool = true,
+    @ViewBuilder content: @escaping () -> Panel
+  ) -> some View {
+    modifier(
+      WindowDialogModifier(
+        isPresented: isPresented,
+        dismissible: dismissible,
+        panel: content
+      )
+    )
+  }
+
+  /// Presents a window-scoped modal dialog whenever `item` is non-nil.
+  func windowDialog<Item: Identifiable, Panel: View>(
+    item: Binding<Item?>,
+    dismissible: Bool = true,
+    @ViewBuilder content: @escaping (Item) -> Panel
+  ) -> some View {
+    let presented = Binding<Bool>(
+      get: { item.wrappedValue != nil },
+      set: { if !$0 { item.wrappedValue = nil } }
+    )
+    return windowDialog(isPresented: presented, dismissible: dismissible) {
+      if let value = item.wrappedValue {
+        content(value)
+      }
+    }
+  }
+}
+
+private struct WindowDialogModifier<Panel: View>: ViewModifier {
+  @Binding var isPresented: Bool
+  let dismissible: Bool
+  @ViewBuilder let panel: () -> Panel
+
+  @Environment(\.theme) private var theme
+
+  func body(content: Content) -> some View {
+    content.overlay {
+      if isPresented {
+        let close = { isPresented = false }
+        let dialogLayer = DialogScrim {
+          ZStack {
+            Color.clear
+              .contentShape(Rectangle())
+              .onTapGesture { if dismissible { close() } }
+            panel()
+          }
+        }
+        .environment(\.closeOverlay, CloseOverlayAction(close))
+        .transition(.opacity)
+
+        #if os(macOS)
+          dialogLayer.onExitCommand { if dismissible { close() } }
+        #else
+          dialogLayer.background {
+            if dismissible {
+              SwiftUI.Button("") { close() }
+                .keyboardShortcut(.cancelAction)
+                .opacity(0)
+                .frame(width: 0, height: 0)
+                .accessibilityHidden(true)
+            }
+          }
+        #endif
+      }
+    }
+    .animation(theme.vars.motion, value: isPresented)
   }
 }

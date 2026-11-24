@@ -104,11 +104,27 @@
       session.whileTracking = { [weak self, weak bar] in
         if let self { bar?.switchAtPointer(from: self) }
       }
-      let x = frame.minX + (point?.x ?? (align == .end ? frame.width : 0))
+      let alignOffset: CGFloat
+      switch align {
+      case .start: alignOffset = 0
+      case .center: alignOffset = frame.width / 2
+      case .end: alignOffset = frame.width
+      }
+      let x = frame.minX + (point?.x ?? alignOffset)
       let y = frame.minY + (point?.y ?? frame.height)
+      let placement: NativeAPI.Placement
+      if point != nil {
+        placement = .bottomStart
+      } else {
+        switch align {
+        case .start: placement = .bottomStart
+        case .center: placement = .bottom
+        case .end: placement = .bottomEnd
+        }
+      }
       session.present(
         strategy: .relativeWithWindowAndOffset(window, offset: NativeAPI.Point(x: x, y: y)),
-        placement: point == nil && align == .end ? .bottomEnd : .bottomStart)
+        placement: placement)
     }
 
     func cancel() {

@@ -27,6 +27,9 @@ public struct Checkbox<Label: View>: View {
   public var size: CheckboxSize
   /// Which colour ramp the checked box fills from.
   public var tint: Tint
+  /// Optional explicit accent colour overriding `tint` when checked (for
+  /// category / calendar colour checkboxes).
+  public var accentColor: Color?
   /// A de-emphasised aside on the label — a count, a size.
   public var note: String?
   public var enabled: Bool
@@ -41,6 +44,7 @@ public struct Checkbox<Label: View>: View {
     onCheckedChange: ((Bool) -> Void)? = nil,
     size: CheckboxSize = .medium,
     tint: Tint = .primary,
+    accentColor: Color? = nil,
     note: String? = nil,
     enabled: Bool = true,
     @ViewBuilder label: @escaping () -> Label
@@ -50,6 +54,7 @@ public struct Checkbox<Label: View>: View {
     self.onCheckedChange = onCheckedChange
     self.size = size
     self.tint = tint
+    self.accentColor = accentColor
     self.note = note
     self.enabled = enabled
     self.label = label
@@ -106,7 +111,13 @@ public struct Checkbox<Label: View>: View {
     // Mixed fills like checked: a parent that is partly on is on. What
     // separates the two is the glyph, not the box.
     let marked = checked || indeterminate
-    let filled = marked ? recipe(.surface) : Color.clear
+    let filled = marked ? (accentColor ?? recipe(.surface)) : Color.clear
+    let markInk: Color = {
+      guard let accentColor else { return recipe(.content) }
+      let c = accentColor.srgbComponents
+      let luminance = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b
+      return luminance > 0.6 ? Color(argb: 0xFF11_1C2E) : .white
+    }()
 
     // A tick says every one; a dash says some. Both sit a step under the label
     // so they clear the box's corners.
@@ -115,7 +126,7 @@ public struct Checkbox<Label: View>: View {
       size: min(vars.iconSmall, boxSize - vars.checkboxThickness * 2)
     )
     .opacity(marked ? 1 : 0)
-    .foregroundStyle(recipe(.content))
+    .foregroundStyle(markInk)
     .frame(width: boxSize, height: boxSize)
     .background(filled)
     .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .circular))
@@ -161,6 +172,7 @@ public extension Checkbox where Label == Text {
     onCheckedChange: ((Bool) -> Void)? = nil,
     size: CheckboxSize = .medium,
     tint: Tint = .primary,
+    accentColor: Color? = nil,
     note: String? = nil,
     enabled: Bool = true
   ) {
@@ -170,6 +182,7 @@ public extension Checkbox where Label == Text {
       onCheckedChange: onCheckedChange,
       size: size,
       tint: tint,
+      accentColor: accentColor,
       note: note,
       enabled: enabled,
       label: { Text(title) }

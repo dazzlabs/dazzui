@@ -56,6 +56,12 @@
           item.setEnabled(false)
           menu.addItem(item)
         case .item(let choice):
+          if choice.isSeparator {
+            if let sep = NativeAPI.MenuItem.createWithLabelAndType("", type: .separator) {
+              menu.addItem(sep)
+            }
+            continue
+          }
           let children = choice.items ?? []
           let type: NativeAPI.MenuItemType =
             !children.isEmpty
@@ -67,7 +73,9 @@
             continue
           }
           item.setEnabled(!choice.disabled)
-          item.setState(choice.checked == true ? .checked : .unchecked)
+          if let checked = choice.checked {
+            item.setState(checked ? .checked : .unchecked)
+          }
           #if os(macOS)
             if let icon = choice.icon {
               let renderer = ImageRenderer(
@@ -176,9 +184,15 @@
         guard let window = view.window else { return }
         let screen = window.convertPoint(toScreen: view.convert(point, to: nil))
         let top = NSScreen.screens.first?.frame.maxY ?? 0
+        let placement: NativeAPI.Placement
+        switch align {
+        case .start: placement = .bottomStart
+        case .center: placement = .bottom
+        case .end: placement = .bottomEnd
+        }
         present(
           strategy: .absolute(NativeAPI.Point(x: screen.x, y: top - screen.y)),
-          placement: align == .end ? .bottomEnd : .bottomStart)
+          placement: placement)
       }
     }
   #endif

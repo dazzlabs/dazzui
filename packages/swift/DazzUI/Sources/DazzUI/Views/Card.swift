@@ -17,46 +17,112 @@ public enum CardVariant: String, CaseIterable, Sendable {
   case tinted
 }
 
+/// Interior padding posture for ``Card``.
+public enum CardPadding: String, CaseIterable, Sendable {
+  /// Standard size-scaled card padding.
+  case `default`
+  /// Zero interior padding for full-bleed media, lists, or custom inner chrome.
+  case none
+}
+
 /// The filled or bordered box the panels in a layout are built from.
 ///
-/// A card is not interactive, so it stays out of the shared state machine
-/// entirely and reads the resting surfaces directly — a panel that lit up
-/// under the pointer would read as something you can press.
-public struct Card<Content: View>: View {
+/// By default a card stays non-interactive and reads resting surfaces directly.
+/// Pass `interactive: true` on cards that act as clickable tiles or list panels
+/// to enable a subtle hover border lift.
+public struct Card<Header: View, Content: View>: View {
   public var size: CardSize
   public var variant: CardVariant
   /// Which ramp `tinted` resolves against; ignored by the other variants.
   public var tint: Tint
+  public var padding: CardPadding
+  /// Highlights the card border on hover for clickable card tiles.
+  public var interactive: Bool
+  /// Optional pinned header band separated from the body by a bottom hairline.
+  public var header: (() -> Header)?
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
+  @State private var hovered = false
 
   public init(
     size: CardSize = .medium,
     variant: CardVariant = .raised,
     tint: Tint = .primary,
+    padding: CardPadding = .default,
+    interactive: Bool = false,
+    @ViewBuilder header: @escaping () -> Header,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.size = size
     self.variant = variant
     self.tint = tint
+    self.padding = padding
+    self.interactive = interactive
+    self.header = header
+    self.content = content
+  }
+
+  init(
+    size: CardSize,
+    variant: CardVariant,
+    tint: Tint,
+    padding: CardPadding,
+    interactive: Bool,
+    headerBuilder: (() -> Header)?,
+    content: @escaping () -> Content
+  ) {
+    self.size = size
+    self.variant = variant
+    self.tint = tint
+    self.padding = padding
+    self.interactive = interactive
+    self.header = headerBuilder
     self.content = content
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: gap) {
-      content()
+    let vars = theme.vars
+    let box = Group {
+      if let header {
+        VStack(alignment: .leading, spacing: 0) {
+          header()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, padding == .none ? 0 : paddingBlock)
+            .padding(.horizontal, padding == .none ? 0 : paddingInline)
+            .rule(vars.colorBorder, edge: .bottom, width: hairline)
+          VStack(alignment: .leading, spacing: gap) {
+            content()
+          }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.vertical, padding == .none ? 0 : paddingBlock)
+          .padding(.horizontal, padding == .none ? 0 : paddingInline)
+        }
+        .padding(hairline)
+      } else {
+        VStack(alignment: .leading, spacing: gap) {
+          content()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, padding == .none ? 0 : paddingBlock + hairline)
+        .padding(.horizontal, padding == .none ? 0 : paddingInline + hairline)
+      }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.vertical, paddingBlock + hairline)
-    .padding(.horizontal, paddingInline + hairline)
     .background(surface)
     .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
     // Drawn on every variant rather than only where it shows, so `outlined`
     // and `tinted` do not gain a pixel per side and sit a hair larger than
     // the filled ones.
     .border(border, width: hairline, cornerRadius: radius)
+
+    if interactive {
+      box
+        .onHover { hovered = $0 }
+        .animation(vars.motion, value: hovered)
+    } else {
+      box
+    }
   }
 
   private var gap: CGFloat {
@@ -106,10 +172,38 @@ public struct Card<Content: View>: View {
 
   private var border: Color {
     let vars = theme.vars
+    if interactive && hovered {
+      switch variant {
+      case .raised, .sunken, .outlined: return vars.colorBorderMuted
+      case .tinted: return vars.ramp(tint)[600].opacity(min(1, vars.washEdge * 1.5))
+      }
+    }
     switch variant {
     case .raised, .sunken, .outlined: return vars.colorBorder
     // The matching wash, so the pair moves together when either is retuned.
     case .tinted: return vars.ramp(tint)[600].opacity(vars.washEdge)
     }
+  }
+}
+
+public extension Card where Header == EmptyView {
+  /// A card without a separate header band.
+  init(
+    size: CardSize = .medium,
+    variant: CardVariant = .raised,
+    tint: Tint = .primary,
+    padding: CardPadding = .default,
+    interactive: Bool = false,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.init(
+      size: size,
+      variant: variant,
+      tint: tint,
+      padding: padding,
+      interactive: interactive,
+      headerBuilder: nil,
+      content: content
+    )
   }
 }

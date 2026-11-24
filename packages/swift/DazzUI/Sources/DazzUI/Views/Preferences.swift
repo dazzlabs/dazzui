@@ -1,3 +1,4 @@
+import FluentIcons
 import SwiftUI
 
 // The settings column.
@@ -42,26 +43,126 @@ public struct Preferences<Content: View>: View {
   }
 }
 
+/// A scrolling settings page container wrapping ``Preferences`` with standard
+/// page padding and width constraints.
+public struct SettingsPage<Content: View>: View {
+  public var maxWidth: CGFloat?
+  public var alignment: Alignment
+  @ViewBuilder public var content: () -> Content
+
+  @Environment(\.theme) private var theme
+
+  public init(
+    maxWidth: CGFloat? = nil,
+    alignment: Alignment = .topLeading,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.maxWidth = maxWidth
+    self.alignment = alignment
+    self.content = content
+  }
+
+  public var body: some View {
+    let vars = theme.vars
+    ScrollView(.vertical) {
+      Preferences {
+        content()
+      }
+      .frame(maxWidth: maxWidth ?? vars.preferencesWidth, alignment: .leading)
+      .padding(.vertical, vars.spacing6)
+      .padding(.horizontal, vars.spacing7)
+      .frame(maxWidth: .infinity, alignment: alignment)
+    }
+  }
+}
+
+/// Hairline separator between preference rows or blocks.
+public struct PreferenceDivider: View {
+  public var tone: DividerTone
+
+  public init(tone: DividerTone = .default) {
+    self.tone = tone
+  }
+
+  public var body: some View {
+    DazzUI.Divider(tone: tone)
+  }
+}
+
+/// Compact back-navigation button for nested preference sub-pages.
+public struct PreferenceBackButton: View {
+  public var title: String
+  public var action: () -> Void
+
+  @Environment(\.theme) private var theme
+  @FocusState private var focused: Bool
+
+  public init(_ title: String, action: @escaping () -> Void) {
+    self.title = title
+    self.action = action
+  }
+
+  public var body: some View {
+    let vars = theme.vars
+    Pressable(action: action, cornerRadius: vars.radiusSmall) { state in
+      let lit = state.hovered || state.pressed
+      HStack(spacing: vars.spacing1) {
+        Icon(.chevronLeft16Regular, size: vars.iconSmall)
+        Text(title)
+          .font(vars.labelQuiet.font)
+          .lineLimit(1)
+      }
+      .foregroundStyle(lit ? vars.colorContent : vars.colorContentSubtle)
+      .padding(.vertical, vars.spacing1)
+      .padding(.horizontal, vars.spacing15)
+      .background(lit ? vars.colorSurfaceSubtle : .clear)
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
+      .animation(vars.motion, value: lit)
+    }
+    .padding(.leading, -vars.spacing15)
+    .focused($focused)
+    .focusRing(
+      visible: focused,
+      color: vars.focusRing,
+      cornerRadius: vars.radiusSmall,
+      width: vars.focusWidth
+    )
+  }
+}
+
+/// Visual framing for a ``PreferenceSection``.
+public enum PreferenceSectionVariant: String, CaseIterable, Sendable {
+  /// Unboxed rows resting directly on the page surface.
+  case plain
+  /// Bordered inset card grouping the section's rows on `colorSurface`.
+  case card
+}
+
 /// A labelled run of preference rows.
 public struct PreferenceSection<Content: View, Action: View>: View {
   /// The heading over the rows. Omit for an unlabelled run.
   public var label: String?
   /// A muted note under the rows, for what the section cannot fit.
   public var footer: String?
+  /// Framing style: `.plain` (default) or `.card` (bordered inset group).
+  public var variant: PreferenceSectionVariant
   /// A control on the heading line, pushed to the trailing edge.
   @ViewBuilder public var action: () -> Action
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
+  @Environment(\.hairline) private var hairline
 
   public init(
     label: String? = nil,
     footer: String? = nil,
+    variant: PreferenceSectionVariant = .plain,
     @ViewBuilder action: @escaping () -> Action,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.label = label
     self.footer = footer
+    self.variant = variant
     self.action = action
     self.content = content
   }
@@ -81,8 +182,20 @@ public struct PreferenceSection<Content: View, Action: View>: View {
         .padding(.bottom, vars.preferencesHeadingGap)
       }
 
-      VStack(alignment: .leading, spacing: vars.preferencesRowGap) {
-        content()
+      if variant == .card {
+        VStack(alignment: .leading, spacing: vars.preferencesRowGap) {
+          content()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, vars.spacing15)
+        .padding(.horizontal, vars.spacing35)
+        .background(vars.colorSurface)
+        .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
+        .border(vars.colorBorder, width: hairline, cornerRadius: vars.radiusLarge)
+      } else {
+        VStack(alignment: .leading, spacing: vars.preferencesRowGap) {
+          content()
+        }
       }
 
       if let footer {
@@ -101,9 +214,16 @@ public extension PreferenceSection where Action == EmptyView {
   init(
     label: String? = nil,
     footer: String? = nil,
+    variant: PreferenceSectionVariant = .plain,
     @ViewBuilder content: @escaping () -> Content
   ) {
-    self.init(label: label, footer: footer, action: { EmptyView() }, content: content)
+    self.init(
+      label: label,
+      footer: footer,
+      variant: variant,
+      action: { EmptyView() },
+      content: content
+    )
   }
 }
 
@@ -183,6 +303,12 @@ public extension PreferenceGroup where Action == EmptyView {
   }
 }
 
+/// Vertical alignment of a ``PreferenceRow``'s leading text and trailing control.
+public enum PreferenceRowAlign: String, CaseIterable, Sendable {
+  case center
+  case top
+}
+
 /// One preference row: title and optional subtitle left, control right.
 ///
 /// A row's height is a minimum plus a pad on its text, never a fixed height.
@@ -196,18 +322,25 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
   /// Makes the row open something. It grows the hover wash that says so; rows
   /// that only carry a control leave this off and stay inert.
   public var onOpen: (() -> Void)?
+  /// Optional URL opened via `\.openURL` when the row is pressed.
+  public var href: URL?
+  /// Vertical alignment between the label stack and trailing control.
+  public var align: PreferenceRowAlign
   public var tint: Tint
   /// A glyph or avatar before the title, for rows that name a thing.
   @ViewBuilder public var icon: () -> Icon
   @ViewBuilder public var trailing: () -> Trailing
 
   @Environment(\.theme) private var theme
+  @Environment(\.openURL) private var openURL
   @FocusState private var focused: Bool
 
   public init(
     title: String,
     subtitle: String? = nil,
     onOpen: (() -> Void)? = nil,
+    href: URL? = nil,
+    align: PreferenceRowAlign = .center,
     tint: Tint = .neutral,
     @ViewBuilder icon: @escaping () -> Icon,
     @ViewBuilder trailing: @escaping () -> Trailing
@@ -215,18 +348,31 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
     self.title = title
     self.subtitle = subtitle
     self.onOpen = onOpen
+    self.href = href
+    self.align = align
     self.tint = tint
     self.icon = icon
     self.trailing = trailing
   }
 
+  private var isInteractive: Bool {
+    onOpen != nil || href != nil
+  }
+
   public var body: some View {
     let vars = theme.vars
 
-    if let onOpen {
+    if isInteractive {
+      let trigger: () -> Void = {
+        if let onOpen {
+          onOpen()
+        } else if let href {
+          openURL(href)
+        }
+      }
       // The row's corner is the shared one for a box that grows: the control
       // step everywhere, the container step in Bright.
-      Pressable(action: onOpen, cornerRadius: vars.controlContainerRadius) { state in
+      Pressable(action: trigger, cornerRadius: vars.controlContainerRadius) { state in
         row
           .padding(.horizontal, vars.spacing2)
           .background(background(hovered: state.hovered || state.pressed))
@@ -256,8 +402,9 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
 
   private var row: some View {
     let vars = theme.vars
+    let stackAlignment: VerticalAlignment = align == .top ? .top : .center
 
-    return HStack(spacing: vars.spacing25) {
+    return HStack(alignment: stackAlignment, spacing: vars.spacing25) {
       // Uncoloured on purpose: a Badge or a Switch in these slots keeps its
       // own ink rather than inheriting a wash.
       icon()
@@ -286,13 +433,17 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
       // than the control height, and the row's minimum still centres it.
       .padding(.vertical, vars.preferencesRowPadding)
       Spacer(minLength: 0)
-      if Trailing.self != EmptyView.self || onOpen != nil {
+      if Trailing.self != EmptyView.self || isInteractive {
         HStack(spacing: vars.spacing25) {
           trailing()
           if onOpen != nil {
             Text("›")
+          } else if href != nil {
+            Text("↗")
+              .foregroundStyle(vars.colorContentSubtle)
           }
         }
+        .padding(.vertical, align == .top ? vars.preferencesRowPadding : 0)
       }
     }
     .multilineTextAlignment(.leading)
@@ -314,6 +465,8 @@ public extension PreferenceRow where Icon == EmptyView {
     title: String,
     subtitle: String? = nil,
     onOpen: (() -> Void)? = nil,
+    href: URL? = nil,
+    align: PreferenceRowAlign = .center,
     tint: Tint = .neutral,
     @ViewBuilder trailing: @escaping () -> Trailing
   ) {
@@ -321,6 +474,8 @@ public extension PreferenceRow where Icon == EmptyView {
       title: title,
       subtitle: subtitle,
       onOpen: onOpen,
+      href: href,
+      align: align,
       tint: tint,
       icon: { EmptyView() },
       trailing: trailing
@@ -334,6 +489,8 @@ public extension PreferenceRow where Trailing == EmptyView {
     title: String,
     subtitle: String? = nil,
     onOpen: (() -> Void)? = nil,
+    href: URL? = nil,
+    align: PreferenceRowAlign = .center,
     tint: Tint = .neutral,
     @ViewBuilder icon: @escaping () -> Icon
   ) {
@@ -341,6 +498,8 @@ public extension PreferenceRow where Trailing == EmptyView {
       title: title,
       subtitle: subtitle,
       onOpen: onOpen,
+      href: href,
+      align: align,
       tint: tint,
       icon: icon,
       trailing: { EmptyView() }
@@ -354,12 +513,16 @@ public extension PreferenceRow where Icon == EmptyView, Trailing == EmptyView {
     title: String,
     subtitle: String? = nil,
     onOpen: (() -> Void)? = nil,
+    href: URL? = nil,
+    align: PreferenceRowAlign = .center,
     tint: Tint = .neutral
   ) {
     self.init(
       title: title,
       subtitle: subtitle,
       onOpen: onOpen,
+      href: href,
+      align: align,
       tint: tint,
       icon: { EmptyView() },
       trailing: { EmptyView() }
@@ -402,6 +565,20 @@ public struct PreferenceThemeOption<Value: Hashable>: Identifiable {
 
   var variables: ThemeVariables {
     (theme ?? ThemeName(rawValue: String(describing: value)) ?? .studioLight).variables
+  }
+}
+
+public extension PreferenceThemeOption where Value == ThemeFamily {
+  /// Creates a swatch option for a typed ``ThemeFamily``, previewed in the
+  /// specified light/dark half.
+  init(family: ThemeFamily, dark: Bool) {
+    self.init(value: family, label: family.displayName, theme: family.themeName(dark: dark))
+  }
+
+  /// Creates a swatch option for a typed ``ThemeFamily``, previewed in the
+  /// specified SwiftUI `ColorScheme`.
+  init(family: ThemeFamily, colorScheme: ColorScheme) {
+    self.init(family: family, dark: colorScheme == .dark)
   }
 }
 

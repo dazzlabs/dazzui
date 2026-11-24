@@ -26,6 +26,37 @@ private let coarseKeyStep: CGFloat = 32
 /// The separator lights up under the pointer and goes solid while dragging.
 private let resizerHintOpacity: Double = 0.6
 
+/// How a ``Sidebar`` collapses when ``Sidebar/collapsed`` is true.
+public enum SidebarCollapsible: String, CaseIterable, Sendable {
+  /// Slides completely out of view (0pt width, non-interactive).
+  case offcanvas
+  /// Collapses to the compact icon rail (`frameSidebarIconWidth`, 48pt),
+  /// keeping navigation icons interactive with tooltips.
+  case icon
+}
+
+private struct SidebarCollapsedKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+private struct SidebarCollapsibleKey: EnvironmentKey {
+  static let defaultValue: SidebarCollapsible = .offcanvas
+}
+
+public extension EnvironmentValues {
+  /// Whether the enclosing ``Sidebar`` is currently collapsed.
+  var sidebarCollapsed: Bool {
+    get { self[SidebarCollapsedKey.self] }
+    set { self[SidebarCollapsedKey.self] = newValue }
+  }
+
+  /// Collapse mode of the enclosing ``Sidebar``.
+  var sidebarCollapsible: SidebarCollapsible {
+    get { self[SidebarCollapsibleKey.self] }
+    set { self[SidebarCollapsibleKey.self] = newValue }
+  }
+}
+
 /// The left workspace column.
 ///
 /// Its width is a token rather than a layout choice because the columns of a
@@ -33,15 +64,16 @@ private let resizerHintOpacity: Double = 0.6
 /// the titlebar's height, so it lines up with the toolbar in the pane beside
 /// it.
 ///
-/// A column put away with ``collapsed`` is not unmounted: it keeps its width
-/// behind a clip anchored to the leading edge and its rows are cut rather than
-/// laid out again, so the pane beside it holds still while the edge slides
-/// over it — the way a native split view collapses — and a width the divider
-/// was dragged to survives the round trip.
-public struct Sidebar<Header: View, Content: View>: View {
+/// A column put away with ``collapsed`` is not unmounted: in `.offcanvas` mode
+/// it keeps its width behind a clip anchored to the leading edge; in `.icon`
+/// mode it shrinks to `frameSidebarIconWidth` (48pt) so icon destinations stay
+/// reachable while preserving the expanded width across round trips.
+public struct Sidebar<Header: View, Content: View, Footer: View>: View {
   /// Content for the strip above the row list, held at exactly the titlebar's
   /// height.
   public var header: (() -> Header)?
+  /// Optional content pinned below the scrolling row list.
+  public var footer: (() -> Footer)?
   /// Let the separator on the trailing edge be dragged. Off by default: a
   /// sidebar standing on its own has no pane to trade width with, and a handle
   /// that leads nowhere is worse than no handle.
@@ -52,15 +84,11 @@ public struct Sidebar<Header: View, Content: View>: View {
   public var defaultWidth: CGFloat?
   public var minWidth: CGFloat
   public var maxWidth: CGFloat
-  /// Whether the column is put away. The host owns the state — a toolbar
-  /// button, a shortcut, a drag past the floor — and toggles it inside an
-  /// animation: `withAnimation(theme.vars.motion)`. The pane beside the column
-  /// takes its space frame by frame only when the change arrives in a
-  /// transaction; a column sweeping in a transaction of its own would leave
-  /// the pane already at its new width underneath it. What the column keeps is
-  /// the drawing: its content at the open width, cut by its own leading edge,
-  /// and gone from the pointer and the accessibility tree once it is shut.
+  /// Whether the column is put away.
   public var collapsed: Bool
+  /// Whether collapsing slides the column off-canvas (`0pt`) or compacts it to
+  /// its icon rail (`frameSidebarIconWidth`).
+  public var collapsible: SidebarCollapsible
   /// Called when the divider is dragged past the floor. Left out, the drag
   /// simply stops at `minWidth` — pass it only where collapsing is a state the
   /// window can actually be in.
@@ -87,20 +115,24 @@ public struct Sidebar<Header: View, Content: View>: View {
     minWidth: CGFloat = sidebarMinimumWidth,
     maxWidth: CGFloat = sidebarMaximumWidth,
     collapsed: Bool = false,
+    collapsible: SidebarCollapsible = .offcanvas,
     onCollapse: (() -> Void)? = nil,
     resizeLabel: String = "Resize sidebar",
     tint: Tint = .primary,
     @ViewBuilder header: @escaping () -> Header,
-    @ViewBuilder content: @escaping () -> Content
+    @ViewBuilder content: @escaping () -> Content,
+    @ViewBuilder footer: @escaping () -> Footer
   ) {
     self.init(
       headerBuilder: header,
+      footerBuilder: footer,
       resizable: resizable,
       width: width,
       defaultWidth: defaultWidth,
       minWidth: minWidth,
       maxWidth: maxWidth,
       collapsed: collapsed,
+      collapsible: collapsible,
       onCollapse: onCollapse,
       resizeLabel: resizeLabel,
       tint: tint,
@@ -110,51 +142,64 @@ public struct Sidebar<Header: View, Content: View>: View {
 
   init(
     headerBuilder: (() -> Header)?,
+    footerBuilder: (() -> Footer)?,
     resizable: Bool,
     width: Binding<CGFloat>?,
     defaultWidth: CGFloat?,
     minWidth: CGFloat,
     maxWidth: CGFloat,
     collapsed: Bool,
+    collapsible: SidebarCollapsible,
     onCollapse: (() -> Void)?,
     resizeLabel: String,
     tint: Tint,
     content: @escaping () -> Content
   ) {
     self.header = headerBuilder
+    self.footer = footerBuilder
     self.resizable = resizable
     self.width = width
     self.defaultWidth = defaultWidth
     self.minWidth = minWidth
     self.maxWidth = maxWidth
     self.collapsed = collapsed
+    self.collapsible = collapsible
     self.onCollapse = onCollapse
     self.resizeLabel = resizeLabel
     self.tint = tint
     self.content = content
   }
 
+  private var isOffcanvasHidden: Bool {
+    collapsed && collapsible == .offcanvas
+  }
+
+  private var isIconCompact: Bool {
+    collapsed && collapsible == .icon
+  }
+
   public var body: some View {
     let vars = theme.vars
+    let targetWidth: CGFloat = collapsed
+      ? (collapsible == .icon ? vars.frameSidebarIconWidth : 0)
+      : resolvedWidth
 
-    column(vars: vars)
-      // Put away, the column keeps the width it has when open and is cut by
-      // its own leading edge as it shuts, so a width the divider was dragged
-      // to survives the round trip and the rows are cut rather than laid out
-      // again. Gone, it is clipped out of the pointer and the accessibility
-      // tree, so it neither catches a click nor leaves its rows to a reader.
-      .frame(width: collapsed ? 0 : resolvedWidth, alignment: .leading)
+    column(vars: vars, innerWidth: isIconCompact ? vars.frameSidebarIconWidth : resolvedWidth)
+      .environment(\.sidebarCollapsed, collapsed)
+      .environment(\.sidebarCollapsible, collapsible)
+      // Put away offcanvas, the column keeps the width it has when open and is
+      // cut by its own leading edge as it shuts, so a width the divider was
+      // dragged to survives the round trip. In icon mode it compacts to
+      // `frameSidebarIconWidth` while staying interactive.
+      .frame(width: targetWidth, alignment: .leading)
       .clipped()
       .overlay(alignment: .trailing) {
-        if resizable { resizer(vars: vars) }
+        if resizable && !collapsed { resizer(vars: vars) }
       }
-      .allowsHitTesting(!collapsed)
-      .accessibilityHidden(collapsed)
+      .allowsHitTesting(!isOffcanvasHidden)
+      .accessibilityHidden(isOffcanvasHidden)
       .onChange(of: collapsed) { away in
         guard away else { return }
-        // A drag that collapsed the column hands the resize cursor back: the
-        // column is cut out from under the pointer rather than unmounted, so
-        // no hover exit follows to take it.
         if hoveringResizer {
           #if os(macOS)
           NSCursor.pop()
@@ -167,22 +212,33 @@ public struct Sidebar<Header: View, Content: View>: View {
       }
   }
 
-  /// The column itself, at the width it has when open.
-  private func column(vars: ThemeVariables) -> some View {
+  /// The column itself, at the open width (or icon rail width when icon-collapsed).
+  private func column(vars: ThemeVariables, innerWidth: CGFloat) -> some View {
     VStack(spacing: 0) {
       if let header {
         HStack(spacing: 0) {
           header()
-          Spacer(minLength: 0)
+          if !isIconCompact {
+            Spacer(minLength: 0)
+          }
         }
-        .padding(.horizontal, vars.spacing4)
+        .padding(.horizontal, isIconCompact ? vars.spacing15 : vars.spacing4)
+        .frame(maxWidth: .infinity, alignment: isIconCompact ? .center : .leading)
         .frame(height: vars.frameTitlebarSize)
       }
       rowList(vars: vars)
+      if let footer {
+        footer()
+          .frame(maxWidth: .infinity, alignment: isIconCompact ? .center : .leading)
+          .fixedSize(horizontal: false, vertical: true)
+          .padding(.horizontal, isIconCompact ? vars.spacing15 : vars.spacing25)
+          .padding(.vertical, vars.spacing2)
+          .rule(isIconCompact ? vars.colorBorder : .clear, edge: .top, width: hairline)
+      }
     }
     // The edge's hairline is drawn inside the column, as CSS's border is.
     .padding(.trailing, hairline)
-    .frame(width: resolvedWidth)
+    .frame(width: innerWidth)
     .background(vars.colorSurfaceColumn)
     .rule(vars.colorBorder, edge: .trailing, width: hairline)
   }
@@ -368,8 +424,8 @@ public struct Sidebar<Header: View, Content: View>: View {
   #endif
 }
 
-public extension Sidebar where Header == EmptyView {
-  /// A sidebar with no header strip.
+public extension Sidebar where Footer == EmptyView {
+  /// A sidebar with a header strip and no pinned footer.
   init(
     resizable: Bool = false,
     width: Binding<CGFloat>? = nil,
@@ -377,6 +433,75 @@ public extension Sidebar where Header == EmptyView {
     minWidth: CGFloat = sidebarMinimumWidth,
     maxWidth: CGFloat = sidebarMaximumWidth,
     collapsed: Bool = false,
+    collapsible: SidebarCollapsible = .offcanvas,
+    onCollapse: (() -> Void)? = nil,
+    resizeLabel: String = "Resize sidebar",
+    tint: Tint = .primary,
+    @ViewBuilder header: @escaping () -> Header,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.init(
+      headerBuilder: header,
+      footerBuilder: nil,
+      resizable: resizable,
+      width: width,
+      defaultWidth: defaultWidth,
+      minWidth: minWidth,
+      maxWidth: maxWidth,
+      collapsed: collapsed,
+      collapsible: collapsible,
+      onCollapse: onCollapse,
+      resizeLabel: resizeLabel,
+      tint: tint,
+      content: content
+    )
+  }
+}
+
+public extension Sidebar where Header == EmptyView {
+  /// A sidebar with no header strip and a pinned footer.
+  init(
+    resizable: Bool = false,
+    width: Binding<CGFloat>? = nil,
+    defaultWidth: CGFloat? = nil,
+    minWidth: CGFloat = sidebarMinimumWidth,
+    maxWidth: CGFloat = sidebarMaximumWidth,
+    collapsed: Bool = false,
+    collapsible: SidebarCollapsible = .offcanvas,
+    onCollapse: (() -> Void)? = nil,
+    resizeLabel: String = "Resize sidebar",
+    tint: Tint = .primary,
+    @ViewBuilder content: @escaping () -> Content,
+    @ViewBuilder footer: @escaping () -> Footer
+  ) {
+    self.init(
+      headerBuilder: nil,
+      footerBuilder: footer,
+      resizable: resizable,
+      width: width,
+      defaultWidth: defaultWidth,
+      minWidth: minWidth,
+      maxWidth: maxWidth,
+      collapsed: collapsed,
+      collapsible: collapsible,
+      onCollapse: onCollapse,
+      resizeLabel: resizeLabel,
+      tint: tint,
+      content: content
+    )
+  }
+}
+
+public extension Sidebar where Header == EmptyView, Footer == EmptyView {
+  /// A sidebar with neither a header strip nor a pinned footer.
+  init(
+    resizable: Bool = false,
+    width: Binding<CGFloat>? = nil,
+    defaultWidth: CGFloat? = nil,
+    minWidth: CGFloat = sidebarMinimumWidth,
+    maxWidth: CGFloat = sidebarMaximumWidth,
+    collapsed: Bool = false,
+    collapsible: SidebarCollapsible = .offcanvas,
     onCollapse: (() -> Void)? = nil,
     resizeLabel: String = "Resize sidebar",
     tint: Tint = .primary,
@@ -384,12 +509,14 @@ public extension Sidebar where Header == EmptyView {
   ) {
     self.init(
       headerBuilder: nil,
+      footerBuilder: nil,
       resizable: resizable,
       width: width,
       defaultWidth: defaultWidth,
       minWidth: minWidth,
       maxWidth: maxWidth,
       collapsed: collapsed,
+      collapsible: collapsible,
       onCollapse: onCollapse,
       resizeLabel: resizeLabel,
       tint: tint,
@@ -411,6 +538,8 @@ public struct SidebarGroup<Label: View, Action: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
+  @Environment(\.sidebarCollapsed) private var sidebarCollapsed
+  @Environment(\.sidebarCollapsible) private var sidebarCollapsible
 
   public init(
     @ViewBuilder label: @escaping () -> Label,
@@ -426,11 +555,15 @@ public struct SidebarGroup<Label: View, Action: View, Content: View>: View {
     self.content = content
   }
 
+  private var isIconCompact: Bool {
+    sidebarCollapsed && sidebarCollapsible == .icon
+  }
+
   public var body: some View {
     let vars = theme.vars
 
-    VStack(alignment: .leading, spacing: 0) {
-      if let label {
+    VStack(alignment: isIconCompact ? .center : .leading, spacing: 0) {
+      if let label, !isIconCompact {
         // A heading carrying a button is a row of two columns — the label
         // taking what is left, the button a column of its own — both on the
         // row's centre. The label's line reserves `sidebar.group-label-height`,
@@ -449,14 +582,14 @@ public struct SidebarGroup<Label: View, Action: View, Content: View>: View {
           }
         }
       }
-      VStack(alignment: .leading, spacing: vars.frameNavGap) {
+      VStack(alignment: isIconCompact ? .center : .leading, spacing: vars.frameNavGap) {
         content()
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .frame(maxWidth: .infinity, alignment: isIconCompact ? .center : .leading)
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
+    .frame(maxWidth: .infinity, alignment: isIconCompact ? .center : .leading)
     .padding(.vertical, vars.spacing15)
-    .padding(.horizontal, vars.spacing25)
+    .padding(.horizontal, isIconCompact ? vars.spacing15 : vars.spacing25)
   }
 }
 

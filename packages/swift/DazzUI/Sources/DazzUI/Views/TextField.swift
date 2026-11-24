@@ -1,8 +1,9 @@
 import FluentIcons
-
-/// The text controls' own three sizes, each of which binds one of the shared
-/// `[data-size]` control profiles.
 import SwiftUI
+
+#if os(macOS)
+  import AppKit
+#endif
 
 /// Whether the control is reporting a problem.
 
@@ -129,19 +130,21 @@ struct FieldStyle: Equatable {
   }
 
   /// Entered text is body weight rather than the profile's label weight — a
-  /// query typed in semibold reads as shouting — and takes the code face
-  /// where the value is a key, an ID, or a URL.
+  /// query typed in semibold reads as shouting — and takes the semantic code
+  /// face where the value is a key, an ID, or a URL.
   static func font(size: CGFloat, mono: Bool, vars: ThemeVariables) -> Font {
-    .system(size: size, weight: vars.bodySmall.weight, design: mono ? .monospaced : .default)
+    mono
+      ? vars.codeFont(size: size, weight: vars.bodySmall.weight)
+      : .system(size: size, weight: vars.bodySmall.weight)
   }
 
   /// A face the caller chose, as a host's class sets `font-family`,
   /// `font-size` and `font-weight` on the field; mono still takes the code
   /// face, in the chosen size and weight.
-  static func font(_ style: TypeStyle, mono: Bool) -> Font {
+  static func font(_ style: TypeStyle, mono: Bool, vars: ThemeVariables) -> Font {
     mono
-      ? .system(size: style.size, weight: style.weight, design: .monospaced)
-      : style.font.weight(style.weight)
+      ? vars.codeFont(size: style.size, weight: style.weight)
+      : style.resolvedFont(weight: style.weight)
   }
 }
 extension View {
@@ -201,6 +204,18 @@ public struct TextField: View {
   /// unless set, as a textarea's are. The box is never shorter than its
   /// floor, `spacing-20`.
   public var rows: Int
+  /// Optional leading adornment view (e.g. a search or key icon).
+  public var leading: AnyView?
+  /// Optional trailing adornment view (e.g. a unit label, badge, or clear button).
+  public var trailing: AnyView?
+  /// Renders without box chrome (no background fill, hairline border, or focus
+  /// ring) for inline titles or plain multiline note/translation editors.
+  public var borderless: Bool
+  /// When true on a multiline field on macOS, plain Return invokes `onSubmit`
+  /// (only when no IME composition is active) while Shift+Return inserts a newline.
+  public var submitOnReturn: Bool
+  /// Invoked when the user submits the field.
+  public var onSubmit: (() -> Void)?
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
@@ -217,7 +232,12 @@ public struct TextField: View {
     multiline: Bool = false,
     secure: Bool = false,
     typeStyle: TypeStyle? = nil,
-    rows: Int = 2
+    rows: Int = 2,
+    leading: (any View)? = nil,
+    trailing: (any View)? = nil,
+    borderless: Bool = false,
+    submitOnReturn: Bool = false,
+    onSubmit: (() -> Void)? = nil
   ) {
     self._text = text
     self.placeholder = placeholder
@@ -230,6 +250,126 @@ public struct TextField: View {
     self.secure = secure
     self.typeStyle = typeStyle
     self.rows = rows
+    self.leading = leading.map { AnyView($0) }
+    self.trailing = trailing.map { AnyView($0) }
+    self.borderless = borderless
+    self.submitOnReturn = submitOnReturn
+    self.onSubmit = onSubmit
+  }
+
+  /// Convenience initializer accepting `@ViewBuilder` `leading` and `trailing` adornments.
+  public init<Leading: View, Trailing: View>(
+    text: Binding<String>,
+    placeholder: String = "",
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
+    tint: Tint = .primary,
+    mono: Bool = false,
+    enabled: Bool = true,
+    multiline: Bool = false,
+    secure: Bool = false,
+    typeStyle: TypeStyle? = nil,
+    rows: Int = 2,
+    borderless: Bool = false,
+    submitOnReturn: Bool = false,
+    onSubmit: (() -> Void)? = nil,
+    @ViewBuilder leading: () -> Leading,
+    @ViewBuilder trailing: () -> Trailing
+  ) {
+    self.init(
+      text: text,
+      placeholder: placeholder,
+      size: size,
+      state: state,
+      tint: tint,
+      mono: mono,
+      enabled: enabled,
+      multiline: multiline,
+      secure: secure,
+      typeStyle: typeStyle,
+      rows: rows,
+      leading: Leading.self == EmptyView.self ? nil : leading(),
+      trailing: Trailing.self == EmptyView.self ? nil : trailing(),
+      borderless: borderless,
+      submitOnReturn: submitOnReturn,
+      onSubmit: onSubmit
+    )
+  }
+
+  /// Convenience initializer accepting a `@ViewBuilder` `leading` adornment.
+  public init<Leading: View>(
+    text: Binding<String>,
+    placeholder: String = "",
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
+    tint: Tint = .primary,
+    mono: Bool = false,
+    enabled: Bool = true,
+    multiline: Bool = false,
+    secure: Bool = false,
+    typeStyle: TypeStyle? = nil,
+    rows: Int = 2,
+    borderless: Bool = false,
+    submitOnReturn: Bool = false,
+    onSubmit: (() -> Void)? = nil,
+    @ViewBuilder leading: () -> Leading
+  ) {
+    self.init(
+      text: text,
+      placeholder: placeholder,
+      size: size,
+      state: state,
+      tint: tint,
+      mono: mono,
+      enabled: enabled,
+      multiline: multiline,
+      secure: secure,
+      typeStyle: typeStyle,
+      rows: rows,
+      leading: Leading.self == EmptyView.self ? nil : leading(),
+      trailing: nil,
+      borderless: borderless,
+      submitOnReturn: submitOnReturn,
+      onSubmit: onSubmit
+    )
+  }
+
+  /// Convenience initializer accepting a `@ViewBuilder` `trailing` adornment.
+  public init<Trailing: View>(
+    text: Binding<String>,
+    placeholder: String = "",
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
+    tint: Tint = .primary,
+    mono: Bool = false,
+    enabled: Bool = true,
+    multiline: Bool = false,
+    secure: Bool = false,
+    typeStyle: TypeStyle? = nil,
+    rows: Int = 2,
+    borderless: Bool = false,
+    submitOnReturn: Bool = false,
+    onSubmit: (() -> Void)? = nil,
+    @ViewBuilder trailing: () -> Trailing
+  ) {
+    self.init(
+      text: text,
+      placeholder: placeholder,
+      size: size,
+      state: state,
+      tint: tint,
+      mono: mono,
+      enabled: enabled,
+      multiline: multiline,
+      secure: secure,
+      typeStyle: typeStyle,
+      rows: rows,
+      leading: nil,
+      trailing: Trailing.self == EmptyView.self ? nil : trailing(),
+      borderless: borderless,
+      submitOnReturn: submitOnReturn,
+      onSubmit: onSubmit
+    )
   }
 
   public var body: some View {
@@ -246,12 +386,16 @@ public struct TextField: View {
       Group {
         if secure && !multiline {
           SwiftUI.SecureField(nativePlaceholder, text: $text)
+            .onSubmit { onSubmit?() }
         } else {
           SwiftUI.TextField(
             nativePlaceholder,
             text: $text,
             axis: multiline ? .vertical : .horizontal
           )
+          .onSubmit {
+            if !multiline { onSubmit?() }
+          }
         }
       }
       .textFieldStyle(.plain)
@@ -259,11 +403,31 @@ public struct TextField: View {
       .disabled(!enabled)
     }
     .font(
-      typeStyle.map { FieldStyle.font($0, mono: mono) }
+      typeStyle.map { FieldStyle.font($0, mono: mono, vars: vars) }
         ?? FieldStyle.font(size: metrics.content.size, mono: mono, vars: vars)
     )
 
-    return Group {
+    let adorned = Group {
+      if leading != nil || trailing != nil {
+        HStack(alignment: multiline ? .top : .center, spacing: vars.spacing2) {
+          if let leading {
+            leading
+              .environment(\.dazzIconSize, metrics.iconSize)
+              .foregroundStyle(vars.colorContentFaint)
+          }
+          editor
+          if let trailing {
+            trailing
+              .environment(\.dazzIconSize, metrics.iconSize)
+              .foregroundStyle(vars.colorContentFaint)
+          }
+        }
+      } else {
+        editor
+      }
+    }
+
+    let sized = Group {
       if multiline {
         let line = proseLine(metrics: metrics)
         // The textarea's height: `rows` lines, its padding and its border,
@@ -272,21 +436,21 @@ public struct TextField: View {
           vars.spacing20,
           line.lineHeight * CGFloat(max(1, rows)) + vars.spacing25 * 2 + hairline * 2
         )
-        editor
+        adorned
           .lineBox(line)
           .frame(maxWidth: .infinity, alignment: .topLeading)
-          .padding(.vertical, vars.spacing25)
-          .padding(.horizontal, vars.spacing3)
-          .frame(minHeight: height, alignment: .topLeading)
+          .padding(.vertical, borderless ? 0 : vars.spacing25)
+          .padding(.horizontal, borderless ? 0 : vars.spacing3)
+          .frame(minHeight: borderless ? line.lineHeight * CGFloat(max(1, rows)) : height, alignment: .topLeading)
       } else {
-        editor
+        adorned
           .lineLimit(1)
-          .padding(.horizontal, vars.spacing3)
+          .padding(.horizontal, borderless ? 0 : vars.spacing3)
           // Single-line controls take the shared control height, so a form can
           // mix them with buttons without the rows stepping. It wins over the
           // profile's block padding, which is what the stylesheet's `height`
           // does too.
-          .frame(height: metrics.size)
+          .frame(height: borderless ? nil : metrics.size)
       }
     }
     // The whole box is the field's, as a textarea's is: a press anywhere in it
@@ -297,19 +461,33 @@ public struct TextField: View {
         .contentShape(Rectangle())
         .onTapGesture { if enabled { focused = true } }
     }
-    .fieldChrome(
-      FieldStyle(
-        vars: vars,
-        tint: ramp,
-        invalid: state == .error,
-        enabled: enabled,
-        focused: focused
-      ),
-      // A growing box takes the container corner; a single line takes the
-      // field corner, one step above the buttons' in every drawn family.
-      cornerRadius: multiline ? vars.radiusLarge : vars.controlFieldRadius,
-      vars: vars
-    )
+    .background {
+      #if os(macOS)
+        if multiline && submitOnReturn, let onSubmit {
+          IMESafeReturnKeyMonitor(active: focused && enabled, onSubmit: onSubmit)
+        }
+      #endif
+    }
+
+    return Group {
+      if borderless {
+        sized.foregroundStyle(enabled ? vars.colorContent : vars.colorContentFaint)
+      } else {
+        sized.fieldChrome(
+          FieldStyle(
+            vars: vars,
+            tint: ramp,
+            invalid: state == .error,
+            enabled: enabled,
+            focused: focused
+          ),
+          // A growing box takes the container corner; a single line takes the
+          // field corner, one step above the buttons' in every drawn family.
+          cornerRadius: multiline ? vars.radiusLarge : vars.controlFieldRadius,
+          vars: vars
+        )
+      }
+    }
   }
 
   private var nativePlaceholder: String {
@@ -659,3 +837,83 @@ extension FieldValue where Content == Text {
     self.init(size: size, mono: mono, content: { Text(value) })
   }
 }
+
+#if os(macOS)
+  /// Intercepts plain Return (without Shift) inside a focused multiline
+  /// `TextField` only when the active `NSTextInputClient` has no IME marked text.
+  private struct IMESafeReturnKeyMonitor: NSViewRepresentable {
+    let active: Bool
+    let onSubmit: () -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeNSView(context: Context) -> NSView {
+      let view = NSView()
+      context.coordinator.update(active: active, onSubmit: onSubmit, view: view)
+      return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+      context.coordinator.update(active: active, onSubmit: onSubmit, view: nsView)
+    }
+
+    static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
+      coordinator.stop()
+    }
+
+    @MainActor
+    final class Coordinator {
+      private var monitor: Any?
+      private var active = false
+      private var onSubmit: () -> Void = {}
+      private weak var anchorView: NSView?
+
+      func update(active: Bool, onSubmit: @escaping () -> Void, view: NSView) {
+        self.active = active
+        self.onSubmit = onSubmit
+        self.anchorView = view
+        if active && monitor == nil {
+          start()
+        } else if !active && monitor != nil {
+          stop()
+        }
+      }
+
+      private func start() {
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+          guard let self, self.active else { return event }
+          guard event.keyCode == 36 || event.keyCode == 76 else { return event }
+          let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+          guard !modifiers.contains(.shift),
+            !modifiers.contains(.command),
+            !modifiers.contains(.control),
+            !modifiers.contains(.option)
+          else { return event }
+          if let window = self.anchorView?.window, event.window !== window {
+            return event
+          }
+          if let client = event.window?.firstResponder as? NSTextInputClient,
+            client.hasMarkedText()
+          {
+            return event
+          }
+          self.onSubmit()
+          return nil
+        }
+      }
+
+      func stop() {
+        if let monitor {
+          NSEvent.removeMonitor(monitor)
+        }
+        monitor = nil
+      }
+
+      deinit {
+        if let monitor {
+          NSEvent.removeMonitor(monitor)
+        }
+      }
+    }
+  }
+#endif

@@ -33,28 +33,76 @@ public enum SidebarMenuButtonSize: String, CaseIterable, Sendable {
   case large
 }
 
+/// A trailing inline action button inside a ``SidebarMenuButton``.
+///
+/// When `showOnHover` is true, the action stays hidden at rest and swaps in
+/// over any ``SidebarMenuBadge`` while the row is hovered or active.
+public struct SidebarMenuAction<Content: View>: View {
+  public var showOnHover: Bool
+  /// Keep the action visible even after pointer hover leaves (for example while
+  /// its popup menu is open).
+  public var active: Bool
+  @ViewBuilder public var content: () -> Content
+
+  @Environment(\.sidebarRowHovered) private var rowHovered
+  @Environment(\.theme) private var theme
+
+  public init(
+    showOnHover: Bool = false,
+    active: Bool = false,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.showOnHover = showOnHover
+    self.active = active
+    self.content = content
+  }
+
+  private var visible: Bool {
+    !showOnHover || rowHovered || active
+  }
+
+  public var body: some View {
+    content()
+      .opacity(visible ? 1 : 0)
+      .allowsHitTesting(visible)
+      .animation(theme.vars.motion, value: visible)
+  }
+}
+
 /// One row of a sidebar — `SidebarMenuButton` in `sidebar.tsx`, with its
-/// `SidebarMenuBadge` as the trailing slot.
+/// `SidebarMenuBadge` and optional `SidebarMenuAction` on the trailing edge.
 ///
 /// Idle, it rests in the nav ink at the quiet weight — a column of full-ink
 /// rows would leave the selected one nothing to win by.
-public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
+public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowAction: View>: View {
   /// Marks this row as the page or pane currently shown.
   public var active: Bool
   public var size: SidebarMenuButtonSize
   public var variant: SidebarMenuButtonVariant
   public var tint: Tint
   public var enabled: Bool
+  /// Tooltip label surfaced when the sidebar is collapsed to `.icon` mode.
+  public var tooltip: String?
+  /// When true, hovering the row (or setting `keepActionVisible`) reveals
+  /// `rowAction` and hides `badge` in its place.
+  public var showActionOnHover: Bool
+  /// Keeps a hover-revealed `rowAction` visible (e.g. while a menu is open).
+  public var keepActionVisible: Bool
   public var action: () -> Void
   /// Leading glyph. It follows the row's colour, so it tints with selection.
   public var icon: (() -> Leading)?
   @ViewBuilder public var label: () -> Label
   /// A count on the row's trailing edge, in the row's own colour.
   public var badge: (() -> Badge)?
+  /// An interactive trailing control (such as a `...` menu button).
+  public var rowAction: (() -> RowAction)?
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
+  @Environment(\.sidebarCollapsed) private var sidebarCollapsed
+  @Environment(\.sidebarCollapsible) private var sidebarCollapsible
   @FocusState private var focused: Bool
+  @State private var rowHovered = false
 
   public init(
     active: Bool = false,
@@ -62,14 +110,20 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
     variant: SidebarMenuButtonVariant = .filled,
     tint: Tint = .primary,
     enabled: Bool = true,
+    tooltip: String? = nil,
+    showActionOnHover: Bool = false,
+    keepActionVisible: Bool = false,
     action: @escaping () -> Void,
     @ViewBuilder icon: @escaping () -> Leading,
     @ViewBuilder label: @escaping () -> Label,
-    @ViewBuilder badge: @escaping () -> Badge
+    @ViewBuilder badge: @escaping () -> Badge,
+    @ViewBuilder rowAction: @escaping () -> RowAction
   ) {
     self.init(
-      active: active, size: size, variant: variant, tint: tint, enabled: enabled, action: action,
-      iconBuilder: icon, label: label, badgeBuilder: badge)
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, showActionOnHover: showActionOnHover, keepActionVisible: keepActionVisible,
+      action: action, iconBuilder: icon, label: label, badgeBuilder: badge,
+      rowActionBuilder: rowAction)
   }
 
   /// The one initialiser that fills the box. An absent icon stays absent
@@ -81,27 +135,98 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
     variant: SidebarMenuButtonVariant,
     tint: Tint,
     enabled: Bool,
+    tooltip: String? = nil,
+    showActionOnHover: Bool = false,
+    keepActionVisible: Bool = false,
     action: @escaping () -> Void,
     iconBuilder: (() -> Leading)?,
     label: @escaping () -> Label,
-    badgeBuilder: (() -> Badge)?
+    badgeBuilder: (() -> Badge)?,
+    rowActionBuilder: (() -> RowAction)? = nil
   ) {
     self.active = active
     self.size = size
     self.variant = variant
     self.tint = tint
     self.enabled = enabled
+    self.tooltip = tooltip
+    self.showActionOnHover = showActionOnHover
+    self.keepActionVisible = keepActionVisible
     self.action = action
     self.icon = iconBuilder
     self.label = label
     self.badge = badgeBuilder
+    self.rowAction = rowActionBuilder
+  }
+
+  private var isIconCompact: Bool {
+    sidebarCollapsed && sidebarCollapsible == .icon
+  }
+
+  private var isActionVisible: Bool {
+    guard rowAction != nil else { return false }
+    return !showActionOnHover || rowHovered || keepActionVisible
   }
 
   public var body: some View {
+    if isIconCompact {
+      compactBody
+    } else {
+      expandedBody
+    }
+  }
+
+  @ViewBuilder
+  private var compactBody: some View {
+    let vars = theme.vars
+    let radius = vars.radiusSmall
+    let boxSize = vars.metrics(.medium).size
+
+    let button = Pressable(action: action, enabled: enabled, cornerRadius: radius) { state in
+      Group {
+        if let icon {
+          icon().environment(\.dazzIconSize, vars.iconMedium)
+        } else {
+          label().lineLimit(1)
+        }
+      }
+      .foregroundStyle(foreground(state))
+      .frame(width: boxSize, height: boxSize)
+      .background(background(state))
+      .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
+      .overlay {
+        if let ring = ring(state) {
+          RoundedRectangle(cornerRadius: radius, style: .circular)
+            .strokeBorder(ring, lineWidth: hairline)
+        }
+      }
+      .animation(vars.motion, value: state.controlState)
+      .animation(vars.motion, value: active)
+    }
+    .focused($focused)
+    .focusRing(
+      visible: focused && enabled,
+      color: vars.focusRing,
+      cornerRadius: radius,
+      width: vars.focusWidth
+    )
+    .accessibilityAddTraits(active ? [.isSelected] : [])
+
+    if let tooltip, !tooltip.isEmpty {
+      Tooltip(tooltip, side: .right, disabled: !enabled, presented: focused) {
+        button
+      }
+    } else {
+      button
+    }
+  }
+
+  private var expandedBody: some View {
     let vars = theme.vars
     let radius = size == .large ? vars.radiusLarge : vars.radiusSmall
+    let hasTrailing = badge != nil || rowAction != nil
 
-    Pressable(action: action, enabled: enabled, cornerRadius: radius) { state in
+    return Pressable(action: action, enabled: enabled, cornerRadius: radius) { state in
       HStack(spacing: vars.spacing15) {
         if let icon {
           // The glyph is taller than the label, so it is boxed to the row's
@@ -124,8 +249,8 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
       .foregroundStyle(foreground(state))
       .padding(.vertical, paddingBlock)
       .padding(.leading, vars.spacing25)
-      // A row with a count keeps its label clear of it.
-      .padding(.trailing, badge == nil ? vars.spacing25 : vars.spacing8)
+      // A row with a count or action keeps its label clear of it.
+      .padding(.trailing, hasTrailing ? vars.spacing8 : vars.spacing25)
       .frame(maxWidth: .infinity, minHeight: size == .large ? vars.spacing12 : nil, alignment: .leading)
       .background(background(state))
       .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
@@ -136,10 +261,10 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
         }
       }
       .overlay(alignment: .trailing) {
-        if let badge {
+        if let badge, !(showActionOnHover && isActionVisible) {
           badge()
             .environment(\.sidebarBadgeInk, badgeColor(state))
-            .padding(.trailing, vars.spacing1)
+            .padding(.trailing, rowAction != nil && !showActionOnHover ? vars.spacing7 : vars.spacing1)
         }
       }
       // The wash under the pointer and the fill that marks the current page
@@ -148,6 +273,17 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
       .animation(vars.motion, value: state.controlState)
       .animation(vars.motion, value: active)
     }
+    .overlay(alignment: .trailing) {
+      if let rowAction {
+        rowAction()
+          .environment(\.sidebarRowHovered, rowHovered || keepActionVisible)
+          .padding(.trailing, vars.spacing1)
+          .opacity(isActionVisible ? 1 : 0)
+          .allowsHitTesting(isActionVisible)
+          .animation(vars.motion, value: isActionVisible)
+      }
+    }
+    .onHover { rowHovered = $0 }
     .focused($focused)
     .focusRing(
       visible: focused && enabled,
@@ -244,7 +380,28 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
   }
 }
 
-public extension SidebarMenuButton where Badge == EmptyView {
+public extension SidebarMenuButton where RowAction == EmptyView {
+  /// A row with a glyph, label, and count.
+  init(
+    active: Bool = false,
+    size: SidebarMenuButtonSize = .medium,
+    variant: SidebarMenuButtonVariant = .filled,
+    tint: Tint = .primary,
+    enabled: Bool = true,
+    tooltip: String? = nil,
+    action: @escaping () -> Void,
+    @ViewBuilder icon: @escaping () -> Leading,
+    @ViewBuilder label: @escaping () -> Label,
+    @ViewBuilder badge: @escaping () -> Badge
+  ) {
+    self.init(
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, action: action, iconBuilder: icon, label: label,
+      badgeBuilder: badge, rowActionBuilder: nil)
+  }
+}
+
+public extension SidebarMenuButton where Badge == EmptyView, RowAction == EmptyView {
   /// A row with no count.
   init(
     active: Bool = false,
@@ -252,17 +409,19 @@ public extension SidebarMenuButton where Badge == EmptyView {
     variant: SidebarMenuButtonVariant = .filled,
     tint: Tint = .primary,
     enabled: Bool = true,
+    tooltip: String? = nil,
     action: @escaping () -> Void,
     @ViewBuilder icon: @escaping () -> Leading,
     @ViewBuilder label: @escaping () -> Label
   ) {
     self.init(
-      active: active, size: size, variant: variant, tint: tint, enabled: enabled, action: action,
-      iconBuilder: icon, label: label, badgeBuilder: nil)
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, action: action, iconBuilder: icon, label: label,
+      badgeBuilder: nil, rowActionBuilder: nil)
   }
 }
 
-public extension SidebarMenuButton where Leading == EmptyView, Badge == EmptyView {
+public extension SidebarMenuButton where Leading == EmptyView, Badge == EmptyView, RowAction == EmptyView {
   /// A row with neither a glyph nor a count.
   init(
     active: Bool = false,
@@ -270,16 +429,18 @@ public extension SidebarMenuButton where Leading == EmptyView, Badge == EmptyVie
     variant: SidebarMenuButtonVariant = .filled,
     tint: Tint = .primary,
     enabled: Bool = true,
+    tooltip: String? = nil,
     action: @escaping () -> Void,
     @ViewBuilder label: @escaping () -> Label
   ) {
     self.init(
-      active: active, size: size, variant: variant, tint: tint, enabled: enabled, action: action,
-      iconBuilder: nil, label: label, badgeBuilder: nil)
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, action: action, iconBuilder: nil, label: label,
+      badgeBuilder: nil, rowActionBuilder: nil)
   }
 }
 
-public extension SidebarMenuButton where Leading == EmptyView {
+public extension SidebarMenuButton where Leading == EmptyView, RowAction == EmptyView {
   /// A row with a count and no glyph.
   init(
     active: Bool = false,
@@ -287,13 +448,39 @@ public extension SidebarMenuButton where Leading == EmptyView {
     variant: SidebarMenuButtonVariant = .filled,
     tint: Tint = .primary,
     enabled: Bool = true,
+    tooltip: String? = nil,
     action: @escaping () -> Void,
     @ViewBuilder label: @escaping () -> Label,
     @ViewBuilder badge: @escaping () -> Badge
   ) {
     self.init(
-      active: active, size: size, variant: variant, tint: tint, enabled: enabled, action: action,
-      iconBuilder: nil, label: label, badgeBuilder: badge)
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, action: action, iconBuilder: nil, label: label,
+      badgeBuilder: badge, rowActionBuilder: nil)
+  }
+}
+
+public extension SidebarMenuButton where Badge == EmptyView {
+  /// A row with a glyph, label, and trailing action (no badge).
+  init(
+    active: Bool = false,
+    size: SidebarMenuButtonSize = .medium,
+    variant: SidebarMenuButtonVariant = .filled,
+    tint: Tint = .primary,
+    enabled: Bool = true,
+    tooltip: String? = nil,
+    showActionOnHover: Bool = false,
+    keepActionVisible: Bool = false,
+    action: @escaping () -> Void,
+    @ViewBuilder icon: @escaping () -> Leading,
+    @ViewBuilder label: @escaping () -> Label,
+    @ViewBuilder rowAction: @escaping () -> RowAction
+  ) {
+    self.init(
+      active: active, size: size, variant: variant, tint: tint, enabled: enabled,
+      tooltip: tooltip, showActionOnHover: showActionOnHover, keepActionVisible: keepActionVisible,
+      action: action, iconBuilder: icon, label: label, badgeBuilder: nil,
+      rowActionBuilder: rowAction)
   }
 }
 
@@ -334,11 +521,20 @@ private struct SidebarBadgeInkKey: EnvironmentKey {
   static let defaultValue: Color? = nil
 }
 
+private struct SidebarRowHoveredKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
 extension EnvironmentValues {
   /// The ink a row hands the count beside it: the count is the row's, so it
   /// turns with the row's state.
   var sidebarBadgeInk: Color? {
     get { self[SidebarBadgeInkKey.self] }
     set { self[SidebarBadgeInkKey.self] = newValue }
+  }
+
+  var sidebarRowHovered: Bool {
+    get { self[SidebarRowHoveredKey.self] }
+    set { self[SidebarRowHoveredKey.self] = newValue }
   }
 }

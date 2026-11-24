@@ -440,6 +440,13 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
       let anchorOnScreen = window.convertToScreen(
         anchor.convert(anchor.bounds, to: nil))
       var room = room.insetBy(dx: 4, dy: 4)
+      // A control sitting inside a full-bleed titlebar lives above
+      // `contentLayoutRect.maxY`; widen room to `window.frame` so a `.top`
+      // tooltip can still flip cleanly to `.bottom` instead of clamping on top
+      // of the anchor.
+      if anchorOnScreen.maxY > room.maxY {
+        room = window.frame.insetBy(dx: 4, dy: 4)
+      }
       if let visibleFrame = window.screen?.visibleFrame {
         room = room.intersection(visibleFrame)
       }

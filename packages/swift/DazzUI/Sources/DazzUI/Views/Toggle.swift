@@ -1,6 +1,14 @@
 import FluentIcons
 import SwiftUI
 
+/// Corner geometry of a ``Toggle``.
+public enum ToggleShape: String, CaseIterable, Sendable {
+  /// The active size profile's control radius.
+  case `default`
+  /// Fully circular pill / round toggle (for example, a round icon latch).
+  case circle
+}
+
 /// A button that stays down.
 ///
 /// The distinction it draws against its neighbours is worth stating, because
@@ -14,6 +22,7 @@ public struct Toggle<Label: View>: View {
   public var size: ControlSize
   public var variant: ControlVariant
   public var tint: Tint
+  public var shape: ToggleShape
   public var enabled: Bool
   /// Set by ``ToggleGroup`` on every member of a run: a grouped toggle really
   /// is drawn differently — square corners inside the run, and no edge of its
@@ -27,6 +36,10 @@ public struct Toggle<Label: View>: View {
   public var glyphOnly: Bool
   /// What a screen reader says, for a toggle whose label is a glyph.
   public var accessibilityName: String?
+  /// Optional tooltip label surfaced on hover or keyboard focus.
+  public var tooltip: String?
+  /// Which edge of the toggle its tooltip hangs from.
+  public var tooltipSide: TooltipSide
   public var action: (() -> Void)?
   @ViewBuilder public var label: () -> Label
 
@@ -40,10 +53,13 @@ public struct Toggle<Label: View>: View {
     // Neutral for the reason `IconButton` is: a toolbar of these is chrome,
     // and a row of accented glyphs reads as a row of actions.
     tint: Tint = .neutral,
+    shape: ToggleShape = .default,
     enabled: Bool = true,
     grouped: Bool = false,
     glyphOnly: Bool = false,
     accessibilityName: String? = nil,
+    tooltip: String? = nil,
+    tooltipSide: TooltipSide = .top,
     action: (() -> Void)? = nil,
     @ViewBuilder label: @escaping () -> Label
   ) {
@@ -51,20 +67,33 @@ public struct Toggle<Label: View>: View {
     self.size = size
     self.variant = variant
     self.tint = tint
+    self.shape = shape
     self.enabled = enabled
     self.grouped = grouped
     self.glyphOnly = glyphOnly
     self.accessibilityName = accessibilityName
+    self.tooltip = tooltip
+    self.tooltipSide = tooltipSide
     self.action = action
     self.label = label
   }
 
   public var body: some View {
+    if let tooltip, !tooltip.isEmpty {
+      Tooltip(tooltip, side: tooltipSide, disabled: !enabled, presented: focused) {
+        control
+      }
+    } else {
+      control
+    }
+  }
+
+  private var control: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size)
-    let corner = grouped ? 0 : metrics.radius
+    let corner: CGFloat = grouped ? 0 : (shape == .circle ? vars.radiusFull : metrics.radius)
 
-    Pressable(action: action ?? {}, enabled: enabled, cornerRadius: corner) { state in
+    return Pressable(action: action ?? {}, enabled: enabled, cornerRadius: corner) { state in
       // Down: the system's own selection rule, applied. The tinted wash for the
       // colour, and the label a weight heavier — the weight is the half that
       // survives on a monochrome toolbar and for a reader who cannot tell the
@@ -117,7 +146,7 @@ public struct Toggle<Label: View>: View {
       width: vars.focusWidth
     )
     .accessibilityAddTraits(pressed ? [.isButton, .isSelected] : .isButton)
-    .accessibilityLabel(accessibilityName ?? "")
+    .accessibilityLabel(accessibilityName ?? tooltip ?? "")
   }
 }
 
@@ -132,7 +161,10 @@ public extension Toggle where Label == Icon {
     size: ControlSize = .tiny,
     variant: ControlVariant = .plain,
     tint: Tint = .neutral,
+    shape: ToggleShape = .default,
     enabled: Bool = true,
+    tooltip: String? = nil,
+    tooltipSide: TooltipSide = .top,
     action: (() -> Void)? = nil
   ) {
     self.init(
@@ -140,9 +172,12 @@ public extension Toggle where Label == Icon {
       size: size,
       variant: variant,
       tint: tint,
+      shape: shape,
       enabled: enabled,
       glyphOnly: true,
       accessibilityName: label,
+      tooltip: tooltip,
+      tooltipSide: tooltipSide,
       action: action,
       // The same glyph step ``IconButton`` draws, so the two line up.
       label: { Icon(icon) }
@@ -158,8 +193,11 @@ public extension Toggle where Label == Text {
     size: ControlSize = .tiny,
     variant: ControlVariant = .plain,
     tint: Tint = .neutral,
+    shape: ToggleShape = .default,
     enabled: Bool = true,
     grouped: Bool = false,
+    tooltip: String? = nil,
+    tooltipSide: TooltipSide = .top,
     action: (() -> Void)? = nil
   ) {
     self.init(
@@ -167,8 +205,11 @@ public extension Toggle where Label == Text {
       size: size,
       variant: variant,
       tint: tint,
+      shape: shape,
       enabled: enabled,
       grouped: grouped,
+      tooltip: tooltip,
+      tooltipSide: tooltipSide,
       action: action,
       label: { Text(title) }
     )

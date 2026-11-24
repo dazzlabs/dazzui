@@ -43,14 +43,10 @@ public struct Code: View {
     let vars = theme.vars
 
     Text(code)
-      // The code face, the one place a view reaches a `base.*` primitive —
-      // exactly as a `mono` TextField does. `base.font.code` has no semantic
-      // token in front of it, because the code face is not a role.
-      //
       // A step under the prose it sits in: a monospace face at the same
       // nominal size always reads larger, and the run would ride above the
-      // line.
-      .font(.system(size: vars.captionSmall.size, design: .monospaced))
+      // line. Resolved through the semantic `fontCode` token.
+      .font(vars.codeFont(size: vars.captionSmall.size))
       .foregroundStyle(vars.colorContent)
       .padding(.vertical, vars.spacing05)
       .padding(.horizontal, vars.spacing1)
@@ -150,7 +146,7 @@ public struct CodeBlock<Actions: View>: View {
           // Set in the code face too: the title is nearly always a path, and a
           // proportional face beside a monospace body reads as a different
           // document rather than as its label.
-          .font(.system(size: vars.captionSmall.size, design: .monospaced))
+          .font(vars.codeFont(size: vars.captionSmall.size))
           .foregroundStyle(vars.colorContentSecondary)
           .lineLimit(1)
           .truncationMode(.tail)
@@ -197,7 +193,7 @@ public struct CodeBlock<Actions: View>: View {
           .frame(height: vars.bodySmall.lineHeight)
       }
     }
-    .font(.system(size: vars.captionSmall.size, design: .monospaced))
+    .font(vars.codeFont(size: vars.captionSmall.size))
     .foregroundStyle(vars.colorContentFaint)
     // Right-aligned so the ones column stays a column past line 9, and wide
     // enough for four digits before it starts pushing the code across.
@@ -221,7 +217,7 @@ public struct CodeBlock<Actions: View>: View {
           )
       }
     }
-    .font(.system(size: vars.captionSmall.size, design: .monospaced))
+    .font(vars.codeFont(size: vars.captionSmall.size))
     .foregroundStyle(vars.colorContent)
     .padding(.leading, lineNumbers ? 0 : vars.spacing3)
     .padding(.trailing, vars.spacing3)

@@ -4,6 +4,7 @@ import SwiftUI
 /// Which edge of the trigger the panel hangs from.
 public enum MenuAlign: String, CaseIterable, Sendable {
   case start
+  case center
   case end
 }
 
@@ -19,13 +20,13 @@ public struct MenuTriggerState {
   }
 }
 
-/// One row of a ``Menu``.
+/// One row (or divider) of a ``Menu``.
 ///
 /// The leading slots are data rather than a builder because a menu is a list
 /// of choices rather than a layout — the row draws itself, and the item only
 /// says what it is.
 public struct MenuItem: Identifiable {
-  public var id: String { label }
+  public let id: String
   public var label: String
   public var icon: AnyView?
   /// Trailing hint; displaying it does not register a keyboard shortcut.
@@ -34,11 +35,13 @@ public struct MenuItem: Identifiable {
   }
   /// Plain hint carried into native menus without installing an accelerator.
   internal var nativeShortcut: String?
-  /// Radio-style check state. Set it on every item of a group, including the
-  /// unchecked ones, so the leading column stays aligned. Checks are a
-  /// flat-list feature: a list holding a submenu renders plain rows.
+  /// Radio/checkbox-style check state. Works alongside submenus in the same
+  /// menu list: when any sibling carries a check state, the leading column
+  /// aligns across all rows.
   public var checked: Bool?
   public var disabled: Bool
+  /// Whether this entry renders as a horizontal separator rule instead of a row.
+  public var isSeparator: Bool
   public var onSelect: (() -> Void)?
   /// What opens beside the row: the row becomes a branch wearing the
   /// chevron, and its list holds branches of its own — a menu nests as deep
@@ -46,6 +49,7 @@ public struct MenuItem: Identifiable {
   public var items: [MenuItem]?
 
   public init(
+    id: String? = nil,
     label: String,
     icon: AnyView? = nil,
     shortcut: AnyView? = nil,
@@ -54,16 +58,18 @@ public struct MenuItem: Identifiable {
     onSelect: (() -> Void)? = nil,
     items: [MenuItem]? = nil
   ) {
+    self.id = id ?? label
     self.label = label
     self.icon = icon
     self.shortcut = shortcut
     self.checked = checked
     self.disabled = disabled
+    self.isSeparator = false
     self.onSelect = onSelect
     self.items = items
   }
 
-  /// The common row: a label, optionally an SF Symbol and a shortcut set as
+  /// The common row: a label, optionally a Fluent icon and a shortcut set as
   /// glyphs rather than boxed as key caps.
   public init(
     _ label: String,
@@ -75,6 +81,7 @@ public struct MenuItem: Identifiable {
     items: [MenuItem]? = nil
   ) {
     self.init(
+      id: label,
       label: label,
       icon: icon.map { AnyView(Icon($0)) },
       shortcut: shortcut.map { AnyView(Text($0)) },
@@ -84,6 +91,29 @@ public struct MenuItem: Identifiable {
       items: items
     )
     nativeShortcut = shortcut
+  }
+
+  private init(separatorId: String) {
+    self.id = separatorId
+    self.label = ""
+    self.icon = nil
+    self.shortcut = nil
+    self.nativeShortcut = nil
+    self.checked = nil
+    self.disabled = true
+    self.isSeparator = true
+    self.onSelect = nil
+    self.items = nil
+  }
+
+  /// A horizontal divider separating groups of items inside a ``Menu``.
+  public static func separator(id: String = UUID().uuidString) -> MenuItem {
+    MenuItem(separatorId: id)
+  }
+
+  /// Convenience property for creating a horizontal divider item.
+  public static var separator: MenuItem {
+    .separator()
   }
 }
 
@@ -123,13 +153,19 @@ public struct Menu<Trigger: View>: View {
   }
 
   public var body: some View {
-    trigger(MenuTriggerState(open: open, toggle: { open.toggle() }))
+    let popoverAlign: PopoverAlign
+    switch align {
+    case .start: popoverAlign = .start
+    case .center: popoverAlign = .center
+    case .end: popoverAlign = .end
+    }
+    return trigger(MenuTriggerState(open: open, toggle: { open.toggle() }))
       // Modal, as Base UI's menu is by default: a press outside only closes
       // it, so pressing the trigger again closes rather than reopens.
       .floatingPanel(
         isPresented: Binding(get: { open && !presentation.usesNativeMenus }, set: { open = $0 }),
         side: .bottom,
-        align: align == .start ? .start : .end,
+        align: popoverAlign,
         gap: theme.vars.spacing1,
         modal: true
       ) {
@@ -161,13 +197,29 @@ struct MenuRows: View {
   @State private var open: String?
   @State private var hoverTask: Task<Void, Never>?
 
+  private var hasChecks: Bool {
+    items.contains { !$0.isSeparator && $0.checked != nil }
+  }
+
   var body: some View {
+    let reserveChecks = hasChecks
     ForEach(items) { item in
-      MenuRow(item: item, tint: tint, childOpen: child(for: item)) {
-        dismiss()
-      }
-      .onHover { hovering in
-        hover(item, hovered: hovering)
+      if item.isSeparator {
+        DazzUI.Divider()
+          .padding(.vertical, theme.vars.spacing1)
+          .padding(.horizontal, theme.vars.spacing1)
+      } else {
+        MenuRow(
+          item: item,
+          tint: tint,
+          reserveCheckColumn: reserveChecks,
+          childOpen: child(for: item)
+        ) {
+          dismiss()
+        }
+        .onHover { hovering in
+          hover(item, hovered: hovering)
+        }
       }
     }
   }
@@ -314,6 +366,9 @@ struct MenuEmpty: View {
 struct MenuRow: View {
   let item: MenuItem
   let tint: Tint
+  /// Reserves the leading checkmark column even on unchecked or submenu rows
+  /// when any sibling in the menu carries a check state.
+  var reserveCheckColumn: Bool = false
   /// Whether the row's submenu is open, when the row is a branch.
   var childOpen: Binding<Bool>? = nil
   let dismiss: () -> Void
@@ -329,7 +384,7 @@ struct MenuRow: View {
 
     let row = Pressable(
       action: {
-        if let childOpen {
+        if isBranch, let childOpen {
           childOpen.wrappedValue.toggle()
         } else {
           item.onSelect?()
@@ -340,13 +395,13 @@ struct MenuRow: View {
       cornerRadius: radius
     ) { state in
       HStack(spacing: vars.spacing2) {
-        if let checked = item.checked {
+        if item.checked != nil || reserveCheckColumn {
           // `Checkmark12Filled`, the glyph `menu.tsx` names. The column holds
-          // its width whether or not the item is checked, so the labels of a
-          // radio group stay on one left edge.
+          // its width whether or not the item is checked — including alongside
+          // submenus — so the labels stay on one left edge.
           Icon(.checkmark12Filled, size: vars.iconSmall)
             .frame(width: vars.iconSmall)
-            .opacity(checked ? 1 : 0)
+            .opacity(item.checked == true ? 1 : 0)
         }
         if let icon = item.icon {
           icon.environment(\.dazzIconSize, vars.iconMedium).foregroundStyle(vars.colorContentMuted)

@@ -1,15 +1,70 @@
 import SwiftUI
 
+#if os(macOS)
+  import AppKit
+#endif
+
+/// Default drag bounds for a resizable ``Rail``.
+public let railMinimumWidth: CGFloat = 120
+public let railMaximumWidth: CGFloat = 280
+
+private let railKeyStep: CGFloat = 8
+private let railCoarseKeyStep: CGFloat = 32
+private let railResizerHintOpacity: Double = 0.6
+
+/// Background fill option for ``Rail``.
+public enum RailSurface: String, CaseIterable, Sendable {
+  /// Standard paper surface (`colorSurface`).
+  case surface
+  /// Midpoint between `colorSurfaceColumn` and `colorSurface` (`railSurface`),
+  /// setting a secondary navigation rail softly apart from the main content pane.
+  case rail
+}
+
 /// The second navigation column, between the sidebar and the content: the
 /// groups, books or pages inside whatever the sidebar selected. Lighter than
 /// the sidebar, because it sits closer to the content.
 public struct Rail<Content: View>: View {
+  public var resizable: Bool
+  /// Controlled width. Leave nil to let the rail manage its own width.
+  public var width: Binding<CGFloat>?
+  /// Starting width when uncontrolled; defaults to `vars.frameRailWidth`.
+  public var defaultWidth: CGFloat?
+  public var minWidth: CGFloat
+  public var maxWidth: CGFloat
+  public var resizeLabel: String
+  public var tint: Tint
+  public var surface: RailSurface
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
 
-  public init(@ViewBuilder content: @escaping () -> Content) {
+  @State private var ownWidth: CGFloat?
+  @State private var dragOrigin: CGFloat?
+  @State private var dragging = false
+  @State private var hoveringResizer = false
+  @FocusState private var resizerFocused: Bool
+
+  public init(
+    resizable: Bool = false,
+    width: Binding<CGFloat>? = nil,
+    defaultWidth: CGFloat? = nil,
+    minWidth: CGFloat = railMinimumWidth,
+    maxWidth: CGFloat = railMaximumWidth,
+    resizeLabel: String = "Resize rail",
+    tint: Tint = .primary,
+    surface: RailSurface = .surface,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.resizable = resizable
+    self.width = width
+    self.defaultWidth = defaultWidth
+    self.minWidth = minWidth
+    self.maxWidth = maxWidth
+    self.resizeLabel = resizeLabel
+    self.tint = tint
+    self.surface = surface
     self.content = content
   }
 
@@ -36,10 +91,134 @@ public struct Rail<Content: View>: View {
         .frame(minHeight: proxy.size.height, alignment: .top)
       }
     }
-    .frame(width: vars.frameRailWidth)
-    .background(vars.colorSurface)
+    .frame(width: resolvedWidth)
+    .background(surface == .rail ? vars.railSurface : vars.colorSurface)
     .rule(vars.colorBorder, edge: .trailing, width: hairline)
+    .overlay(alignment: .trailing) {
+      if resizable { resizer(vars: vars) }
+    }
   }
+
+  private var resolvedWidth: CGFloat {
+    width?.wrappedValue ?? ownWidth ?? naturalWidth
+  }
+
+  private var naturalWidth: CGFloat {
+    defaultWidth ?? theme.vars.frameRailWidth
+  }
+
+  private func clamp(_ value: CGFloat) -> CGFloat {
+    min(maxWidth, max(minWidth, value)).rounded()
+  }
+
+  private func commit(_ next: CGFloat) {
+    if let width {
+      width.wrappedValue = next
+    } else {
+      ownWidth = next
+    }
+  }
+
+  private func settle(_ change: () -> Void) {
+    withAnimation(theme.vars.motion, change)
+  }
+
+  private var lineOpacity: Double {
+    if dragging { return 1 }
+    return hoveringResizer || resizerFocused ? railResizerHintOpacity : 0
+  }
+
+  private func resizer(vars: ThemeVariables) -> some View {
+    withResizerFocus(
+      Color.clear
+        .frame(width: vars.spacing2)
+        .contentShape(Rectangle())
+        .overlay(alignment: .trailing) {
+          Rectangle()
+            .fill(vars.ramp(tint)[600])
+            .frame(width: vars.spacingPx)
+            .padding(.trailing, vars.spacing2 / 2)
+            .opacity(lineOpacity)
+            .animation(vars.motion, value: lineOpacity)
+        }
+        .offset(x: vars.spacing2 / 2)
+        .onTapGesture(count: 2) {
+          settle { commit(clamp(naturalWidth)) }
+        }
+        .gesture(
+          DragGesture(minimumDistance: 1, coordinateSpace: .global)
+            .onChanged { value in
+              let from = dragOrigin ?? resolvedWidth
+              dragOrigin = from
+              dragging = true
+              commit(clamp(from + value.translation.width))
+            }
+            .onEnded { _ in
+              dragOrigin = nil
+              dragging = false
+            }
+        )
+        .onHover { inside in
+          hoveringResizer = inside
+          #if os(macOS)
+            if inside {
+              NSCursor.resizeLeftRight.push()
+            } else {
+              NSCursor.pop()
+            }
+          #endif
+        }
+        .onDisappear {
+          #if os(macOS)
+            if hoveringResizer {
+              NSCursor.pop()
+              hoveringResizer = false
+            }
+          #endif
+        }
+    )
+    .accessibilityElement()
+    .accessibilityLabel(resizeLabel)
+    .accessibilityValue(Text("\(Int(resolvedWidth))"))
+    .accessibilityAdjustableAction { direction in
+      settle {
+        switch direction {
+        case .increment: commit(clamp(resolvedWidth + railKeyStep))
+        case .decrement: commit(clamp(resolvedWidth - railKeyStep))
+        @unknown default: break
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private func withResizerFocus<V: View>(_ view: V) -> some View {
+    #if os(macOS)
+      if #available(macOS 14.0, *) {
+        withResizerMoveCommands(view.focusable(resizable, interactions: .activate))
+          .focusEffectDisabled()
+      } else {
+        withResizerMoveCommands(view.focusable(resizable))
+      }
+    #else
+      view
+    #endif
+  }
+
+  #if os(macOS)
+    private func withResizerMoveCommands<V: View>(_ view: V) -> some View {
+      view
+        .focused($resizerFocused)
+        .onMoveCommand { direction in
+          let step = NSEvent.modifierFlags.contains(.shift) ? railCoarseKeyStep : railKeyStep
+          switch direction {
+          case .left: settle { commit(clamp(resolvedWidth - step)) }
+          case .right: settle { commit(clamp(resolvedWidth + step)) }
+          default: break
+          }
+        }
+    }
+  #endif
 }
 
 /// A run of rail rows, optionally named.

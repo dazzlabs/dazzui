@@ -122,35 +122,75 @@ public struct TypeStyle: Sendable, Equatable {
 
   /// The font this face resolves to.
   ///
-  /// Every face in the graph leads its stack with `-apple-system`, which on
-  /// this platform is a request for the system face rather than a family that
-  /// can be looked up by name — so the stack resolves to `.system` and only a
-  /// face naming a real family falls through to `.custom`.
+  /// Every face in the graph leads its stack with `-apple-system` (or
+  /// `ui-monospace` for code), which on this platform is a request for the
+  /// system face rather than a family that can be looked up by name — so the
+  /// stack resolves to `.system` and only a face naming a real family falls
+  /// through to `.custom`.
   public var font: Font {
-    guard let first = family.first, !first.hasPrefix("-apple-system") else {
-      return .system(size: size, weight: weight)
+    resolvedFont(weight: nil)
+  }
+
+  /// Resolves the font with an optional weight override and optional tabular digits.
+  public func resolvedFont(weight overrideWeight: Font.Weight? = nil, monospacedDigit: Bool = false) -> Font {
+    let effectiveWeight = overrideWeight ?? weight
+    let base: Font
+    if let first = family.first {
+      if first.hasPrefix("-apple-system") {
+        base = .system(size: size, weight: effectiveWeight)
+      } else if first == "ui-monospace" || first == "monospace" {
+        base = .system(size: size, weight: effectiveWeight, design: .monospaced)
+      } else if let overrideWeight {
+        base = .custom(first, size: size).weight(overrideWeight)
+      } else {
+        base = .custom(first, size: size)
+      }
+    } else {
+      base = .system(size: size, weight: effectiveWeight)
     }
-    return .custom(first, size: size)
+    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+      return monospacedDigit ? base.monospacedDigit() : base
+    #else
+      return base
+    #endif
   }
 
   /// How tall the platform sets one line of this face: its ascender, its
   /// descender and its own leading — what a `Text` is before any spacing.
+  ///
+  /// Cached by `(family, size)` behind a lock so SwiftUI redraws do not query
+  /// CoreText/AppKit font metrics on every `Text` evaluation.
   public var naturalLineHeight: CGFloat {
-    #if os(macOS)
-      let face = family.first.flatMap { name in
-        name.hasPrefix("-apple-system") ? nil : NSFont(name: name, size: size)
-      } ?? NSFont.systemFont(ofSize: size)
-      // A `Text` sets its line on whole points above and below the baseline:
-      // a 13pt system face is 12.6 up and 2.7 down, and a line of it is 16.
-      return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
-    #elseif canImport(UIKit)
-      let face = family.first.flatMap { name in
-        name.hasPrefix("-apple-system") ? nil : UIFont(name: name, size: size)
-      } ?? UIFont.systemFont(ofSize: size)
-      return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
-    #else
-      return size
-    #endif
+    let familyKey = family.first ?? "-apple-system"
+    let sizeKey = Int((size * 100).rounded())
+    let key = TypeMetricsCacheKey(family: familyKey, size: sizeKey)
+    return TypeMetricsCache.shared.naturalLineHeight(for: key) {
+      #if os(macOS)
+        let face: NSFont
+        if familyKey.hasPrefix("-apple-system") {
+          face = NSFont.systemFont(ofSize: size)
+        } else if familyKey == "ui-monospace" || familyKey == "monospace" {
+          face = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        } else {
+          face = NSFont(name: familyKey, size: size) ?? NSFont.systemFont(ofSize: size)
+        }
+        // A `Text` sets its line on whole points above and below the baseline:
+        // a 13pt system face is 12.6 up and 2.7 down, and a line of it is 16.
+        return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+      #elseif canImport(UIKit)
+        let face: UIFont
+        if familyKey.hasPrefix("-apple-system") {
+          face = UIFont.systemFont(ofSize: size)
+        } else if familyKey == "ui-monospace" || familyKey == "monospace" {
+          face = UIFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        } else {
+          face = UIFont(name: familyKey, size: size) ?? UIFont.systemFont(ofSize: size)
+        }
+        return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+      #else
+        return size
+      #endif
+    }
   }
 
   /// SwiftUI spaces lines by the gap between them, where CSS states the whole
@@ -164,6 +204,62 @@ public struct TypeStyle: Sendable, Equatable {
   /// CSS's half-leading: what a line box puts above and below its line.
   public var halfLeading: CGFloat {
     lineSpacing / 2
+  }
+}
+
+internal struct TypeMetricsCacheKey: Hashable, Sendable {
+  let family: String
+  let size: Int
+}
+
+internal final class TypeMetricsCache: @unchecked Sendable {
+  static let shared = TypeMetricsCache()
+  private static let limit = 512
+
+  private let lock = NSLock()
+  private var naturalHeights: [TypeMetricsCacheKey: CGFloat] = [:]
+  private var computeCount = 0
+
+  func naturalLineHeight(for key: TypeMetricsCacheKey, compute: () -> CGFloat) -> CGFloat {
+    lock.lock()
+    if let hit = naturalHeights[key] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+
+    let measured = compute()
+
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = naturalHeights[key] {
+      return raced
+    }
+    if naturalHeights.count >= Self.limit {
+      naturalHeights.removeAll(keepingCapacity: true)
+    }
+    naturalHeights[key] = measured
+    computeCount += 1
+    return measured
+  }
+
+  internal var cachedEntryCount: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return naturalHeights.count
+  }
+
+  internal var totalComputations: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return computeCount
+  }
+
+  internal func resetForTesting() {
+    lock.lock()
+    naturalHeights.removeAll()
+    computeCount = 0
+    lock.unlock()
   }
 }
 

@@ -184,8 +184,12 @@ internal final class NativeMenuBar: ObservableObject {
         var location = NSPoint(x: 0, y: 0)
         if let point {
           location = NSPoint(x: point.x, y: self.bounds.height - point.y)
-        } else if align == .end {
-          location.x = self.bounds.width
+        } else {
+          switch align {
+          case .start: location.x = 0
+          case .center: location.x = self.bounds.midX
+          case .end: location.x = self.bounds.width
+          }
         }
         session.present(at: location, in: self, align: point == nil ? align : .start)
       }

@@ -252,27 +252,42 @@ public struct ToastOptions {
   public var action: ToastAction?
   public var dismissable: Bool
   public var timeout: TimeInterval?
+  /// Optional leading Fluent icon.
+  public var icon: FluentIcon?
+  /// Shows a ``Spinner`` in the leading slot while work is in flight.
+  public var loading: Bool
+  /// Optional custom leading view (takes precedence over `icon` when provided).
+  public var leading: AnyView?
 
   public init(
     title: String,
     tint: Tint = .neutral,
     action: ToastAction? = nil,
     dismissable: Bool = true,
-    timeout: TimeInterval? = nil
+    timeout: TimeInterval? = nil,
+    icon: FluentIcon? = nil,
+    loading: Bool = false,
+    leading: (any View)? = nil
   ) {
     self.title = title
     self.tint = tint
     self.action = action
     self.dismissable = dismissable
     self.timeout = timeout
+    self.icon = icon
+    self.loading = loading
+    self.leading = leading.map { AnyView($0) }
   }
 
   var resolvedTimeout: TimeInterval {
-    timeout ?? (tint == .danger ? 0 : action != nil ? 8 : 5)
+    timeout ?? (tint == .danger || loading ? 0 : action != nil ? 8 : 5)
   }
 }
 
 /// The toasts raised under a ``ToastProvider``, oldest first.
+///
+/// Auto-dismiss timers pause while the pointer hovers a toast and resume with
+/// the remaining duration when the pointer leaves.
 @MainActor
 public final class Toaster: ObservableObject {
   public struct Raised: Identifiable {
@@ -280,8 +295,16 @@ public final class Toaster: ObservableObject {
     public let options: ToastOptions
   }
 
+  private struct TimerState {
+    var remaining: TimeInterval
+    var startedAt: Date?
+    var paused: Bool
+    var task: Task<Void, Never>?
+  }
+
   @Published public private(set) var toasts: [Raised] = []
   private var next = 0
+  private var timers: [Int: TimerState] = [:]
 
   public init() {}
 
@@ -293,17 +316,68 @@ public final class Toaster: ObservableObject {
     toasts.append(Raised(id: id, options: options))
     let timeout = options.resolvedTimeout
     if timeout.isFinite && timeout > 0 {
-      Task { @MainActor [weak self] in
-        try? await Task.sleep(for: .seconds(timeout))
-        self?.close(id)
-      }
+      startTimer(id: id, remaining: timeout)
     }
     return id
   }
 
+  /// Pauses the auto-dismiss timer for `id` (for example while the user hovers
+  /// the toast to read it or click its action).
+  public func pause(_ id: Int) {
+    guard var state = timers[id], !state.paused else { return }
+    state.task?.cancel()
+    state.task = nil
+    if let startedAt = state.startedAt {
+      let elapsed = Date().timeIntervalSince(startedAt)
+      state.remaining = max(0, state.remaining - elapsed)
+    }
+    state.startedAt = nil
+    state.paused = true
+    timers[id] = state
+  }
+
+  /// Resumes a paused auto-dismiss timer with its remaining duration.
+  public func resume(_ id: Int) {
+    guard let state = timers[id], state.paused else { return }
+    guard state.remaining > 0 else {
+      close(id)
+      return
+    }
+    startTimer(id: id, remaining: state.remaining)
+  }
+
+  /// Whether the auto-dismiss timer for `id` is currently paused.
+  public func isPaused(_ id: Int) -> Bool {
+    timers[id]?.paused == true
+  }
+
   /// Dismisses one toast, or every toast when `id` is nil.
   public func close(_ id: Int? = nil) {
-    toasts.removeAll { id == nil || $0.id == id }
+    if let id {
+      timers[id]?.task?.cancel()
+      timers.removeValue(forKey: id)
+      toasts.removeAll { $0.id == id }
+    } else {
+      for state in timers.values {
+        state.task?.cancel()
+      }
+      timers.removeAll()
+      toasts.removeAll()
+    }
+  }
+
+  private func startTimer(id: Int, remaining: TimeInterval) {
+    let task = Task { @MainActor [weak self] in
+      try? await Task.sleep(for: .seconds(remaining))
+      guard !Task.isCancelled else { return }
+      self?.close(id)
+    }
+    timers[id] = TimerState(
+      remaining: remaining,
+      startedAt: Date(),
+      paused: false,
+      task: task
+    )
   }
 }
 
@@ -386,7 +460,15 @@ private struct ToasterStack: View {
             Toast(
               tint: raised.options.tint,
               onDismiss: raised.options.dismissable ? { toaster.close(raised.id) } : nil,
-              leading: { EmptyView() },
+              leading: {
+                if raised.options.loading {
+                  Spinner(size: .small, tint: raised.options.tint)
+                } else if let leading = raised.options.leading {
+                  leading
+                } else if let icon = raised.options.icon {
+                  Icon(icon)
+                }
+              },
               message: { Text(raised.options.title) },
               trailing: {
                 if let action = raised.options.action {
@@ -399,6 +481,13 @@ private struct ToasterStack: View {
                 }
               }
             )
+            .onHover { hovering in
+              if hovering {
+                toaster.pause(raised.id)
+              } else {
+                toaster.resume(raised.id)
+              }
+            }
           }
         }
         .allowsHitTesting(!toasts.isEmpty)

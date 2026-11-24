@@ -29,6 +29,8 @@ public struct Button<Label: View>: View {
   /// `shortcut` node. Drawn in place of the string when both are given.
   public var shortcutView: AnyView?
   public var enabled: Bool
+  /// Shows an inline ``Spinner`` and disables interaction while work is in flight.
+  public var loading: Bool
   public var action: () -> Void
   @ViewBuilder public var label: () -> Label
 
@@ -44,6 +46,7 @@ public struct Button<Label: View>: View {
     trailing: (any View)? = nil,
     shortcut: String? = nil,
     enabled: Bool = true,
+    loading: Bool = false,
     action: @escaping () -> Void,
     @ViewBuilder label: @escaping () -> Label
   ) {
@@ -55,6 +58,7 @@ public struct Button<Label: View>: View {
     self.trailing = trailing.map { AnyView($0) }
     self.shortcut = shortcut
     self.enabled = enabled
+    self.loading = loading
     self.action = action
     self.label = label
   }
@@ -69,6 +73,7 @@ public struct Button<Label: View>: View {
     leading: (any View)? = nil,
     trailing: (any View)? = nil,
     enabled: Bool = true,
+    loading: Bool = false,
     action: @escaping () -> Void,
     @ViewBuilder label: @escaping () -> Label,
     @ViewBuilder shortcut: () -> Shortcut
@@ -81,27 +86,58 @@ public struct Button<Label: View>: View {
       leading: leading,
       trailing: trailing,
       enabled: enabled,
+      loading: loading,
       action: action,
       label: label
     )
     self.shortcutView = AnyView(shortcut())
   }
 
+  /// A button with a `@ViewBuilder` leading view alongside a custom label.
+  public init<LeadingView: View>(
+    size: ControlSize = .small,
+    variant: ControlVariant = .recessed,
+    tint: Tint = .primary,
+    fullWidth: Bool = false,
+    shortcut: String? = nil,
+    enabled: Bool = true,
+    loading: Bool = false,
+    action: @escaping () -> Void,
+    @ViewBuilder leading: () -> LeadingView,
+    @ViewBuilder label: @escaping () -> Label
+  ) {
+    self.init(
+      size: size,
+      variant: variant,
+      tint: tint,
+      fullWidth: fullWidth,
+      leading: leading(),
+      trailing: nil,
+      shortcut: shortcut,
+      enabled: enabled,
+      loading: loading,
+      action: action,
+      label: label
+    )
+  }
+
   public var body: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size)
+    let isInteractive = enabled && !loading
+    let hasLeading = loading || leading != nil
     // A glyph beside a label is drawn `control.label-glyph.shrink` under the
     // profile's icon; the end it sits at pads `control.label-glyph.inset`
     // less. A stroke's width is reserved on both ends either way.
     let glyphSize = metrics.iconSize - vars.controlLabelGlyphShrink
     let leadingPadding =
       metrics.paddingInline + vars.spacingPx
-      - (leading == nil ? 0 : vars.controlLabelGlyphInset)
+      - (hasLeading ? vars.controlLabelGlyphInset : 0)
     let trailingPadding =
       metrics.paddingInline + vars.spacingPx
       - (trailing == nil ? 0 : vars.controlLabelGlyphInset)
 
-    Pressable(action: action, enabled: enabled, cornerRadius: metrics.radius) { state in
+    Pressable(action: action, enabled: isInteractive, cornerRadius: metrics.radius) { state in
       let colors = vars.controlColors(
         variant: variant,
         tint: tint,
@@ -113,7 +149,11 @@ public struct Button<Label: View>: View {
 
       HStack(spacing: metrics.gap) {
         Group {
-          leading
+          if loading {
+            Spinner(size: .small, tint: tint, onAccent: variant == .filled)
+          } else {
+            leading
+          }
           label()
           trailing
         }
@@ -167,7 +207,7 @@ public struct Button<Label: View>: View {
     }
     .focused($focused)
     .focusRing(
-      visible: focused && enabled,
+      visible: focused && isInteractive,
       color: vars.focusRing,
       cornerRadius: metrics.radius,
       width: vars.focusWidth
@@ -208,6 +248,7 @@ public extension Button where Label == Text {
     trailing: (any View)? = nil,
     shortcut: String? = nil,
     enabled: Bool = true,
+    loading: Bool = false,
     action: @escaping () -> Void
   ) {
     self.init(
@@ -219,6 +260,35 @@ public extension Button where Label == Text {
       trailing: trailing,
       shortcut: shortcut,
       enabled: enabled,
+      loading: loading,
+      action: action,
+      label: { Text(title) }
+    )
+  }
+
+  /// A button whose label is a plain string with a `@ViewBuilder` leading glyph.
+  init<LeadingView: View>(
+    _ title: String,
+    size: ControlSize = .small,
+    variant: ControlVariant = .recessed,
+    tint: Tint = .primary,
+    fullWidth: Bool = false,
+    shortcut: String? = nil,
+    enabled: Bool = true,
+    loading: Bool = false,
+    action: @escaping () -> Void,
+    @ViewBuilder leading: () -> LeadingView
+  ) {
+    self.init(
+      size: size,
+      variant: variant,
+      tint: tint,
+      fullWidth: fullWidth,
+      leading: leading(),
+      trailing: nil,
+      shortcut: shortcut,
+      enabled: enabled,
+      loading: loading,
       action: action,
       label: { Text(title) }
     )
@@ -236,6 +306,7 @@ public extension Button where Label == Text {
     leading: (any View)? = nil,
     trailing: (any View)? = nil,
     enabled: Bool = true,
+    loading: Bool = false,
     action: @escaping () -> Void,
     @ViewBuilder shortcut: () -> Shortcut
   ) {
@@ -247,6 +318,7 @@ public extension Button where Label == Text {
       leading: leading,
       trailing: trailing,
       enabled: enabled,
+      loading: loading,
       action: action,
       label: { Text(title) },
       shortcut: shortcut
