@@ -994,17 +994,17 @@ class ThemeVariables {
 
   // Type faces
 
-  /// The face `base.font.code` declares. Everything set in it reads this
+  /// The face `font.code` declares. Everything set in it reads this
   /// field — the type styles that name it, and the widgets that reach it
   /// directly — so a host re-points the face rather than each of them.
   final FontFace fontCode;
 
-  /// The face `base.font.display` declares. Everything set in it reads this
+  /// The face `font.display` declares. Everything set in it reads this
   /// field — the type styles that name it, and the widgets that reach it
   /// directly — so a host re-points the face rather than each of them.
   final FontFace fontDisplay;
 
-  /// The face `base.font.ui` declares. Everything set in it reads this
+  /// The face `font.ui` declares. Everything set in it reads this
   /// field — the type styles that name it, and the widgets that reach it
   /// directly — so a host re-points the face rather than each of them.
   final FontFace fontUi;

@@ -99,6 +99,9 @@ public struct ThemeVariables: Sendable {
     spacing20: CGFloat = 80.0,
     strokeHairline: CGFloat = 1.0,
     strokeControl: CGFloat = 1.5,
+    fontUi: [String] = ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"],
+    fontDisplay: [String] = ["-apple-system", "SF Pro Display", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"],
+    fontCode: [String] = ["ui-monospace", "SF Mono", "Menlo", "monospace"],
     headlineSmall: TypeStyle = TypeStyle(family: ["-apple-system", "SF Pro Display", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 20.0, weight: .semibold, lineHeight: 26.0),
     headlineMedium: TypeStyle = TypeStyle(family: ["-apple-system", "SF Pro Display", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 24.0, weight: .semibold, lineHeight: 30.0),
     headlineLarge: TypeStyle = TypeStyle(family: ["-apple-system", "SF Pro Display", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 28.0, weight: .semibold, lineHeight: 34.0),
@@ -335,6 +338,9 @@ public struct ThemeVariables: Sendable {
     self.spacing20 = spacing20
     self.strokeHairline = strokeHairline
     self.strokeControl = strokeControl
+    self.fontUi = fontUi
+    self.fontDisplay = fontDisplay
+    self.fontCode = fontCode
     self.headlineSmall = headlineSmall
     self.headlineMedium = headlineMedium
     self.headlineLarge = headlineLarge
@@ -539,6 +545,9 @@ public struct ThemeVariables: Sendable {
   public var spacing20: CGFloat
   public var strokeHairline: CGFloat
   public var strokeControl: CGFloat
+  public var fontUi: [String]
+  public var fontDisplay: [String]
+  public var fontCode: [String]
   public var headlineSmall: TypeStyle
   public var headlineMedium: TypeStyle
   public var headlineLarge: TypeStyle
@@ -917,6 +926,9 @@ public struct ThemeVariables: Sendable {
       spacing20: spacing20 * scale,
       strokeHairline: strokeHairline,
       strokeControl: strokeControl,
+      fontUi: fontUi,
+      fontDisplay: fontDisplay,
+      fontCode: fontCode,
       headlineSmall: headlineSmall.scaled(by: scale),
       headlineMedium: headlineMedium.scaled(by: scale),
       headlineLarge: headlineLarge.scaled(by: scale),

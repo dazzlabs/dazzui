@@ -1,4 +1,5 @@
 import YAML from 'yaml'
+import { buildCatalog } from './catalog.mjs'
 
 /**
  * Terrazzo plugin to generate the SwiftUI token sources.
@@ -46,6 +47,10 @@ class SwiftUIPlugin {
     outputFile(
       'swiftui/ThemeName.swift',
       generateThemeNameFile(this.modeSelectors)
+    )
+    outputFile(
+      'swiftui/ThemeFamily.swift',
+      generateThemeFamilyFile(this.modeSelectors)
     )
     // The mobile package wears system controls; only colour crosses over.
     const mobileTokens = Object.fromEntries(
@@ -200,6 +205,105 @@ ${themes.map(theme => `    case .${swiftName(theme)}: return .${swiftName(theme)
   /// A theme's half is in its name, as it is in the stylesheet.
   public var colorScheme: ColorScheme {
     rawValue.hasSuffix("-dark") ? .dark : .light
+  }
+}
+`
+}
+
+/**
+ * Every paired theme family in the desktop token graph, with its display name,
+ * group (`drawn`, `desktops`, `applications`, `omarchy`), and light/dark
+ * `ThemeName` halves.
+ */
+function generateThemeFamilyFile(modeSelectors) {
+  const { groups, families } = buildCatalog(modeSelectors)
+  const drawn = families.filter(entry => entry.group === 'drawn')
+  const escapeSwift = value =>
+    String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+
+  return `import SwiftUI
+
+${HEADER}
+
+/// The category a \`\`ThemeFamily\`\` belongs to.
+public enum ThemeGroup: String, CaseIterable, Sendable, Identifiable, Hashable {
+${groups.map(group => `  case ${swiftName(group.id)} = "${group.id}"`).join('\n')}
+
+  public var id: String { rawValue }
+
+  public var displayName: String {
+    switch self {
+${groups.map(group => `    case .${swiftName(group.id)}: return "${escapeSwift(group.title)}"`).join('\n')}
+    }
+  }
+}
+
+/// Every paired theme family the token graph carries, each with a light and dark half.
+public enum ThemeFamily: String, CaseIterable, Sendable, Identifiable, Hashable {
+${families.map(entry => `  case ${swiftName(entry.family)} = "${entry.family}"`).join('\n')}
+
+  public var id: String { rawValue }
+
+  /// The six drawn DazzUI families.
+  public static let drawn: [ThemeFamily] = [
+${drawn.map(entry => `    .${swiftName(entry.family)},`).join('\n')}
+  ]
+
+  /// The imported families (desktops, applications, and Omarchy).
+  public static let imported: [ThemeFamily] = allCases.filter { !$0.isDrawn }
+
+  public static func families(in group: ThemeGroup) -> [ThemeFamily] {
+    allCases.filter { $0.group == group }
+  }
+
+  public var group: ThemeGroup {
+    switch self {
+${families.map(entry => `    case .${swiftName(entry.family)}: return .${swiftName(entry.group)}`).join('\n')}
+    }
+  }
+
+  public var isDrawn: Bool {
+    group == .drawn
+  }
+
+  public var displayName: String {
+    switch self {
+${families.map(entry => `    case .${swiftName(entry.family)}: return "${escapeSwift(entry.title)}"`).join('\n')}
+    }
+  }
+
+  public var light: ThemeName {
+    switch self {
+${families.map(entry => `    case .${swiftName(entry.family)}: return .${swiftName(entry.light)}`).join('\n')}
+    }
+  }
+
+  public var dark: ThemeName {
+    switch self {
+${families.map(entry => `    case .${swiftName(entry.family)}: return .${swiftName(entry.dark)}`).join('\n')}
+    }
+  }
+
+  public func themeName(dark: Bool) -> ThemeName {
+    dark ? self.dark : self.light
+  }
+
+  public func themeName(for colorScheme: ColorScheme) -> ThemeName {
+    themeName(dark: colorScheme == .dark)
+  }
+}
+
+public extension ThemeName {
+  /// The \`\`ThemeFamily\`\` this palette belongs to.
+  var family: ThemeFamily {
+    switch self {
+${families
+  .map(
+    entry =>
+      `    case .${swiftName(entry.light)}, .${swiftName(entry.dark)}: return .${swiftName(entry.family)}`
+  )
+  .join('\n')}
+    }
   }
 }
 `

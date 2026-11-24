@@ -94,7 +94,7 @@ const TARGETS = [
   {
     package: '@dazzlabs/dazzui',
     dir: path.join('..', 'packages', 'js', 'dazzui', 'src', 'generated'),
-    files: ['style.css', 'control.css', 'runtime.ts'],
+    files: ['style.css', 'control.css', 'runtime.ts', 'themes.ts'],
   },
   {
     package: '@dazzlabs/dazzui-mobile',
@@ -133,6 +133,7 @@ const TARGETS = [
     files: [
       'swiftui/Colors.swift',
       'swiftui/ThemeName.swift',
+      'swiftui/ThemeFamily.swift',
       'swiftui/ThemeVariables.swift',
     ],
   },

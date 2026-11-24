@@ -47,13 +47,13 @@ final class ConformanceCollector: XCTestCase {
         as? [String: Any]
     )
 
-    func halves(_ families: [ThemeFamily]) -> [ThemeChoice] {
-      families.flatMap { [ThemeChoice(family: $0.value), ThemeChoice(family: $0.value, dark: true)] }
+    func halves(_ values: [String]) -> [ThemeChoice] {
+      values.flatMap { [ThemeChoice(family: $0), ThemeChoice(family: $0, dark: true)] }
     }
     let themes: [ThemeChoice] =
       switch value("THEMES") ?? "drawn" {
-      case "drawn": halves(themeFamilyGroups[0].families)
-      case "all": halves(themeFamilyGroups.flatMap(\.families))
+      case "drawn": halves(themeFamilyGroups[0].families.map(\.value))
+      case "all": halves(themeFamilyGroups.flatMap(\.families).map(\.value))
       case let list:
         list.split(separator: ",").map { id in
           let cut = id.lastIndex(of: "-")!

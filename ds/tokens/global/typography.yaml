@@ -1,3 +1,15 @@
+# Semantic font families aliasing the primitive stacks in `_base.yaml`.
+# Components read these (or the typography roles below) rather than reaching
+# into `base.font.*` directly.
+font:
+  $type: fontFamily
+  ui:
+    $value: "{base.font.ui}"
+  display:
+    $value: "{base.font.display}"
+  code:
+    $value: "{base.font.code}"
+
 # The type faces, drawn to AppKit's practical scale: 11 secondary ·
 # 12 small · 13 body · 15 emphasis · 17 title, carried on past 17 for the
 # headline faces the desktop chrome does not use.
@@ -9,63 +21,63 @@
 headlineSmall:
   $type: typography
   $value:
-    fontFamily: "{base.font.display}"
+    fontFamily: "{font.display}"
     fontSize: "{base.type.xl}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.xl}"
 headlineMedium:
   $type: typography
   $value:
-    fontFamily: "{base.font.display}"
+    fontFamily: "{font.display}"
     fontSize: "{base.type.2xl}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.2xl}"
 headlineLarge:
   $type: typography
   $value:
-    fontFamily: "{base.font.display}"
+    fontFamily: "{font.display}"
     fontSize: "{base.type.3xl}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.3xl}"
 titleSmall:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.body}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.body}"
 titleMedium:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.emphasis}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.emphasis}"
 titleLarge:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.title}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.leading.title}"
 bodySmall:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.small}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.small}"
 bodyMedium:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.body}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.body}"
 bodyLarge:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.emphasis}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.emphasis}"
@@ -77,56 +89,56 @@ bodyLarge:
 labelQuiet:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.small}"
     fontWeight: "{base.font-weight.medium}"
     lineHeight: "{base.type.small}"
 labelStrong:
   $type: typography
   $value:
-    fontFamily: "{base.font.display}"
+    fontFamily: "{font.display}"
     fontSize: "{base.type.small}"
     fontWeight: "{base.font-weight.bold}"
     lineHeight: "{base.type.small}"
 labelSmall:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.caption}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.type.caption}"
 labelMedium:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.small}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.type.small}"
 labelLarge:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.body}"
     fontWeight: "{base.font-weight.semibold}"
     lineHeight: "{base.type.body}"
 captionSmall:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.caption}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.caption}"
 captionMedium:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.small}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.small}"
 captionLarge:
   $type: typography
   $value:
-    fontFamily: "{base.font.ui}"
+    fontFamily: "{font.ui}"
     fontSize: "{base.type.body}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.body}"

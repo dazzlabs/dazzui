@@ -73,7 +73,7 @@ export function generate(tokens, modeSelectors, { generator = 'gpui' } = {}) {
         : role === 'code'
           ? '#[cfg(any(target_os = "linux", target_os = "macos"))]'
           : '#[cfg(target_os = "linux")]',
-      `pub const FONT_${role.toUpperCase()}: &[&str] = &[${tokens[`base.font.${role}`].$value.map(name => JSON.stringify(name)).join(', ')}];`,
+      `pub const FONT_${role.toUpperCase()}: &[&str] = &[${(tokens[`font.${role}`] ?? tokens[`base.font.${role}`]).$value.map(name => JSON.stringify(name)).join(', ')}];`,
       '',
     ]),
     '/// Every semantic and component token, resolved for one theme.',
@@ -118,6 +118,9 @@ function describe(snapshot) {
   const taken = new Set()
 
   for (const id of ids) {
+    // Font family stacks are emitted as module-level `FONT_*` constants.
+    if (id.startsWith('font.')) continue
+
     const ramp = RAMP_STEP.exec(id)
     if (ramp) {
       const group = ramp[1]

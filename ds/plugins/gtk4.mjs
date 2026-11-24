@@ -101,7 +101,17 @@ function values(snapshot) {
       )
     } else if (id.startsWith('motion.') && id.endsWith('easing'))
       result.set(key, `cubic-bezier(${value.join(', ')})`)
-    else if (Array.isArray(value) && value.length === 4)
+    else if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      value.every(v => typeof v === 'string')
+    )
+      result.set(key, fontStack(value))
+    else if (
+      Array.isArray(value) &&
+      value.length === 4 &&
+      value.every(v => typeof v === 'number')
+    )
       result.set(key, color(value))
     else throw new Error(`Unsupported GTK token: ${id}`)
   }
@@ -198,7 +208,10 @@ export default function gtk4Plugin({ modeSelectors = [] } = {}) {
       const themes = resolveThemes(tokens, modeSelectors)
       outputFile(
         'gtk4/tokens.css',
-        generateCSS(themes, tokens['base.font.code'].$value)
+        generateCSS(
+          themes,
+          (tokens['font.code'] ?? tokens['base.font.code']).$value
+        )
       )
       outputFile(
         'gtk4/themes.rs',

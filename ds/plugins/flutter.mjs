@@ -228,7 +228,7 @@ ${generateThemeInstances(tokens, modeSelectors)}`
  */
 function faceFieldName(value) {
   if (typeof value !== 'string') return null
-  const match = value.match(/^\{base\.font\.([a-zA-Z0-9-]+)\}$/)
+  const match = value.match(/^\{(?:base\.)?font\.([a-zA-Z0-9-]+)\}$/)
   if (!match) return null
   return `font${capitalize(dartName(match[1]))}`
 }
@@ -238,13 +238,8 @@ function faceFieldName(value) {
  *
  * It used to be only the faces a *type style* names, on the grounds that a
  * knob nothing reads is a promise the class does not keep. That was true
- * until `base.font.code` — the one face no `typography` token stands in front
- * of, because a mono readout is a decision a component makes rather than a
- * style the graph names. `text-field.css` reaches it as `var(--base-font-code)`
- * and so do the meter, the slider and the OTP field; a Dart port with no
- * `fontCode` had to reach for tabular figures instead and drew the wrong face.
- *
- * So the rule is the declaration rather than the reference: what a host may
+ * until `base.font.code` — now promoted to the semantic `font.code` role —
+ * so the rule is the declaration rather than the reference: what a host may
  * re-point is what the design says the system is set in.
  */
 function generateFontFaces(tokens) {
@@ -253,7 +248,9 @@ function generateFontFaces(tokens) {
   for (const [id, token] of Object.entries(tokens)) {
     if (token.$type !== 'fontFamily') continue
     const name = faceFieldName(`{${id}}`)
-    if (!name || used.has(name)) continue
+    if (!name) continue
+    // Prefer the semantic `font.*` token over `base.font.*` when both exist.
+    if (used.has(name) && id.startsWith('base.')) continue
     used.set(name, { id, ...splitFontStack(token.$value) })
   }
 
@@ -1610,6 +1607,11 @@ function generateClassContent(categories, allTokens) {
       for (const token of subcategory.tokens) {
         // Do not generate base.* tokens into ThemeVariables
         if (isBaseTokenId(token.id)) {
+          continue
+        }
+        // Semantic font faces (`font.ui`, `font.display`, `font.code`) are
+        // emitted as `FontFace` fields by `generateFontFaces`.
+        if (token.$type === 'fontFamily' && faceFieldName(`{${token.id}}`)) {
           continue
         }
 

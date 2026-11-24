@@ -12,6 +12,7 @@ import harmonyMobilePlugin from './plugins/harmony-mobile.mjs'
 import mobileCSSPlugin from './plugins/mobile-css.mjs'
 import runtimePlugin from './plugins/runtime.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
+import themesTSPlugin from './plugins/themes-ts.mjs'
 import winUI3Plugin from './plugins/winui3.mjs'
 import { importedSelectors } from './scripts/themes.mjs'
 
@@ -259,6 +260,7 @@ export default defineConfig({
     contrastPlugin({ modeSelectors }),
     controlPlugin({ modeSelectors }),
     runtimePlugin({ modeSelectors }),
+    themesTSPlugin({ modeSelectors }),
     flutterPlugin({ modeSelectors }),
     swiftUIPlugin({ modeSelectors, mobileModeSelectors: pairedModeSelectors }),
     winUI3Plugin({ modeSelectors }),
