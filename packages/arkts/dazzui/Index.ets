@@ -15,6 +15,24 @@ export {
   THEME_NAMES,
   withAlpha,
 } from './src/main/ets/foundation/Tokens'
+export {
+  AppearanceMode,
+  DazzAppearanceMode,
+  DazzThemeName,
+  DazzThemeFamily,
+  DazzThemeGroup,
+  THEME_FAMILIES,
+  DRAWN_THEME_FAMILIES,
+  resolveThemeName,
+  resolveAppearanceDark,
+  resolveThemeForMode,
+  parseThemeFamily,
+  parseAppearanceMode,
+  isThemeName,
+  isThemeFamily,
+  isAppearanceMode,
+  isDarkTheme,
+} from './src/main/ets/foundation/ThemeAppearance'
 export { DazzTheme } from './src/main/ets/foundation/Theme'
 export { DazzWindowFrame, DazzWindowTitlebar, DazzWindowBody, DazzWindowMain, DazzWindowContent, DazzWindowFooter } from './src/main/ets/components/WindowFrame'
 export { DazzWindowPlatform, DazzWindowControl, DazzWindowControls, DazzWindowControlState, DazzWindowTitleStyle } from './src/main/ets/foundation/WindowData'
@@ -39,6 +57,7 @@ export {
   DazzSidebarGroupContent, DazzSidebarMenu, DazzSidebarMenuItem,
   DazzSidebarMenuButton, DazzSidebarMenuBadge, DazzSidebarTrigger,
 } from './src/main/ets/components/Sidebar'
+export { DazzSidebarBounds } from './src/main/ets/foundation/SidebarData'
 export { DazzRadioGroup } from './src/main/ets/components/Radio'
 export { DazzSlider } from './src/main/ets/components/Slider'
 export { DazzToastProvider, DazzToastViewport } from './src/main/ets/components/Toast'
@@ -61,7 +80,14 @@ export {
   DazzPreferenceGroup,
   DazzPreferenceSection,
   DazzPreferenceRow,
+  DazzPreferenceThemeSwatches,
 } from './src/main/ets/components/Preferences'
+export {
+  DazzPreferenceThemeOption,
+  DazzSwatchPalette,
+  resolveSwatchThemeName,
+  resolveSwatchPalette,
+} from './src/main/ets/foundation/PreferenceSwatchesData'
 export { DazzDialog, DazzDialogClose } from './src/main/ets/components/Dialog'
 export { DazzPopover } from './src/main/ets/components/Popover'
 export { DazzTooltip } from './src/main/ets/components/Tooltip'

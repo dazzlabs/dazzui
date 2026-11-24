@@ -4,7 +4,10 @@ import { DazzShadowLayer } from './ShadowLayer'
 import { DazzTint, DazzVariant } from '../foundation/TokenTypes'
 import {
   DazzSidebarContext, DazzSidebarColumnContext, DazzSidebarRowContext,
-  DazzSidebarColumnData, registerSidebarShortcut, unregisterSidebarShortcut,
+  DazzSidebarColumnData, DazzSidebarBounds,
+  registerSidebarShortcut, unregisterSidebarShortcut,
+  clampSidebarWidth, resolveSidebarBounds, resolveSidebarWidth,
+  dragSidebarWidth, resetSidebarWidth, stepSidebarWidth,
 } from '../foundation/SidebarData'
 import { dispatchSidebarKey } from '../foundation/SidebarKeys'
 import { DazzIconButton } from './Button'
@@ -88,17 +91,53 @@ export struct DazzSidebar {
   @Prop @Watch('sync') side: string = 'left'
   @Prop @Watch('sync') variant: string = 'sidebar'
   @Prop @Watch('sync') collapsible: string = 'offcanvas'
+  @Prop resizable: boolean = false
+  @Prop @Watch('sync') sidebarWidth: number | undefined = undefined
+  @Prop @Watch('sync') minWidth: number | undefined = undefined
+  @Prop @Watch('sync') maxWidth: number | undefined = undefined
+  @Prop @Watch('sync') defaultWidth: number | undefined = undefined
+  @Prop resizeLabel: string = 'Resize sidebar'
   @BuilderParam content: () => void = this.empty
+  onWidthChange: (width: number) => void = () => {}
   private columnID: string = 'dazzui-sidebar-column-' + String(++sidebarSequence)
   private surfaceID: string = 'dazzui-sidebar-surface-' + String(++sidebarSurfaceSequence)
+  private dragStartWidth: number = 0
   @State private paintWidth: number = 0
   @State private paintHeight: number = 0
+  @State private localWidth: number | undefined = undefined
+  @State private dragging: boolean = false
+  @State private handleHovered: boolean = false
+  @State private handleFocused: boolean = false
   @LocalBuilder empty() {}
   aboutToAppear(): void { this.sync() }
   aboutToDisappear(): void { this.sidebar.removeColumn(this.columnID) }
-  baseWidth(): number {
+  tokenBaseWidth(): number {
     return this.tokens.metric(this.side === 'right' ? 'frame.aside.width'
       : this.collapsible === 'none' ? 'frame.rail.width' : 'frame.sidebar.width')
+  }
+  bounds(): DazzSidebarBounds {
+    return resolveSidebarBounds(
+      this.tokenBaseWidth(), this.defaultWidth, this.minWidth, this.maxWidth
+    )
+  }
+  baseWidth(): number {
+    if (!this.resizable && this.sidebarWidth === undefined && this.defaultWidth === undefined) {
+      return this.tokenBaseWidth()
+    }
+    const limits = this.bounds()
+    return resolveSidebarWidth(
+      this.tokenBaseWidth(), this.sidebarWidth, this.localWidth,
+      this.defaultWidth, limits.min, limits.max
+    )
+  }
+  commitWidth(next: number): void {
+    const limits = this.bounds()
+    const clamped = clampSidebarWidth(next, limits.min, limits.max)
+    if (this.sidebarWidth === undefined) {
+      this.localWidth = clamped
+      this.sync()
+    }
+    this.onWidthChange(clamped)
   }
   sync(): void {
     const snapshot = new DazzSidebarColumnContext()
@@ -124,6 +163,7 @@ export struct DazzSidebar {
       : this.baseWidth()
   }
   motion(): AnimateParam {
+    if (this.dragging) return { duration: 0 }
     return { duration: this.tokens.metric('motion.duration'),
       curve: curves.cubicBezierCurve(this.tokens.metric('motion.easing.x1'), this.tokens.metric('motion.easing.y1'),
         this.tokens.metric('motion.easing.x2'), this.tokens.metric('motion.easing.y2')) }
@@ -156,6 +196,82 @@ export struct DazzSidebar {
         }, color: this.tokens.color('border') })
         .translate({ x: this.column.offcanvas ? (this.side === 'left' ? -this.baseWidth() : this.baseWidth()) : 0 })
         .animation(this.motion())
+      if (this.resizable && !this.column.icon && !this.column.offcanvas) {
+        Row() {
+          Row() {}
+            .width(this.tokens.metric('stroke.control'))
+            .height('100%')
+            .backgroundColor(
+              this.dragging || this.handleHovered || this.handleFocused
+                ? this.tokens.paint('outlined', 'border', 'normal', 'primary')
+                : Color.Transparent
+            )
+            .hitTestBehavior(HitTestMode.None)
+            .touchable(false)
+            .focusable(false)
+        }
+          .width(6)
+          .height('100%')
+          .justifyContent(this.side === 'left' ? FlexAlign.End : FlexAlign.Start)
+          .position({ x: this.side === 'left' ? this.rootWidth() - 6 : 0, y: 0 })
+          .responseRegion({ x: this.side === 'left' ? 0 : -2, y: 0, width: 8, height: '100%' })
+          .hitTestBehavior(HitTestMode.Block)
+          .focusable(true)
+          .accessibilityText(this.resizeLabel)
+          .focusBox({
+            margin: LengthMetrics.vp(0),
+            strokeWidth: LengthMetrics.vp(this.tokens.metric('focus.width')),
+            strokeColor: ColorMetrics.resourceColor(this.tokens.focus()),
+          })
+          .onHover((hovered: boolean) => { this.handleHovered = hovered })
+          .onFocus(() => { this.handleFocused = this.getUIContext().getFocusController().isActive() })
+          .onBlur(() => { this.handleFocused = false })
+          .gesture(
+            PanGesture({ direction: PanDirection.Horizontal })
+              .onActionStart(() => {
+                this.dragStartWidth = this.baseWidth()
+                this.dragging = true
+              })
+              .onActionUpdate((event: GestureEvent) => {
+                const limits = this.bounds()
+                this.commitWidth(
+                  dragSidebarWidth(
+                    this.dragStartWidth, event.offsetX, this.side,
+                    limits.min, limits.max
+                  )
+                )
+              })
+              .onActionEnd(() => { this.dragging = false })
+              .onActionCancel(() => { this.dragging = false })
+          )
+          .parallelGesture(
+            TapGesture({ count: 2 }).onAction(() => {
+              const limits = this.bounds()
+              this.commitWidth(
+                resetSidebarWidth(
+                  this.tokenBaseWidth(), this.defaultWidth,
+                  limits.min, limits.max
+                )
+              )
+            })
+          )
+          .onKeyEvent((event: KeyEvent): boolean => {
+            if (event.type !== KeyType.Down) return false
+            const limits = this.bounds()
+            const next = stepSidebarWidth(
+              this.baseWidth(),
+              event.keyCode,
+              this.side,
+              event.getModifierKeyState?.(['Shift']) ?? false,
+              limits.min,
+              limits.max
+            )
+            if (next === undefined) return false
+            this.commitWidth(next)
+            event.stopPropagation()
+            return true
+          })
+      }
     }.width(this.rootWidth()).height('100%').clip(this.variant !== 'floating' || this.column.offcanvas)
       // React's positioned column paints above its following content pane.
       .zIndex(this.collapsible === 'none' ? 0 : 1)
