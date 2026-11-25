@@ -189,16 +189,16 @@ public final class ThemeAppearanceController: ObservableObject {
     /// Synchronizes a portable `NativeAPI.Window`'s background and titlebar colors.
     public static func syncWindowChrome(
       _ window: NativeAPI.Window?,
-      surface: Color,
-      chrome: Color,
-      content: Color
+      surface: SwiftUI.Color,
+      chrome: SwiftUI.Color,
+      content: SwiftUI.Color
     ) {
       guard let target = window ?? Application.shared.getPrimaryWindow() else { return }
       target.setBackgroundColor(nativeColor(surface))
       _ = target.setTitleBarColors(nativeColor(chrome), foreground: nativeColor(content))
     }
 
-    private static func nativeColor(_ color: Color) -> NativeAPI.Color {
+    private static func nativeColor(_ color: SwiftUI.Color) -> NativeAPI.Color {
       let c = color.srgbComponents
       func byte(_ channel: CGFloat) -> UInt8 {
         UInt8(min(255, max(0, (channel * 255).rounded())))
@@ -375,7 +375,7 @@ public final class OmarchyPaletteObserver: ObservableObject {
   }
 }
 
-public extension View {
+public extension SwiftUI.View {
   /// Scopes a theme resolved from a typed ``ThemeFamily`` and ``AppearanceMode``.
   ///
   /// Observes `ThemeAppearanceController` so system appearance switches update
@@ -389,7 +389,7 @@ public extension View {
     sizing: ThemeSizing = .design,
     followOmarchy: Bool = false,
     controller: ThemeAppearanceController = .shared
-  ) -> some View {
+  ) -> some SwiftUI.View {
     theme(
       family: family.rawValue,
       mode: mode,
@@ -407,7 +407,7 @@ public extension View {
     sizing: ThemeSizing = .design,
     followOmarchy: Bool = false,
     controller: ThemeAppearanceController = .shared
-  ) -> some View {
+  ) -> some SwiftUI.View {
     modifier(
       FamilyAppearanceThemeModifier(
         family: family,
@@ -421,7 +421,7 @@ public extension View {
 
   /// Paints a `ThemeVariables` color behind this view, resolved from the
   /// nearest scoped `@Environment(\.theme)`.
-  func themeBackground(_ color: KeyPath<ThemeVariables, Color>) -> some View {
+  func themeBackground(_ color: KeyPath<ThemeVariables, SwiftUI.Color>) -> some SwiftUI.View {
     modifier(ThemeBackgroundModifier(color: color))
   }
 }
@@ -436,7 +436,7 @@ private struct FamilyAppearanceThemeModifier: ViewModifier {
   @Environment(\.colorScheme) private var envScheme
 
   @ViewBuilder
-  func body(content: Content) -> some View {
+  func body(content: Content) -> some SwiftUI.View {
     let systemScheme: ColorScheme = {
       #if os(macOS) || os(Windows) || os(Linux)
         return controller.systemColorScheme
@@ -457,10 +457,10 @@ private struct FamilyAppearanceThemeModifier: ViewModifier {
 }
 
 private struct ThemeBackgroundModifier: ViewModifier {
-  let color: KeyPath<ThemeVariables, Color>
+  let color: KeyPath<ThemeVariables, SwiftUI.Color>
   @Environment(\.theme) private var theme
 
-  func body(content: Content) -> some View {
+  func body(content: Content) -> some SwiftUI.View {
     content.background(theme.vars[keyPath: color])
   }
 }

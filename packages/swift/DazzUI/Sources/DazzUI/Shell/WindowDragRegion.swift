@@ -6,27 +6,27 @@ import SwiftUI
   import NativeAPI
 #endif
 
-public extension View {
+public extension SwiftUI.View {
   /// Makes a stretch of custom chrome behave like a native window titlebar:
   /// dragging bare space moves the window and double-clicking performs the
   /// platform's titlebar double-click action (zoom/minimize/maximize).
-  func windowDragRegion() -> some View {
+  func windowDragRegion() -> some SwiftUI.View {
     background(WindowDragRegion())
   }
 }
 
 /// An invisible region that hands pointer drags and titlebar double-clicks to
 /// the enclosing native window.
-public struct WindowDragRegion: View {
+public struct WindowDragRegion: SwiftUI.View {
   public init() {}
 
-  public var body: some View {
+  public var body: some SwiftUI.View {
     #if os(macOS)
       MacOSWindowDragRegion()
     #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
       PortableWindowDragRegion()
     #else
-      Color.clear
+      SwiftUI.Color.clear
     #endif
   }
 }
@@ -61,7 +61,7 @@ public struct WindowDragRegion: View {
     }
   }
 #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
-  private struct PortableWindowDragRegion: View {
+  private struct PortableWindowDragRegion: SwiftUI.View {
     @Environment(\.nativeWindow) private var nativeWindow
     @State private var dragging = false
 
@@ -69,8 +69,8 @@ public struct WindowDragRegion: View {
       nativeWindow ?? Application.shared.getPrimaryWindow()
     }
 
-    var body: some View {
-      Color.clear
+    var body: some SwiftUI.View {
+      SwiftUI.Color.clear
         .contentShape(Rectangle())
         .onTapGesture(count: 2) {
           _ = targetWindow?.performTitleBarDoubleClick()
