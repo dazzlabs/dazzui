@@ -15,21 +15,38 @@ internal enum NativeMenuEntry {
 
 extension SwiftUI.View {
   func nativeMenu(
-    isPresented: Binding<Bool>, entries: [NativeMenuEntry],
+    isPresented: Binding<Bool>,
+    entries: [NativeMenuEntry],
+    align: MenuAlign = .start, point: CGPoint? = nil,
+    bar: NativeMenuBar? = nil, menuID: String? = nil,
+    switchMenu: @escaping () -> Void = {}
+  ) -> some SwiftUI.View {
+    nativeMenu(
+      isPresented: isPresented,
+      hasEntries: !entries.isEmpty,
+      entries: { entries },
+      align: align, point: point, bar: bar, menuID: menuID, switchMenu: switchMenu)
+  }
+
+  func nativeMenu(
+    isPresented: Binding<Bool>,
+    hasEntries: Bool = true,
+    entries: @escaping () -> [NativeMenuEntry],
     align: MenuAlign = .start, point: CGPoint? = nil,
     bar: NativeMenuBar? = nil, menuID: String? = nil,
     switchMenu: @escaping () -> Void = {}
   ) -> some SwiftUI.View {
     modifier(
       NativeMenuModifier(
-        isPresented: isPresented, entries: entries,
+        isPresented: isPresented, hasEntries: hasEntries, entries: entries,
         align: align, point: point, bar: bar, menuID: menuID, switchMenu: switchMenu))
   }
 }
 
 private struct NativeMenuModifier: ViewModifier {
   @Binding var isPresented: Bool
-  let entries: [NativeMenuEntry]
+  let hasEntries: Bool
+  let entries: () -> [NativeMenuEntry]
   let align: MenuAlign
   let point: CGPoint?
   let bar: NativeMenuBar?
@@ -41,17 +58,19 @@ private struct NativeMenuModifier: ViewModifier {
   func body(content: Content) -> some SwiftUI.View {
     content
       .background {
-        #if os(macOS)
-          NativeMenuAnchor(
-            isPresented: $isPresented, presentation: presentation,
-            entries: entries, theme: theme, align: align, point: point,
-            bar: bar, menuID: menuID, switchMenu: switchMenu)
-        #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
-          PortNativeMenuAnchor(
-            isPresented: $isPresented, presentation: presentation,
-            entries: entries, theme: theme, align: align, point: point,
-            bar: bar, menuID: menuID, switchMenu: switchMenu)
-        #endif
+        if presentation.usesNativeMenus {
+          #if os(macOS)
+            NativeMenuAnchor(
+              isPresented: $isPresented, presentation: presentation,
+              hasEntries: hasEntries, entries: entries, theme: theme, align: align, point: point,
+              bar: bar, menuID: menuID, switchMenu: switchMenu)
+          #elseif (os(Windows) || os(Linux)) && !CROSS_SWIFTUI_HARMONY
+            PortNativeMenuAnchor(
+              isPresented: $isPresented, presentation: presentation,
+              hasEntries: hasEntries, entries: entries, theme: theme, align: align, point: point,
+              bar: bar, menuID: menuID, switchMenu: switchMenu)
+          #endif
+        }
       }
       .onChange(of: presentation) { _ in isPresented = false }
       .onDisappear { isPresented = false }
@@ -103,7 +122,8 @@ internal final class NativeMenuBar: ObservableObject {
   private struct NativeMenuAnchor: NSViewRepresentable {
     @Binding var isPresented: Bool
     let presentation: MenuPresentation
-    let entries: [NativeMenuEntry]
+    let hasEntries: Bool
+    let entries: () -> [NativeMenuEntry]
     let theme: Theme
     let align: MenuAlign
     let point: CGPoint?
@@ -113,7 +133,7 @@ internal final class NativeMenuBar: ObservableObject {
 
     func makeNSView(context: Context) -> NativeMenuAnchorView { NativeMenuAnchorView() }
     func updateNSView(_ view: NativeMenuAnchorView, context: Context) {
-      view.canSwitch = !entries.isEmpty && menuID != nil
+      view.canSwitch = hasEntries && menuID != nil
       view.switchMenu = switchMenu
       bar?.add(view)
       view.update(
@@ -144,6 +164,16 @@ internal final class NativeMenuBar: ObservableObject {
       theme: Theme, align: MenuAlign, point: CGPoint?, bar: NativeMenuBar?,
       dismiss: @escaping () -> Void
     ) {
+      update(
+        shown: shown, presentation: presentation, entries: { entries },
+        theme: theme, align: align, point: point, bar: bar, dismiss: dismiss)
+    }
+
+    func update(
+      shown: Bool, presentation: MenuPresentation, entries: () -> [NativeMenuEntry],
+      theme: Theme, align: MenuAlign, point: CGPoint?, bar: NativeMenuBar?,
+      dismiss: @escaping () -> Void
+    ) {
       let changed = self.presentation != nil && self.presentation != presentation
       self.presentation = presentation
       guard !changed, shown, presentation.usesNativeMenus else {
@@ -155,7 +185,7 @@ internal final class NativeMenuBar: ObservableObject {
       generation += 1
       let token = generation
       let session = NativeMenuSession(
-        entries: entries, theme: theme, scale: window?.backingScaleFactor ?? 2)
+        entries: entries(), theme: theme, scale: window?.backingScaleFactor ?? 2)
       self.session = session
       session.didClose = { [weak self] in
         guard let self, self.generation == token else { return }

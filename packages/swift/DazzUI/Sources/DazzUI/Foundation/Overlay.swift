@@ -108,17 +108,33 @@ public extension View {
   }
 }
 
+/// Owns the window's ``OverlayStack`` without publishing layer mutations to
+/// ``OverlayHost`` itself, so opening or closing a dialog, drawer or toast
+/// only re-evaluates ``OverlayLayers`` instead of the entire window content.
+@MainActor
+private final class OverlayStackHolder: ObservableObject {
+  let stack = OverlayStack()
+}
+
 private struct OverlayHost: ViewModifier {
-  @StateObject private var stack = OverlayStack()
+  @StateObject private var holder = OverlayStackHolder()
 
   func body(content: Content) -> some View {
     content
-      .environment(\.overlayStack, stack)
+      .environment(\.overlayStack, holder.stack)
       .overlay {
-        ZStack {
-          ForEach(stack.layers) { layer in layer.content }
-        }
+        OverlayLayers(stack: holder.stack)
       }
+  }
+}
+
+private struct OverlayLayers: View {
+  @ObservedObject var stack: OverlayStack
+
+  var body: some View {
+    ZStack {
+      ForEach(stack.layers) { layer in layer.content }
+    }
   }
 }
 

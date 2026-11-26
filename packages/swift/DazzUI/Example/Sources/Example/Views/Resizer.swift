@@ -38,17 +38,28 @@ struct Resizer: View {
     }
     .frame(width: vars.spacing2)
     .onHover { inside in
+      guard hovered != inside else { return }
       hovered = inside
       #if os(macOS)
         if inside { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
       #endif
     }
+    .onDisappear {
+      #if os(macOS)
+        if hovered {
+          NSCursor.pop()
+          hovered = false
+        }
+      #endif
+      from = nil
+    }
     .gesture(
       DragGesture(minimumDistance: 0, coordinateSpace: .global)
         .onChanged { drag in
           let start = from ?? width
-          from = start
-          width = column.clamp(start + drag.translation.width * outward)
+          if from == nil { from = start }
+          let next = column.clamp(start + drag.translation.width * outward)
+          if next != width { width = next }
         }
         .onEnded { _ in from = nil }
     )

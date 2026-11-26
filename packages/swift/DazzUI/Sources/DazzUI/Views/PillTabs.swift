@@ -122,7 +122,7 @@ private struct PillTab<Value: Hashable>: View {
   private func surface(state: PressableState) -> Color {
     let vars = theme.vars
     if selected {
-      return vars.resolve(vars.descriptor(.filled, .surface), tint: tint, state: .normal)
+      return vars.controlColor(.filled, .surface, tint: tint, state: .normal)
     }
     if state.enabled, state.hovered || state.pressed { return vars.colorSurfaceSunken }
     return vars.colorSurfaceInset
@@ -131,7 +131,7 @@ private struct PillTab<Value: Hashable>: View {
   private func content(state: PressableState) -> Color {
     let vars = theme.vars
     if selected {
-      return vars.resolve(vars.descriptor(.filled, .content), tint: tint, state: .normal)
+      return vars.controlColor(.filled, .content, tint: tint, state: .normal)
     }
     if state.enabled, state.hovered || state.pressed { return vars.colorContent }
     return vars.colorContentNav

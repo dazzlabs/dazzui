@@ -17,6 +17,17 @@ public enum Tint: String, CaseIterable, Sendable {
   case success
   case warning
   case danger
+
+  internal var cacheIndex: Int {
+    switch self {
+    case .primary: return 0
+    case .neutral: return 1
+    case .info: return 2
+    case .success: return 3
+    case .warning: return 4
+    case .danger: return 5
+    }
+  }
 }
 
 /// The `control.color.*` recipes, which is the whole set: `recessed` is the
@@ -30,6 +41,17 @@ public enum ControlVariant: String, CaseIterable, Sendable {
   case tinted
   case outlined
   case plain
+
+  internal var cacheIndex: Int {
+    switch self {
+    case .recessed: return 0
+    case .normal: return 1
+    case .filled: return 2
+    case .tinted: return 3
+    case .outlined: return 4
+    case .plain: return 5
+    }
+  }
 }
 
 /// The four control sizes, each a profile of geometry and type in
@@ -42,11 +64,20 @@ public enum ControlSize: String, CaseIterable, Sendable {
 }
 
 /// The interaction states the shared state machine resolves a recipe for.
-public enum ControlState: Sendable {
+public enum ControlState: CaseIterable, Sendable {
   case normal
   case hovered
   case pressed
   case disabled
+
+  internal var cacheIndex: Int {
+    switch self {
+    case .normal: return 0
+    case .hovered: return 1
+    case .pressed: return 2
+    case .disabled: return 3
+    }
+  }
 
   /// What a pointer and an enabled flag add up to. Disabled outranks
   /// everything, which is what flattens a control to the groove.
@@ -92,6 +123,22 @@ public struct ControlMetrics: Sendable, Equatable {
   public let content: TypeStyle
 }
 
+internal struct ControlMetricsTable: Sendable {
+  let tiny: ControlMetrics
+  let small: ControlMetrics
+  let medium: ControlMetrics
+  let large: ControlMetrics
+
+  subscript(_ size: ControlSize) -> ControlMetrics {
+    switch size {
+    case .tiny: return tiny
+    case .small: return small
+    case .medium: return medium
+    case .large: return large
+    }
+  }
+}
+
 public extension ThemeVariables {
   /// The ramp a tint selects — the Swift half of `control.css`'s
   /// `[data-tint] { --tint-600: var(--color-primary-600) }`.
@@ -106,48 +153,48 @@ public extension ThemeVariables {
     }
   }
 
-  /// The size profile `[data-size]` binds.
+  /// The size profile `[data-size]` binds, cached per `ThemeVariables` storage
+  /// so system-sized themes do not rebuild scaled `TypeStyle` and `Font`
+  /// instances on every control redraw.
   func metrics(_ size: ControlSize) -> ControlMetrics {
-    switch size {
-    case .tiny:
-      return ControlMetrics(
-        size: controlTinySize,
-        iconSize: controlTinyIconSize,
-        gap: controlTinyGap,
-        paddingBlock: controlTinyPaddingBlock,
-        paddingInline: controlTinyPaddingInline,
-        radius: controlTinyRadius,
-        content: controlTinyContent
-      )
-    case .small:
-      return ControlMetrics(
-        size: controlSmallSize,
-        iconSize: controlSmallIconSize,
-        gap: controlSmallGap,
-        paddingBlock: controlSmallPaddingBlock,
-        paddingInline: controlSmallPaddingInline,
-        radius: controlSmallRadius,
-        content: controlSmallContent
-      )
-    case .medium:
-      return ControlMetrics(
-        size: controlMediumSize,
-        iconSize: controlMediumIconSize,
-        gap: controlMediumGap,
-        paddingBlock: controlMediumPaddingBlock,
-        paddingInline: controlMediumPaddingInline,
-        radius: controlMediumRadius,
-        content: controlMediumContent
-      )
-    case .large:
-      return ControlMetrics(
-        size: controlLargeSize,
-        iconSize: controlLargeIconSize,
-        gap: controlLargeGap,
-        paddingBlock: controlLargePaddingBlock,
-        paddingInline: controlLargePaddingInline,
-        radius: controlLargeRadius,
-        content: controlLargeContent
+    cachedControlMetrics(for: size) {
+      ControlMetricsTable(
+        tiny: ControlMetrics(
+          size: controlTinySize,
+          iconSize: controlTinyIconSize,
+          gap: controlTinyGap,
+          paddingBlock: controlTinyPaddingBlock,
+          paddingInline: controlTinyPaddingInline,
+          radius: controlTinyRadius,
+          content: controlTinyContent
+        ),
+        small: ControlMetrics(
+          size: controlSmallSize,
+          iconSize: controlSmallIconSize,
+          gap: controlSmallGap,
+          paddingBlock: controlSmallPaddingBlock,
+          paddingInline: controlSmallPaddingInline,
+          radius: controlSmallRadius,
+          content: controlSmallContent
+        ),
+        medium: ControlMetrics(
+          size: controlMediumSize,
+          iconSize: controlMediumIconSize,
+          gap: controlMediumGap,
+          paddingBlock: controlMediumPaddingBlock,
+          paddingInline: controlMediumPaddingInline,
+          radius: controlMediumRadius,
+          content: controlMediumContent
+        ),
+        large: ControlMetrics(
+          size: controlLargeSize,
+          iconSize: controlLargeIconSize,
+          gap: controlLargeGap,
+          paddingBlock: controlLargePaddingBlock,
+          paddingInline: controlLargePaddingInline,
+          radius: controlLargeRadius,
+          content: controlLargeContent
+        )
       )
     }
   }
@@ -202,21 +249,47 @@ public extension ThemeVariables {
     tint: Tint,
     state: ControlState = .normal
   ) -> Color {
-    resolve(descriptor(variant, part), tint: tint, state: state)
+    let resolved = controlColors(variant: variant, tint: tint, state: state)
+    switch part {
+    case .surface: return resolved.surface
+    case .content: return resolved.content
+    case .border: return resolved.border
+    }
   }
 
   /// The three colours a control paints in one state — the Swift half of
   /// `--control-surface` / `--control-content` / `--control-border`.
+  ///
+  /// Backed by a per-theme 144-entry table (6 variants × 6 tints × 4 states)
+  /// built lazily once on `ThemeVariables` storage so hot control renders avoid
+  /// re-constructing `ColorDescriptor` values and opacity colours.
   func controlColors(
     variant: ControlVariant,
     tint: Tint,
     state: ControlState
   ) -> ControlColors {
-    ControlColors(
-      surface: resolve(descriptor(variant, .surface), tint: tint, state: state),
-      content: resolve(descriptor(variant, .content), tint: tint, state: state),
-      border: resolve(descriptor(variant, .border), tint: tint, state: state)
-    )
+    let index = variant.cacheIndex * 24 + tint.cacheIndex * 4 + state.cacheIndex
+    return cachedControlColor(at: index) {
+      var entries: [ControlColors] = []
+      entries.reserveCapacity(144)
+      for v in ControlVariant.allCases {
+        let surfaceDesc = descriptor(v, .surface)
+        let contentDesc = descriptor(v, .content)
+        let borderDesc = descriptor(v, .border)
+        for t in Tint.allCases {
+          for s in ControlState.allCases {
+            entries.append(
+              ControlColors(
+                surface: resolve(surfaceDesc, tint: t, state: s),
+                content: resolve(contentDesc, tint: t, state: s),
+                border: resolve(borderDesc, tint: t, state: s)
+              )
+            )
+          }
+        }
+      }
+      return entries
+    }
   }
 
   /// Keyboard focus: the system accent at a per-theme alpha, and never the

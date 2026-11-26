@@ -3,7 +3,172 @@ import SwiftUI
 /// The colour token set for one theme.
 ///
 /// DO NOT EDIT - This file is auto-generated
-public struct Palette: Sendable {
+public struct Palette: Sendable, Equatable {
+  /// Reference-counted backing storage so passing and reading `Palette`
+  /// through SwiftUI view bodies copies one 8-byte pointer instead of the
+  /// entire token table, while preserving value semantics via copy-on-write.
+  private final class Storage: @unchecked Sendable {
+    var colorPrimary: ColorSwatch
+    var colorNeutral: ColorSwatch
+    var colorInfo: ColorSwatch
+    var colorSuccess: ColorSwatch
+    var colorWarning: ColorSwatch
+    var colorDanger: ColorSwatch
+    var colorCanvas: Color
+    var colorSurface: Color
+    var colorSurfaceMuted: Color
+    var colorSurfaceSunken: Color
+    var colorSurfaceSubtle: Color
+    var colorSurfaceInset: Color
+    var colorSurfaceRaised: Color
+    var colorSurfaceOverlay: Color
+    var colorSurfaceChrome: Color
+    var colorSurfaceColumn: Color
+    var colorContent: Color
+    var colorContentSecondary: Color
+    var colorContentNav: Color
+    var colorContentMuted: Color
+    var colorContentSubtle: Color
+    var colorContentFaint: Color
+    var colorBorder: Color
+    var colorBorderStrong: Color
+    var colorBorderMuted: Color
+    var colorOnAccent: Color
+    var nativeTintShade: Int
+
+    init(
+      colorPrimary: ColorSwatch,
+      colorNeutral: ColorSwatch,
+      colorInfo: ColorSwatch,
+      colorSuccess: ColorSwatch,
+      colorWarning: ColorSwatch,
+      colorDanger: ColorSwatch,
+      colorCanvas: Color,
+      colorSurface: Color,
+      colorSurfaceMuted: Color,
+      colorSurfaceSunken: Color,
+      colorSurfaceSubtle: Color,
+      colorSurfaceInset: Color,
+      colorSurfaceRaised: Color,
+      colorSurfaceOverlay: Color,
+      colorSurfaceChrome: Color,
+      colorSurfaceColumn: Color,
+      colorContent: Color,
+      colorContentSecondary: Color,
+      colorContentNav: Color,
+      colorContentMuted: Color,
+      colorContentSubtle: Color,
+      colorContentFaint: Color,
+      colorBorder: Color,
+      colorBorderStrong: Color,
+      colorBorderMuted: Color,
+      colorOnAccent: Color,
+      nativeTintShade: Int
+    ) {
+      self.colorPrimary = colorPrimary
+      self.colorNeutral = colorNeutral
+      self.colorInfo = colorInfo
+      self.colorSuccess = colorSuccess
+      self.colorWarning = colorWarning
+      self.colorDanger = colorDanger
+      self.colorCanvas = colorCanvas
+      self.colorSurface = colorSurface
+      self.colorSurfaceMuted = colorSurfaceMuted
+      self.colorSurfaceSunken = colorSurfaceSunken
+      self.colorSurfaceSubtle = colorSurfaceSubtle
+      self.colorSurfaceInset = colorSurfaceInset
+      self.colorSurfaceRaised = colorSurfaceRaised
+      self.colorSurfaceOverlay = colorSurfaceOverlay
+      self.colorSurfaceChrome = colorSurfaceChrome
+      self.colorSurfaceColumn = colorSurfaceColumn
+      self.colorContent = colorContent
+      self.colorContentSecondary = colorContentSecondary
+      self.colorContentNav = colorContentNav
+      self.colorContentMuted = colorContentMuted
+      self.colorContentSubtle = colorContentSubtle
+      self.colorContentFaint = colorContentFaint
+      self.colorBorder = colorBorder
+      self.colorBorderStrong = colorBorderStrong
+      self.colorBorderMuted = colorBorderMuted
+      self.colorOnAccent = colorOnAccent
+      self.nativeTintShade = nativeTintShade
+    }
+
+    func copy() -> Storage {
+      let duplicate = Storage(
+        colorPrimary: colorPrimary,
+        colorNeutral: colorNeutral,
+        colorInfo: colorInfo,
+        colorSuccess: colorSuccess,
+        colorWarning: colorWarning,
+        colorDanger: colorDanger,
+        colorCanvas: colorCanvas,
+        colorSurface: colorSurface,
+        colorSurfaceMuted: colorSurfaceMuted,
+        colorSurfaceSunken: colorSurfaceSunken,
+        colorSurfaceSubtle: colorSurfaceSubtle,
+        colorSurfaceInset: colorSurfaceInset,
+        colorSurfaceRaised: colorSurfaceRaised,
+        colorSurfaceOverlay: colorSurfaceOverlay,
+        colorSurfaceChrome: colorSurfaceChrome,
+        colorSurfaceColumn: colorSurfaceColumn,
+        colorContent: colorContent,
+        colorContentSecondary: colorContentSecondary,
+        colorContentNav: colorContentNav,
+        colorContentMuted: colorContentMuted,
+        colorContentSubtle: colorContentSubtle,
+        colorContentFaint: colorContentFaint,
+        colorBorder: colorBorder,
+        colorBorderStrong: colorBorderStrong,
+        colorBorderMuted: colorBorderMuted,
+        colorOnAccent: colorOnAccent,
+        nativeTintShade: nativeTintShade
+      )
+      return duplicate
+    }
+    func equals(_ other: Storage) -> Bool {
+      colorPrimary == other.colorPrimary &&
+      colorNeutral == other.colorNeutral &&
+      colorInfo == other.colorInfo &&
+      colorSuccess == other.colorSuccess &&
+      colorWarning == other.colorWarning &&
+      colorDanger == other.colorDanger &&
+      colorCanvas == other.colorCanvas &&
+      colorSurface == other.colorSurface &&
+      colorSurfaceMuted == other.colorSurfaceMuted &&
+      colorSurfaceSunken == other.colorSurfaceSunken &&
+      colorSurfaceSubtle == other.colorSurfaceSubtle &&
+      colorSurfaceInset == other.colorSurfaceInset &&
+      colorSurfaceRaised == other.colorSurfaceRaised &&
+      colorSurfaceOverlay == other.colorSurfaceOverlay &&
+      colorSurfaceChrome == other.colorSurfaceChrome &&
+      colorSurfaceColumn == other.colorSurfaceColumn &&
+      colorContent == other.colorContent &&
+      colorContentSecondary == other.colorContentSecondary &&
+      colorContentNav == other.colorContentNav &&
+      colorContentMuted == other.colorContentMuted &&
+      colorContentSubtle == other.colorContentSubtle &&
+      colorContentFaint == other.colorContentFaint &&
+      colorBorder == other.colorBorder &&
+      colorBorderStrong == other.colorBorderStrong &&
+      colorBorderMuted == other.colorBorderMuted &&
+      colorOnAccent == other.colorOnAccent &&
+      nativeTintShade == other.nativeTintShade
+    }
+  }
+
+  private var storage: Storage
+
+  private mutating func ensureUnique() {
+    if !isKnownUniquelyReferenced(&storage) {
+      storage = storage.copy()
+    }
+  }
+
+  public static func == (lhs: Palette, rhs: Palette) -> Bool {
+    lhs.storage === rhs.storage || lhs.storage.equals(rhs.storage)
+  }
+
   public init(
     colorPrimary: ColorSwatch = Colors.ink,
     colorNeutral: ColorSwatch = Colors.neutral,
@@ -33,62 +198,226 @@ public struct Palette: Sendable {
     colorOnAccent: Color = Color(argb: 0xFFD6_FF3F),
     nativeTintShade: Int = 600
   ) {
-    self.colorPrimary = colorPrimary
-    self.colorNeutral = colorNeutral
-    self.colorInfo = colorInfo
-    self.colorSuccess = colorSuccess
-    self.colorWarning = colorWarning
-    self.colorDanger = colorDanger
-    self.colorCanvas = colorCanvas
-    self.colorSurface = colorSurface
-    self.colorSurfaceMuted = colorSurfaceMuted
-    self.colorSurfaceSunken = colorSurfaceSunken
-    self.colorSurfaceSubtle = colorSurfaceSubtle
-    self.colorSurfaceInset = colorSurfaceInset
-    self.colorSurfaceRaised = colorSurfaceRaised
-    self.colorSurfaceOverlay = colorSurfaceOverlay
-    self.colorSurfaceChrome = colorSurfaceChrome
-    self.colorSurfaceColumn = colorSurfaceColumn
-    self.colorContent = colorContent
-    self.colorContentSecondary = colorContentSecondary
-    self.colorContentNav = colorContentNav
-    self.colorContentMuted = colorContentMuted
-    self.colorContentSubtle = colorContentSubtle
-    self.colorContentFaint = colorContentFaint
-    self.colorBorder = colorBorder
-    self.colorBorderStrong = colorBorderStrong
-    self.colorBorderMuted = colorBorderMuted
-    self.colorOnAccent = colorOnAccent
-    self.nativeTintShade = nativeTintShade
+    self.storage = Storage(
+      colorPrimary: colorPrimary,
+      colorNeutral: colorNeutral,
+      colorInfo: colorInfo,
+      colorSuccess: colorSuccess,
+      colorWarning: colorWarning,
+      colorDanger: colorDanger,
+      colorCanvas: colorCanvas,
+      colorSurface: colorSurface,
+      colorSurfaceMuted: colorSurfaceMuted,
+      colorSurfaceSunken: colorSurfaceSunken,
+      colorSurfaceSubtle: colorSurfaceSubtle,
+      colorSurfaceInset: colorSurfaceInset,
+      colorSurfaceRaised: colorSurfaceRaised,
+      colorSurfaceOverlay: colorSurfaceOverlay,
+      colorSurfaceChrome: colorSurfaceChrome,
+      colorSurfaceColumn: colorSurfaceColumn,
+      colorContent: colorContent,
+      colorContentSecondary: colorContentSecondary,
+      colorContentNav: colorContentNav,
+      colorContentMuted: colorContentMuted,
+      colorContentSubtle: colorContentSubtle,
+      colorContentFaint: colorContentFaint,
+      colorBorder: colorBorder,
+      colorBorderStrong: colorBorderStrong,
+      colorBorderMuted: colorBorderMuted,
+      colorOnAccent: colorOnAccent,
+      nativeTintShade: nativeTintShade
+    )
   }
 
-  public var colorPrimary: ColorSwatch
-  public var colorNeutral: ColorSwatch
-  public var colorInfo: ColorSwatch
-  public var colorSuccess: ColorSwatch
-  public var colorWarning: ColorSwatch
-  public var colorDanger: ColorSwatch
-  public var colorCanvas: Color
-  public var colorSurface: Color
-  public var colorSurfaceMuted: Color
-  public var colorSurfaceSunken: Color
-  public var colorSurfaceSubtle: Color
-  public var colorSurfaceInset: Color
-  public var colorSurfaceRaised: Color
-  public var colorSurfaceOverlay: Color
-  public var colorSurfaceChrome: Color
-  public var colorSurfaceColumn: Color
-  public var colorContent: Color
-  public var colorContentSecondary: Color
-  public var colorContentNav: Color
-  public var colorContentMuted: Color
-  public var colorContentSubtle: Color
-  public var colorContentFaint: Color
-  public var colorBorder: Color
-  public var colorBorderStrong: Color
-  public var colorBorderMuted: Color
-  public var colorOnAccent: Color
-  public var nativeTintShade: Int
+  public var colorPrimary: ColorSwatch {
+    get { storage.colorPrimary }
+    set {
+      ensureUnique()
+      storage.colorPrimary = newValue
+    }
+  }
+  public var colorNeutral: ColorSwatch {
+    get { storage.colorNeutral }
+    set {
+      ensureUnique()
+      storage.colorNeutral = newValue
+    }
+  }
+  public var colorInfo: ColorSwatch {
+    get { storage.colorInfo }
+    set {
+      ensureUnique()
+      storage.colorInfo = newValue
+    }
+  }
+  public var colorSuccess: ColorSwatch {
+    get { storage.colorSuccess }
+    set {
+      ensureUnique()
+      storage.colorSuccess = newValue
+    }
+  }
+  public var colorWarning: ColorSwatch {
+    get { storage.colorWarning }
+    set {
+      ensureUnique()
+      storage.colorWarning = newValue
+    }
+  }
+  public var colorDanger: ColorSwatch {
+    get { storage.colorDanger }
+    set {
+      ensureUnique()
+      storage.colorDanger = newValue
+    }
+  }
+  public var colorCanvas: Color {
+    get { storage.colorCanvas }
+    set {
+      ensureUnique()
+      storage.colorCanvas = newValue
+    }
+  }
+  public var colorSurface: Color {
+    get { storage.colorSurface }
+    set {
+      ensureUnique()
+      storage.colorSurface = newValue
+    }
+  }
+  public var colorSurfaceMuted: Color {
+    get { storage.colorSurfaceMuted }
+    set {
+      ensureUnique()
+      storage.colorSurfaceMuted = newValue
+    }
+  }
+  public var colorSurfaceSunken: Color {
+    get { storage.colorSurfaceSunken }
+    set {
+      ensureUnique()
+      storage.colorSurfaceSunken = newValue
+    }
+  }
+  public var colorSurfaceSubtle: Color {
+    get { storage.colorSurfaceSubtle }
+    set {
+      ensureUnique()
+      storage.colorSurfaceSubtle = newValue
+    }
+  }
+  public var colorSurfaceInset: Color {
+    get { storage.colorSurfaceInset }
+    set {
+      ensureUnique()
+      storage.colorSurfaceInset = newValue
+    }
+  }
+  public var colorSurfaceRaised: Color {
+    get { storage.colorSurfaceRaised }
+    set {
+      ensureUnique()
+      storage.colorSurfaceRaised = newValue
+    }
+  }
+  public var colorSurfaceOverlay: Color {
+    get { storage.colorSurfaceOverlay }
+    set {
+      ensureUnique()
+      storage.colorSurfaceOverlay = newValue
+    }
+  }
+  public var colorSurfaceChrome: Color {
+    get { storage.colorSurfaceChrome }
+    set {
+      ensureUnique()
+      storage.colorSurfaceChrome = newValue
+    }
+  }
+  public var colorSurfaceColumn: Color {
+    get { storage.colorSurfaceColumn }
+    set {
+      ensureUnique()
+      storage.colorSurfaceColumn = newValue
+    }
+  }
+  public var colorContent: Color {
+    get { storage.colorContent }
+    set {
+      ensureUnique()
+      storage.colorContent = newValue
+    }
+  }
+  public var colorContentSecondary: Color {
+    get { storage.colorContentSecondary }
+    set {
+      ensureUnique()
+      storage.colorContentSecondary = newValue
+    }
+  }
+  public var colorContentNav: Color {
+    get { storage.colorContentNav }
+    set {
+      ensureUnique()
+      storage.colorContentNav = newValue
+    }
+  }
+  public var colorContentMuted: Color {
+    get { storage.colorContentMuted }
+    set {
+      ensureUnique()
+      storage.colorContentMuted = newValue
+    }
+  }
+  public var colorContentSubtle: Color {
+    get { storage.colorContentSubtle }
+    set {
+      ensureUnique()
+      storage.colorContentSubtle = newValue
+    }
+  }
+  public var colorContentFaint: Color {
+    get { storage.colorContentFaint }
+    set {
+      ensureUnique()
+      storage.colorContentFaint = newValue
+    }
+  }
+  public var colorBorder: Color {
+    get { storage.colorBorder }
+    set {
+      ensureUnique()
+      storage.colorBorder = newValue
+    }
+  }
+  public var colorBorderStrong: Color {
+    get { storage.colorBorderStrong }
+    set {
+      ensureUnique()
+      storage.colorBorderStrong = newValue
+    }
+  }
+  public var colorBorderMuted: Color {
+    get { storage.colorBorderMuted }
+    set {
+      ensureUnique()
+      storage.colorBorderMuted = newValue
+    }
+  }
+  public var colorOnAccent: Color {
+    get { storage.colorOnAccent }
+    set {
+      ensureUnique()
+      storage.colorOnAccent = newValue
+    }
+  }
+  public var nativeTintShade: Int {
+    get { storage.nativeTintShade }
+    set {
+      ensureUnique()
+      storage.nativeTintShade = newValue
+    }
+  }
 
 
 }

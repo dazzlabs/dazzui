@@ -44,14 +44,63 @@ public struct TooltipProvider<Content: View>: View {
 /// A control that owns a hint already — ``IconButton`` — does not want a
 /// second hint opened around it, so an outer tooltip with a tooltip inside
 /// stands down, the way React's and ArkUI's do.
-private typealias TooltipScope = (_ id: UUID, _ mounted: Bool) -> Void
+///
+/// Kept as an identity-equatable reference box so putting it into the SwiftUI
+/// environment never invalidates the subtree on parent redraws.
+@MainActor
+private final class TooltipScopeBox: Equatable {
+  private var nested: Set<UUID> = []
+  var onHasNestedChange: ((Bool) -> Void)?
+
+  var hasNested: Bool { !nested.isEmpty }
+
+  func setMounted(_ id: UUID, _ mounted: Bool) {
+    let wasEmpty = nested.isEmpty
+    if mounted {
+      nested.insert(id)
+    } else {
+      nested.remove(id)
+    }
+    let isEmpty = nested.isEmpty
+    if wasEmpty != isEmpty {
+      onHasNestedChange?(!isEmpty)
+    }
+  }
+
+  nonisolated static func == (lhs: TooltipScopeBox, rhs: TooltipScopeBox) -> Bool {
+    lhs === rhs
+  }
+}
+
+/// Holds the in-flight open/close delay task without triggering SwiftUI state
+/// invalidations when the task handle is replaced or cancelled.
+@MainActor
+private final class TooltipScheduler {
+  private var task: Task<Void, Never>?
+
+  func schedule(_ operation: @escaping @MainActor () async -> Void) {
+    task?.cancel()
+    task = Task { @MainActor in
+      await operation()
+    }
+  }
+
+  func cancel() {
+    task?.cancel()
+    task = nil
+  }
+
+  deinit {
+    task?.cancel()
+  }
+}
 
 private struct TooltipScopeKey: EnvironmentKey {
-  static let defaultValue: TooltipScope? = nil
+  static let defaultValue: TooltipScopeBox? = nil
 }
 
 private extension EnvironmentValues {
-  var tooltipScope: TooltipScope? {
+  var tooltipScope: TooltipScopeBox? {
     get { self[TooltipScopeKey.self] }
     set { self[TooltipScopeKey.self] = newValue }
   }
@@ -76,14 +125,16 @@ public struct Tooltip<Label: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.tooltipDelayContext) private var delayContext
   @Environment(\.tooltipScope) private var parentScope
   @State private var hovered = false
   @State private var open = false
-  /// The tooltips mounted inside this one, which take precedence over it.
-  @State private var nested: Set<UUID> = []
+  @State private var portalMounted = false
+  /// Whether any tooltip is mounted inside this one, which takes precedence over it.
+  @State private var hasNested = false
   @State private var id = UUID()
+  @State private var scopeBox = TooltipScopeBox()
+  @State private var scheduler = TooltipScheduler()
 
   public init(
     side: TooltipSide = .top,
@@ -109,20 +160,25 @@ public struct Tooltip<Label: View, Content: View>: View {
     scheduled(
       presentation(
         content()
-          .onHover { hovered = $0 }
+          .onHover { inside in
+            let next = inside && !disabled
+            if hovered != next { hovered = next }
+          }
           // Only the control is scoped: a label is a label, and a tooltip in
           // one is about something else.
-          .environment(\.tooltipScope, { id, mounted in
-            if mounted {
-              nested.insert(id)
-            } else {
-              nested.remove(id)
-            }
-          })
+          .environment(\.tooltipScope, scopeBox)
       )
     )
-    .onAppear { parentScope?(id, true) }
-    .onDisappear { parentScope?(id, false) }
+    .onAppear {
+      scopeBox.onHasNestedChange = { hasNested = $0 }
+      if hasNested != scopeBox.hasNested { hasNested = scopeBox.hasNested }
+      parentScope?.setMounted(id, true)
+      if shouldPresent { schedulePresentation(true) }
+    }
+    .onDisappear {
+      scheduler.cancel()
+      parentScope?.setMounted(id, false)
+    }
   }
 
   /// Where the label is drawn.
@@ -142,18 +198,21 @@ public struct Tooltip<Label: View, Content: View>: View {
   private func presentation<V: View>(_ anchor: V) -> some View {
     #if os(macOS)
     anchor.background {
-      TooltipPortal(
-        open: open,
-        side: side,
-        align: align,
-        gap: theme.vars.spacing1,
-        maxWidth: theme.vars.toastMaxWidth,
-        shadowInset: theme.vars.spacing3,
-        theme: theme,
-        duration: theme.vars.motionDuration,
-        easing: theme.vars.motionEasing
-      ) {
-        panel
+      if open || portalMounted {
+        TooltipPortal(
+          open: open,
+          side: side,
+          align: align,
+          gap: theme.vars.spacing1,
+          maxWidth: theme.vars.toastMaxWidth,
+          shadowInset: theme.vars.spacing3,
+          theme: theme,
+          duration: theme.vars.motionDuration,
+          easing: theme.vars.motionEasing,
+          onDismissed: { portalMounted = false }
+        ) {
+          panel
+        }
       }
     }
     #else
@@ -176,23 +235,35 @@ public struct Tooltip<Label: View, Content: View>: View {
   }
 
   private func scheduled<V: View>(_ view: V) -> some View {
-    view.task(id: shouldPresent) {
-      if shouldPresent {
-        let openingDelay = delayContext?.isPrimed == true ? 0 : max(0, delay)
+    view.onChange(of: shouldPresent) { present in
+      schedulePresentation(present)
+    }
+  }
+
+  private func schedulePresentation(_ present: Bool) {
+    if present {
+      let openingDelay = delayContext?.isPrimed == true ? 0 : max(0, delay)
+      scheduler.schedule {
         guard await wait(openingDelay) else { return }
         guard shouldPresent else { return }
         delayContext?.markOpened()
+        portalMounted = true
         withAnimation(theme.vars.motion) { open = true }
-      } else {
-        guard await wait(max(0, closeDelay)) else { return }
+      }
+    } else if open {
+      let delaySeconds = max(0, closeDelay)
+      scheduler.schedule {
+        guard await wait(delaySeconds) else { return }
         guard !shouldPresent else { return }
         withAnimation(theme.vars.motion) { open = false }
       }
+    } else {
+      scheduler.cancel()
     }
   }
 
   private var shouldPresent: Bool {
-    !disabled && nested.isEmpty && (hovered || presented)
+    !disabled && !hasNested && (hovered || presented)
   }
 
   private var panel: some View {
@@ -208,7 +279,7 @@ public struct Tooltip<Label: View, Content: View>: View {
       .clipShape(
         RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular)
       )
-      .border(vars.colorBorder, width: hairline, cornerRadius: vars.radiusSmall)
+      .border(vars.colorBorder, width: vars.strokeHairline, cornerRadius: vars.radiusSmall)
       .tokenShadow(vars.shadowSm)
       .allowsHitTesting(false)
       .accessibilityHidden(true)
@@ -274,6 +345,7 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
   var theme: Theme
   var duration: Double
   var easing: BezierCurve
+  var onDismissed: () -> Void
   @ViewBuilder var label: () -> Label
 
   func makeNSView(context: Context) -> NSView {
@@ -299,13 +371,14 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
       shadowInset: shadowInset,
       duration: duration,
       easing: easing,
-      content: AnyView(label().environment(\.theme, theme))
+      onDismissed: onDismissed,
+      content: open ? AnyView(label().environment(\.theme, theme)) : nil
     )
     context.coordinator.reapply(anchor: anchor)
   }
 
   static func dismantleNSView(_ anchor: NSView, coordinator: Coordinator) {
-    coordinator.dismiss(animated: false)
+    coordinator.dismiss(animated: false, notify: false)
   }
 
   func makeCoordinator() -> Coordinator { Coordinator() }
@@ -326,7 +399,8 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
     private var gap: CGFloat = 0
     private var maxWidth: CGFloat = 0
     private var shadowInset: CGFloat = 0
-    private var content = AnyView(EmptyView())
+    private var content: AnyView?
+    private var onDismissed: (() -> Void)?
 
     func remember(
       open: Bool,
@@ -337,7 +411,8 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
       shadowInset: CGFloat,
       duration: Double,
       easing: BezierCurve,
-      content: AnyView
+      onDismissed: @escaping () -> Void,
+      content: AnyView?
     ) {
       self.open = open
       self.side = side
@@ -347,12 +422,15 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
       self.shadowInset = shadowInset
       self.duration = duration
       self.easing = easing
-      self.content = content
+      self.onDismissed = onDismissed
+      if let content {
+        self.content = content
+      }
     }
 
     func reapply(anchor: NSView) {
-      guard open, let window = anchor.window, window.contentView != nil else {
-        dismiss(animated: true)
+      guard open, let content, let window = anchor.window, window.contentView != nil else {
+        dismiss(animated: true, notify: true)
         return
       }
 
@@ -390,22 +468,37 @@ private struct TooltipPortal<Label: View>: NSViewRepresentable {
       }
     }
 
-    func dismiss(animated: Bool) {
-      guard let panel else { return }
+    private func notifyDismissedIfClosed() {
+      guard !open else { return }
+      let callback = onDismissed
+      DispatchQueue.main.async { [weak self] in
+        guard let self, !self.open else { return }
+        callback?()
+      }
+    }
+
+    func dismiss(animated: Bool, notify: Bool = false) {
+      guard let panel else {
+        if notify { notifyDismissedIfClosed() }
+        return
+      }
       guard visible else {
         panel.orderOut(nil)
+        if notify { notifyDismissedIfClosed() }
         return
       }
       visible = false
       guard animated else {
         panel.orderOut(nil)
         panel.alphaValue = 1
+        if notify { notifyDismissedIfClosed() }
         return
       }
       animate(panel, to: 0) { [weak self] in
         guard let self, !self.visible else { return }
         self.panel?.orderOut(nil)
         self.panel?.alphaValue = 1
+        if notify { self.notifyDismissedIfClosed() }
       }
     }
 

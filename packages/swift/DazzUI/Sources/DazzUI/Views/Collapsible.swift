@@ -79,19 +79,11 @@ struct DisclosureHeader<Meta: View>: View {
 
   private func wash(state: PressableState) -> Color {
     guard state.enabled, state.hovered || state.pressed else { return .clear }
-    return theme.vars.resolve(
-      theme.vars.descriptor(.normal, .surface),
-      tint: .neutral,
-      state: .hovered
-    )
+    return theme.vars.controlColor(.normal, .surface, tint: .neutral, state: .hovered)
   }
 
   private var disabledInk: Color {
-    theme.vars.resolve(
-      theme.vars.descriptor(.normal, .content),
-      tint: .neutral,
-      state: .disabled
-    )
+    theme.vars.controlColor(.normal, .content, tint: .neutral, state: .disabled)
   }
 }
 

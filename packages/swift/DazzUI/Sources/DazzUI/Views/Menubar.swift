@@ -55,7 +55,8 @@ public struct Menubar: View {
         )
         .nativeMenu(
           isPresented: Binding(get: { open == menu.id }, set: { if !$0 && open == menu.id { open = nil } }),
-          entries: menu.disabled ? [] : menu.items.map(NativeMenuEntry.item),
+          hasEntries: !menu.disabled && !menu.items.isEmpty,
+          entries: { menu.disabled ? [] : menu.items.map(NativeMenuEntry.item) },
           bar: nativeBar, menuID: menu.id, switchMenu: { open = menu.id }
         )
         .overlay(alignment: .bottomLeading) {
@@ -120,16 +121,12 @@ private struct MenubarTrigger: View {
   }
 
   private var wash: Color {
-    theme.vars.resolve(theme.vars.descriptor(.normal, .surface), tint: tint, state: .hovered)
+    theme.vars.controlColor(.normal, .surface, tint: tint, state: .hovered)
   }
 
   private var ink: Color {
     menu.disabled
-      ? theme.vars.resolve(
-        theme.vars.descriptor(.normal, .content),
-        tint: tint,
-        state: .disabled
-      )
+      ? theme.vars.controlColor(.normal, .content, tint: tint, state: .disabled)
       : theme.vars.colorContent
   }
 }

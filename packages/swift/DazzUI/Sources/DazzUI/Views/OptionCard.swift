@@ -22,7 +22,6 @@ public struct OptionCard<Title: View, Description: View>: View {
   public var cornerRadius: CGFloat?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @FocusState private var focused: Bool
 
   public init(
@@ -47,6 +46,7 @@ public struct OptionCard<Title: View, Description: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let radius = cornerRadius ?? vars.radiusLarge
 
     Pressable(action: action, enabled: enabled, cornerRadius: radius) { state in
@@ -70,7 +70,7 @@ public struct OptionCard<Title: View, Description: View>: View {
       .foregroundStyle(
         state.enabled
           ? vars.colorContent
-          : vars.resolve(vars.descriptor(.normal, .content), tint: tint, state: .disabled)
+          : vars.controlColor(.normal, .content, tint: tint, state: .disabled)
       )
       .padding(
         padding
@@ -110,7 +110,7 @@ public struct OptionCard<Title: View, Description: View>: View {
   private func surface(state: PressableState) -> Color {
     let vars = theme.vars
     guard state.enabled else {
-      return vars.resolve(vars.descriptor(.normal, .surface), tint: tint, state: .disabled)
+      return vars.controlColor(.normal, .surface, tint: tint, state: .disabled)
     }
     // The wash, not the `tinted` recipe's chip fill: a card is a surface, and
     // the chip's 12% fills it rather than tinting it. The border is what says
@@ -123,7 +123,7 @@ public struct OptionCard<Title: View, Description: View>: View {
   private var border: Color {
     let vars = theme.vars
     guard selected else { return vars.colorBorder }
-    return vars.resolve(vars.descriptor(.outlined, .border), tint: tint, state: .normal)
+    return vars.controlColor(.outlined, .border, tint: tint, state: .normal)
   }
 
   /// A chosen card's explanation steps up an ink grade — it is being read

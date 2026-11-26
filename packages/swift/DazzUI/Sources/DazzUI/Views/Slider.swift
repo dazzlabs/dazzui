@@ -39,7 +39,6 @@ public struct Slider: View {
   public var enabled: Bool
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   /// Which thumb the pointer took hold of. A range whose thumbs sit on the
   /// same value is the case this exists for: without it every drag would move
   /// whichever one the array happens to start with.
@@ -145,10 +144,10 @@ public struct Slider: View {
       .fill(
         enabled
           ? vars.colorSurface
-          : vars.resolve(vars.descriptor(.normal, .surface), tint: tint, state: .disabled)
+          : vars.controlColor(.normal, .surface, tint: tint, state: .disabled)
       )
       .frame(width: thumb, height: thumb)
-      .overlay(Circle().strokeBorder(edge, lineWidth: hairline))
+      .overlay(Circle().strokeBorder(edge, lineWidth: vars.strokeHairline))
       .tokenShadow(enabled ? vars.shadowXs : [.none])
   }
 
@@ -201,11 +200,7 @@ public struct Slider: View {
   private var fill: Color {
     enabled
       ? theme.vars.ramp(tint)[600]
-      : theme.vars.resolve(
-        theme.vars.descriptor(.normal, .content),
-        tint: tint,
-        state: .disabled
-      )
+      : theme.vars.controlColor(.normal, .content, tint: tint, state: .disabled)
   }
 
   private var edge: Color {

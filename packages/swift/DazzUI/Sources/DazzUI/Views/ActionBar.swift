@@ -44,12 +44,24 @@ private struct ActionBarLayout: Layout {
   let gap: CGFloat
   let align: ActionBarAlign
 
+  struct Cache {
+    var sizes: [CGSize]
+  }
+
+  func makeCache(subviews: Subviews) -> Cache {
+    Cache(sizes: subviews.map { $0.sizeThatFits(.unspecified) })
+  }
+
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache.sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+  }
+
   func sizeThatFits(
     proposal: ProposedViewSize,
     subviews: Subviews,
-    cache: inout Void
+    cache: inout Cache
   ) -> CGSize {
-    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+    let sizes = cache.sizes
     return CGSize(
       // A block-level flex row fills its parent; only its height is its own.
       width: proposal.width ?? intrinsicWidth(of: sizes),
@@ -61,9 +73,9 @@ private struct ActionBarLayout: Layout {
     in bounds: CGRect,
     proposal: ProposedViewSize,
     subviews: Subviews,
-    cache: inout Void
+    cache: inout Cache
   ) {
-    let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+    let sizes = cache.sizes
     let free = max(0, bounds.width - intrinsicWidth(of: sizes))
 
     var x = bounds.minX

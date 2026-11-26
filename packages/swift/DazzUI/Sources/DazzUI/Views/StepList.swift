@@ -105,7 +105,7 @@ public struct Step<Label: View, Meta: View>: View {
   private var metaInk: Color {
     let vars = theme.vars
     guard status == .active else { return vars.colorContentFaint }
-    return vars.resolve(vars.descriptor(.plain, .content), tint: tint, state: .normal)
+    return vars.controlColor(.plain, .content, tint: tint, state: .normal)
   }
 }
 

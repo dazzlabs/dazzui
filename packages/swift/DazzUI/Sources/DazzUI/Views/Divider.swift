@@ -29,7 +29,6 @@ public struct Divider: View {
   public var orientation: DividerOrientation
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     tone: DividerTone = .default,
@@ -40,7 +39,9 @@ public struct Divider: View {
   }
 
   public var body: some View {
-    let color = tone == .muted ? theme.vars.colorBorderStrong : theme.vars.colorBorder
+    let vars = theme.vars
+    let hairline = vars.strokeHairline
+    let color = tone == .muted ? vars.colorBorderStrong : vars.colorBorder
 
     switch orientation {
     case .horizontal:

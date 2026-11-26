@@ -98,22 +98,74 @@ public struct ShortcutEvent: Sendable, Equatable {
     self.metaKey = metaKey
   }
 }
-private func matches(_ value: String, _ pattern: String) -> Bool {
-  value.range(of: pattern, options: .regularExpression) != nil
+private func isASCIIUpper(_ byte: UInt8) -> Bool {
+  byte >= 0x41 && byte <= 0x5A
 }
+
+private func isASCIIDigit(_ byte: UInt8) -> Bool {
+  byte >= 0x30 && byte <= 0x39
+}
+
+private func isKeyLetterCode(_ code: String) -> Bool {
+  let utf8 = code.utf8
+  guard utf8.count == 4, code.hasPrefix("Key"), let last = utf8.last else { return false }
+  return isASCIIUpper(last)
+}
+
+private func isDigitCode(_ code: String) -> Bool {
+  let utf8 = code.utf8
+  if utf8.count == 6, code.hasPrefix("Digit"), let last = utf8.last {
+    return isASCIIDigit(last)
+  }
+  if utf8.count == 7, code.hasPrefix("Numpad"), let last = utf8.last {
+    return isASCIIDigit(last)
+  }
+  return false
+}
+
+private func isFunctionKey1To20(_ value: String) -> Bool {
+  let utf8 = value.utf8
+  guard let first = utf8.first, first == 0x46 else { return false } // 'F'
+  let rest = utf8.dropFirst()
+  switch rest.count {
+  case 1:
+    let d = rest[rest.startIndex]
+    return d >= 0x31 && d <= 0x39 // 1...9
+  case 2:
+    let a = rest[rest.startIndex]
+    let b = rest[rest.index(after: rest.startIndex)]
+    if a == 0x31 { return isASCIIDigit(b) } // 10...19
+    return a == 0x32 && b == 0x30 // 20
+  default:
+    return false
+  }
+}
+
+private func isAnyFunctionKey(_ value: String) -> Bool {
+  let utf8 = value.utf8
+  guard utf8.count >= 2, utf8.first == 0x46 else { return false }
+  return utf8.dropFirst().allSatisfy(isASCIIDigit)
+}
+
+private func isPrintableASCII(_ value: String) -> Bool {
+  let utf8 = value.utf8
+  guard utf8.count == 1, let byte = utf8.first else { return false }
+  return byte >= 0x21 && byte <= 0x7E
+}
+
 private func keyGlyph(_ code: String, _ key: String) -> String? {
   if let glyph = keyGlyphs[code] { return glyph }
-  if matches(code, "^Key[A-Z]$") { return String(code.dropFirst(3)) }
-  if matches(code, "^(Digit|Numpad)\\d$") { return String(code.suffix(1)) }
-  if matches(code, "^F([1-9]|1\\d|20)$") { return code }
+  if isKeyLetterCode(code) { return String(code.dropFirst(3)) }
+  if isDigitCode(code) { return String(code.suffix(1)) }
+  if isFunctionKey1To20(code) { return code }
 
   // No position — a synthetic event, an on-screen keyboard — so fall back to
   // the character, which is only trustworthy while it is plain ASCII.
   if code.isEmpty {
     if key == " " { return "Space" }
     if let glyph = keyGlyphs[key] { return glyph }
-    if matches(key, "^F([1-9]|1\\d|20)$") { return key }
-    if matches(key, "^[\\x21-\\x7e]$") { return key.uppercased() }
+    if isFunctionKey1To20(key) { return key }
+    if isPrintableASCII(key) { return key.uppercased() }
   }
   return nil
 }
@@ -128,7 +180,7 @@ private func modifierGlyphs(_ event: ShortcutEvent) -> String {
 public func formatShortcut(_ event: ShortcutEvent) -> String? {
   guard let key = keyGlyph(event.code, event.key) else { return nil }
 
-  let isFunctionKey = matches(key, "^F\\d+$")
+  let isFunctionKey = isAnyFunctionKey(key)
   if !isFunctionKey && !event.ctrlKey && !event.altKey && !event.metaKey {
     return nil
   }
@@ -162,7 +214,6 @@ public struct ShortcutRecorder: View {
   public var accessibilityLabel: String?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @FocusState private var focused: Bool
 
   @State private var recording = false
@@ -170,6 +221,7 @@ public struct ShortcutRecorder: View {
   @State private var held = ""
   /// Set for a beat after a press the recorder could not take.
   @State private var rejected = false
+  @State private var rejectTimer = RejectFlashTimer()
   #if os(macOS)
     @State private var monitor = ShortcutMonitor()
   #endif
@@ -217,7 +269,7 @@ public struct ShortcutRecorder: View {
         .frame(height: vars.controlMediumSize)
         .background(surface)
         .clipShape(RoundedRectangle(cornerRadius: vars.controlFieldRadius, style: .circular))
-        .border(border, width: hairline, cornerRadius: vars.controlFieldRadius)
+        .border(border, width: vars.strokeHairline, cornerRadius: vars.controlFieldRadius)
         // The glow behind the field: the accent while listening, danger for a
         // press it could not take.
         .focusRing(
@@ -272,10 +324,17 @@ public struct ShortcutRecorder: View {
         return .handled
       }
     #endif
-    .task(id: rejected) {
-      guard rejected else { return }
-      try? await Task.sleep(nanoseconds: UInt64(Self.rejectFlash * 1_000_000_000))
-      rejected = false
+    .onChange(of: rejected) { isRejected in
+      if isRejected {
+        rejectTimer.schedule(after: Self.rejectFlash) {
+          rejected = false
+        }
+      } else {
+        rejectTimer.cancel()
+      }
+    }
+    .onDisappear {
+      rejectTimer.cancel()
     }
   }
 
@@ -401,6 +460,28 @@ public struct ShortcutRecorder: View {
     }
   #endif
 }
+private final class RejectFlashTimer {
+  private var task: Task<Void, Never>?
+
+  func schedule(after seconds: Double, action: @escaping @MainActor () -> Void) {
+    task?.cancel()
+    task = Task { @MainActor in
+      try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+      guard !Task.isCancelled else { return }
+      action()
+    }
+  }
+
+  func cancel() {
+    task?.cancel()
+    task = nil
+  }
+
+  deinit {
+    task?.cancel()
+  }
+}
+
 private struct ClearButton: View {
   let label: String
   let action: () -> Void

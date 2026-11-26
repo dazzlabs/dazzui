@@ -54,7 +54,6 @@ public struct Accordion: View {
   public var enabled: Bool
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @State private var latched: Set<String>
 
   public init(
@@ -100,7 +99,7 @@ public struct Accordion: View {
         // the rows are already separated by their own hover wash, and a rule
         // under every one would draw a table. `divided` is for the case where
         // they are genuinely a list.
-        .rule(divided && index > 0 ? vars.colorBorder : .clear, edge: .top, width: hairline)
+        .rule(divided && index > 0 ? vars.colorBorder : .clear, edge: .top, width: vars.strokeHairline)
       }
     }
     .animation(vars.motion, value: value)

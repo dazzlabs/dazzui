@@ -136,7 +136,6 @@ public struct Menu<Trigger: View>: View {
   public var tint: Tint
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.menuPresentation) private var presentation
   @State private var open = false
 
@@ -171,7 +170,12 @@ public struct Menu<Trigger: View>: View {
       ) {
         panel
       }
-      .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), align: align)
+      .nativeMenu(
+        isPresented: $open,
+        hasEntries: !items.isEmpty,
+        entries: { items.map(NativeMenuEntry.item) },
+        align: align
+      )
   }
 
   private var panel: some View {
@@ -262,7 +266,6 @@ struct MenuSheet<Content: View>: View {
   @ViewBuilder var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   init(minWidth: CGFloat? = nil, @ViewBuilder content: @escaping () -> Content) {
     self.minWidth = minWidth
@@ -279,7 +282,7 @@ struct MenuSheet<Content: View>: View {
     .frame(minWidth: minWidth ?? vars.menuMinWidth, alignment: .leading)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
-    .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusLarge)
+    .border(vars.colorBorderStrong, width: vars.strokeHairline, cornerRadius: vars.radiusLarge)
     .tokenShadow(vars.shadowLg)
     .fixedSize(horizontal: minWidth == nil, vertical: true)
     .accessibilityElement(children: .contain)
@@ -467,20 +470,12 @@ struct MenuRow: View {
   /// has no pressed look of its own.
   private func surface(state: PressableState) -> Color {
     guard state.enabled, state.hovered || state.pressed else { return .clear }
-    return theme.vars.resolve(
-      theme.vars.descriptor(.normal, .surface),
-      tint: tint,
-      state: .hovered
-    )
+    return theme.vars.controlColor(.normal, .surface, tint: tint, state: .hovered)
   }
 
   private func content(state: PressableState) -> Color {
     guard state.enabled else {
-      return theme.vars.resolve(
-        theme.vars.descriptor(.normal, .content),
-        tint: tint,
-        state: .disabled
-      )
+      return theme.vars.controlColor(.normal, .content, tint: tint, state: .disabled)
     }
     return theme.vars.colorContent
   }

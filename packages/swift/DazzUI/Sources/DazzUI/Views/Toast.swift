@@ -28,7 +28,6 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
   public var dismissLabel: String
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var landed = false
 
@@ -50,6 +49,7 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
 
     HStack(spacing: vars.spacing25) {
       leading()
@@ -173,11 +173,7 @@ private struct ToastDismiss: View {
         .frame(width: vars.controlTinySize, height: vars.controlTinySize)
         .background(
           state.hovered || state.pressed
-            ? vars.resolve(
-              vars.descriptor(.normal, .surface),
-              tint: .neutral,
-              state: .hovered
-            )
+            ? vars.controlColor(.normal, .surface, tint: .neutral, state: .hovered)
             : .clear
         )
         .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
@@ -393,18 +389,26 @@ public extension EnvironmentValues {
   }
 }
 
+/// Holds a ``Toaster`` without publishing `toasts` mutations to ``ToastProvider``,
+/// so raising or dismissing a toast only invalidates ``ToasterStack`` instead of
+/// the entire subtree under the provider.
+@MainActor
+private final class ToasterHolder: ObservableObject {
+  let toaster = Toaster()
+}
+
 /// Where toasts are raised from: anything inside reaches `\.toaster`, and a
 /// ``ToasterViewport`` inside shows what was raised.
 public struct ToastProvider<Content: View>: View {
   @ViewBuilder public var content: () -> Content
-  @StateObject private var toaster = Toaster()
+  @StateObject private var holder = ToasterHolder()
 
   public init(@ViewBuilder content: @escaping () -> Content) {
     self.content = content
   }
 
   public var body: some View {
-    content().environment(\.toaster, toaster)
+    content().environment(\.toaster, holder.toaster)
   }
 }
 

@@ -23,7 +23,12 @@ internal struct SystemSizingMetrics: Sendable, Hashable {
   let controls: [Control]
 
   func control(_ size: ControlSize) -> Control {
-    controls[ControlSize.allCases.firstIndex(of: size)!]
+    switch size {
+    case .tiny: return controls[0]
+    case .small: return controls[1]
+    case .medium: return controls[2]
+    case .large: return controls[3]
+    }
   }
 
   func content(_ size: ControlSize, design: TypeStyle) -> TypeStyle {
@@ -136,19 +141,102 @@ private final class SystemSizingCache: @unchecked Sendable {
     }
   }
 #else
+  /// One shared 1-second timer that runs only while at least one `.system`-sized
+  /// modifier is actively mounted, stopping completely when every subtree uses
+  /// `.design` sizing.
+  @MainActor
+  internal final class SystemSizingTicker {
+    static let shared = SystemSizingTicker()
+
+    private var timer: Timer?
+    private var listeners: [UUID: @MainActor () -> Void] = [:]
+
+    var isRunning: Bool { timer != nil }
+    var listenerCount: Int { listeners.count }
+
+    func add(_ id: UUID, action: @escaping @MainActor () -> Void) {
+      listeners[id] = action
+      if timer == nil {
+        let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+          MainActor.assumeIsolated {
+            self?.fire()
+          }
+        }
+        timer.tolerance = 0.25
+        self.timer = timer
+      }
+    }
+
+    func remove(_ id: UUID) {
+      listeners.removeValue(forKey: id)
+      if listeners.isEmpty {
+        timer?.invalidate()
+        timer = nil
+      }
+    }
+
+    private func fire() {
+      for action in listeners.values {
+        action()
+      }
+    }
+  }
+
+  @MainActor
+  private struct SystemSizingObserver: View {
+    let onRefresh: @MainActor () -> Void
+
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var id = UUID()
+
+    var body: some View {
+      Color.clear
+        .frame(width: 0, height: 0)
+        .allowsHitTesting(false)
+        .onAppear {
+          onRefresh()
+          syncTicker(active: scenePhase == .active)
+        }
+        .onDisappear {
+          SystemSizingTicker.shared.remove(id)
+        }
+        .onChange(of: scenePhase) { phase in
+          let active = phase == .active
+          syncTicker(active: active)
+          if active { onRefresh() }
+        }
+        #if os(macOS)
+          .onReceive(
+            NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
+              .receive(on: RunLoop.main)
+          ) { _ in onRefresh() }
+          .onReceive(
+            NotificationCenter.default.publisher(for: NSFont.fontSetChangedNotification).receive(
+              on: RunLoop.main)
+          ) { _ in onRefresh() }
+          .onReceive(
+            NSWorkspace.shared.notificationCenter.publisher(
+              for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification
+            ).receive(on: RunLoop.main)
+          ) { _ in onRefresh() }
+        #endif
+    }
+
+    private func syncTicker(active: Bool) {
+      if active {
+        SystemSizingTicker.shared.add(id, action: onRefresh)
+      } else {
+        SystemSizingTicker.shared.remove(id)
+      }
+    }
+  }
+
   @MainActor
   internal struct SystemThemeModifier: ViewModifier {
     let name: ThemeName
     let sizing: ThemeSizing
     private let readMetrics: @MainActor () -> SystemSizingMetrics
-    @State private var metrics: SystemSizingMetrics
-    @Environment(\.scenePhase) private var scenePhase
-
-    /// One timer for every modifier in the process, rather than a publisher
-    /// made afresh each time SwiftUI rebuilds this struct.
-    private static let ticks = Timer.publish(every: 1, on: .main, in: .common)
-      .autoconnect()
-      .share()
+    @State private var metrics: SystemSizingMetrics?
 
     init(
       name: ThemeName, sizing: ThemeSizing,
@@ -159,37 +247,27 @@ private final class SystemSizingCache: @unchecked Sendable {
       self.name = name
       self.sizing = sizing
       self.readMetrics = readMetrics
-      // SwiftUI evaluates this on every rebuild and keeps only the first;
-      // `current()` makes the rest a cache hit.
-      _metrics = State(initialValue: readMetrics())
+      // Never probe platform metrics inside `init`: SwiftUI re-runs `init` on
+      // every parent body evaluation and discards `State(initialValue:)` after
+      // mount. Metrics are read lazily in `body`/`onAppear` only in `.system`.
+      _metrics = State(initialValue: nil)
     }
 
     func body(content: Content) -> some View {
-      let resolved = Theme(name, sizing: sizing, metrics: metrics)
+      let resolved =
+        sizing == .system
+        ? Theme(name, sizing: .system, metrics: metrics ?? readMetrics())
+        : Theme(name)
       content
         .environment(\.theme, resolved)
         .font(resolved.vars.bodyMedium.font)
         .environment(\.colorScheme, name.colorScheme)
-        .onAppear(perform: refresh)
-        .onChange(of: sizing) { _ in refresh() }
-        .onReceive(Self.ticks) { _ in
-          if scenePhase == .active { refresh() }
+        .background {
+          if sizing == .system {
+            SystemSizingObserver(onRefresh: refresh)
+          }
         }
-        #if os(macOS)
-          .onReceive(
-            NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
-              .receive(on: RunLoop.main)
-          ) { _ in refresh() }
-          .onReceive(
-            NotificationCenter.default.publisher(for: NSFont.fontSetChangedNotification).receive(
-              on: RunLoop.main)
-          ) { _ in refresh() }
-          .onReceive(
-            NSWorkspace.shared.notificationCenter.publisher(
-              for: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification
-            ).receive(on: RunLoop.main)
-          ) { _ in refresh() }
-        #endif
+        .onChange(of: sizing) { _ in refresh() }
     }
 
     private func refresh() {

@@ -130,10 +130,9 @@ public struct SkeletonText: View {
     VStack(alignment: .leading, spacing: theme.vars.spacing15) {
       ForEach(0..<max(lines, 0), id: \.self) { line in
         if line == lines - 1 {
-          GeometryReader { proxy in
-            Skeleton(width: proxy.size.width * Self.lastLine)
+          ProportionalBarLayout(fraction: Self.lastLine) {
+            Skeleton()
           }
-          .frame(height: theme.vars.bodySmall.lineHeight)
         } else {
           Skeleton()
         }

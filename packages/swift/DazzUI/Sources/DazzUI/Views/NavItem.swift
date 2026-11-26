@@ -134,25 +134,25 @@ public struct NavItem<Leading: View, Label: View>: View {
   private func background(state: PressableState) -> Color {
     let vars = theme.vars
     if active {
-      return vars.resolve(vars.descriptor(.filled, .surface), tint: tint, state: .normal)
+      return vars.controlColor(.filled, .surface, tint: tint, state: .normal)
     }
     guard state.enabled, state.hovered || state.pressed else { return .clear }
-    return vars.resolve(vars.descriptor(.plain, .surface), tint: tint, state: .hovered)
+    return vars.controlColor(.plain, .surface, tint: tint, state: .hovered)
   }
 
   private func foreground(state: PressableState) -> Color {
     let vars = theme.vars
     if active {
-      return vars.resolve(vars.descriptor(.filled, .content), tint: tint, state: .normal)
+      return vars.controlColor(.filled, .content, tint: tint, state: .normal)
     }
     if !state.enabled {
-      return vars.resolve(vars.descriptor(.normal, .content), tint: tint, state: .disabled)
+      return vars.controlColor(.normal, .content, tint: tint, state: .disabled)
     }
     // The hover rule outranks the action's own colour in the cascade, so both
     // kinds of row come to full ink under the pointer.
     if state.hovered || state.pressed { return vars.colorContent }
     return role == .action
-      ? vars.resolve(vars.descriptor(.plain, .content), tint: tint, state: .normal)
+      ? vars.controlColor(.plain, .content, tint: tint, state: .normal)
       : vars.colorContentNav
   }
 }

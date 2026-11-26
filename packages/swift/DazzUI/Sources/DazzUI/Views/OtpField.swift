@@ -48,10 +48,12 @@ public struct OtpField: View {
 
   public var body: some View {
     let vars = theme.vars
+    let metrics = vars.metrics(size.controlSize)
+    let characters = Array(value)
 
     HStack(spacing: vars.spacing2) {
       ForEach(0..<length, id: \.self) { index in
-        cell(at: index)
+        cell(at: index, characters: characters, metrics: metrics, vars: vars)
           // The break between two groups of digits is a step of air rather
           // than a rule, which is what a printed code does.
           .padding(.leading, breaks(at: index) ? vars.spacing3 - vars.spacing2 : 0)
@@ -80,10 +82,12 @@ public struct OtpField: View {
     .onTapGesture { focused = true }
   }
 
-  private func cell(at index: Int) -> some View {
-    let vars = theme.vars
-    let metrics = vars.metrics(size.controlSize)
-    let characters = Array(value)
+  private func cell(
+    at index: Int,
+    characters: [Character],
+    metrics: ControlMetrics,
+    vars: ThemeVariables
+  ) -> some View {
     let filled = index < characters.count
     let here = focused && enabled && index == min(characters.count, length - 1)
 

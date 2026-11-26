@@ -1,5 +1,8 @@
 import FluentIcons
 import SwiftUI
+#if canImport(os)
+  import os
+#endif
 
 /// A span of days. `end` is nil while the first day has been picked and the
 /// second has not — a range mid-pick is still a value, because the picker
@@ -22,10 +25,23 @@ public struct DateRange: Equatable, Sendable {
 public struct DayMath: Sendable {
   public let calendar: Foundation.Calendar
 
+  /// Returns a shared `DayMath` instance for standard weekdays (1...7) in the
+  /// current time zone to avoid re-creating `Foundation.Calendar` on every
+  /// SwiftUI body evaluation while staying accurate if `TimeZone.current`
+  /// changes at runtime.
+  internal static func cached(weekStartsOn: Int) -> DayMath {
+    DayMathCache.shared.dayMath(weekStartsOn: weekStartsOn)
+  }
+
   /// `weekStartsOn` is Foundation's weekday: 1 is Sunday, 2 Monday.
   public init(weekStartsOn: Int = 2) {
+    self.calendar = Self.cached(weekStartsOn: weekStartsOn).calendar
+  }
+
+  fileprivate init(uncachedWeekStartsOn: Int, timeZone: TimeZone) {
     var calendar = Foundation.Calendar(identifier: .gregorian)
-    calendar.firstWeekday = weekStartsOn
+    calendar.timeZone = timeZone
+    calendar.firstWeekday = uncachedWeekStartsOn
     self.calendar = calendar
   }
 
@@ -78,10 +94,191 @@ public struct DayMath: Sendable {
   /// The six weeks a month grid draws — always forty-two days, so the grid
   /// never changes height between months.
   public func monthGrid(_ month: Date) -> [Date] {
+    cachedMonthGrid(month).days
+  }
+
+  internal func cachedMonthGrid(_ month: Date) -> CachedMonthGrid {
     let first = startOfMonth(month)
+    let timestamp = first.timeIntervalSinceReferenceDate
+    guard timestamp.isFinite else {
+      return buildMonthGrid(first: first)
+    }
+    let key = MonthGridCacheKey(
+      firstWeekday: calendar.firstWeekday,
+      timeZone: TimeZoneKey(calendar.timeZone),
+      monthBits: timestamp.bitPattern
+    )
+    return MonthGridCache.shared.grid(for: key) {
+      buildMonthGrid(first: first)
+    }
+  }
+
+  private func buildMonthGrid(first: Date) -> CachedMonthGrid {
     let offset = (weekday(first) - calendar.firstWeekday + 7) % 7
     let start = addDays(first, -offset)
-    return (0..<42).map { addDays(start, $0) }
+    var days: [Date] = []
+    var dayNumbers: [Int] = []
+    days.reserveCapacity(42)
+    dayNumbers.reserveCapacity(42)
+    for i in 0..<42 {
+      // Normalize each cell to `startOfDay` once per cached month so midnight-
+      // skipping DST transitions never leave days offset from `state.start`.
+      let day = startOfDay(addDays(start, i))
+      days.append(day)
+      dayNumbers.append(calendar.component(.day, from: day))
+    }
+    let nextMonth = addMonths(first, 1)
+    return CachedMonthGrid(
+      days: days,
+      dayNumbers: dayNumbers,
+      monthStart: first,
+      nextMonth: nextMonth
+    )
+  }
+}
+
+@inline(__always)
+private func currentLocalTimeZone() -> TimeZone {
+  #if canImport(Darwin)
+    // On Darwin, `NSTimeZone.default` tracks both system timezone changes and
+    // explicit `NSTimeZone.default` overrides — matching `Foundation.Calendar`
+    // and `DateFormatter` identically.
+    NSTimeZone.default
+  #else
+    TimeZone.current
+  #endif
+}
+
+private struct TimeZoneKey: Hashable, Sendable {
+  let timeZone: TimeZone
+  let referenceOffset: Int
+
+  init(_ timeZone: TimeZone) {
+    self.timeZone = timeZone
+    // Foundation's `TimeZone.==` compares `.identifier`, which rounds fixed
+    // offsets to whole minutes (`+3630s` and `+3659s` both report `"GMT+0101"`).
+    // Pairing with the offset at the reference epoch distinguishes them cleanly.
+    self.referenceOffset = timeZone.secondsFromGMT(for: Date(timeIntervalSinceReferenceDate: 0))
+  }
+}
+
+internal final class DayMathCache: @unchecked Sendable {
+  static let shared = DayMathCache()
+
+  private struct State: Sendable {
+    var cachedTimeZone: TimeZoneKey?
+    var slots: [DayMath?] = Array(repeating: nil, count: 7)
+    var buildCount = 0
+  }
+
+  #if canImport(os)
+    private let state = OSAllocatedUnfairLock(initialState: State())
+
+    private func withState<R>(_ body: (inout State) -> R) -> R {
+      state.withLock(body)
+    }
+  #else
+    private let lock = NSLock()
+    private var state = State()
+
+    private func withState<R>(_ body: (inout State) -> R) -> R {
+      lock.lock()
+      defer { lock.unlock() }
+      return body(&state)
+    }
+  #endif
+
+  func dayMath(weekStartsOn: Int, timeZone: TimeZone = currentLocalTimeZone()) -> DayMath {
+    guard (1...7).contains(weekStartsOn) else {
+      return DayMath(uncachedWeekStartsOn: weekStartsOn, timeZone: timeZone)
+    }
+    let key = TimeZoneKey(timeZone)
+    let slotIndex = weekStartsOn - 1
+    if let hit = withState({ state -> DayMath? in
+      guard state.cachedTimeZone == key else { return nil }
+      return state.slots[slotIndex]
+    }) {
+      return hit
+    }
+    let built = DayMath(uncachedWeekStartsOn: weekStartsOn, timeZone: timeZone)
+    return withState { state in
+      if state.cachedTimeZone != key {
+        state.cachedTimeZone = key
+        for i in state.slots.indices { state.slots[i] = nil }
+      }
+      if let raced = state.slots[slotIndex] {
+        return raced
+      }
+      state.slots[slotIndex] = built
+      state.buildCount += 1
+      return built
+    }
+  }
+
+  internal var totalBuilds: Int {
+    withState { $0.buildCount }
+  }
+
+  internal func resetForTesting() {
+    withState { state in
+      state.cachedTimeZone = nil
+      for i in state.slots.indices { state.slots[i] = nil }
+      state.buildCount = 0
+    }
+  }
+}
+
+internal struct CachedMonthGrid: Sendable {
+  let days: [Date]
+  let dayNumbers: [Int]
+  let monthStart: Date
+  let nextMonth: Date
+}
+
+private struct MonthGridCacheKey: Hashable, Sendable {
+  let firstWeekday: Int
+  let timeZone: TimeZoneKey
+  let monthBits: UInt64
+}
+
+internal final class MonthGridCache: @unchecked Sendable {
+  static let shared = MonthGridCache()
+  private static let limit = 256
+  private let lock = NSLock()
+  private var entries: [MonthGridCacheKey: CachedMonthGrid] = [:]
+  private var computeCount = 0
+
+  fileprivate func grid(
+    for key: MonthGridCacheKey,
+    compute: () -> CachedMonthGrid
+  ) -> CachedMonthGrid {
+    lock.lock()
+    if let hit = entries[key] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+    let built = compute()
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = entries[key] { return raced }
+    if entries.count >= Self.limit { entries.removeAll(keepingCapacity: true) }
+    entries[key] = built
+    computeCount += 1
+    return built
+  }
+
+  internal var totalComputations: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return computeCount
+  }
+
+  internal func resetForTesting() {
+    lock.lock()
+    entries.removeAll()
+    computeCount = 0
+    lock.unlock()
   }
 }
 
@@ -124,16 +321,73 @@ public struct CalendarStrings: Sendable {
     return formatter
   }
 
+  internal static let monthTitleCache = LocalDayStringCache()
+
   @Sendable public static func monthTitle(_ date: Date) -> String {
-    monthFormatter.string(from: date)
+    monthTitleCache.string(for: date, formatter: monthFormatter)
   }
 
   @Sendable public static func weekday(_ weekday: Int) -> String {
     ["S", "M", "T", "W", "T", "F", "S"][(weekday - 1 + 7) % 7]
   }
 
+  internal static let dayLabelCache = LocalDayStringCache()
+
   @Sendable public static func dayLabel(_ date: Date) -> String {
-    dayFormatter.string(from: date)
+    dayLabelCache.string(for: date, formatter: dayFormatter)
+  }
+}
+
+/// Bounded thread-safe cache for Gregorian day/month date strings keyed by
+/// local civil day (`floor((floor(t) + tzOffset) / 86400)`).
+///
+/// Keying by local civil day avoids rounding collisions across midnight
+/// (`23:59:59.6` vs `00:00:00`), deduplicates all times within the same day,
+/// stays accurate across runtime timezone changes, and never traps on extreme
+/// `Date` values.
+internal final class LocalDayStringCache: @unchecked Sendable {
+  private static let limit = 512
+  private static let maxCacheableSeconds: TimeInterval = 1e15
+  private let lock = NSLock()
+  private var entries: [Int64: String] = [:]
+  private var computeCount = 0
+
+  func string(for date: Date, formatter: DateFormatter) -> String {
+    let tz = currentLocalTimeZone()
+    let t = date.timeIntervalSinceReferenceDate
+    guard t.isFinite, abs(t) < Self.maxCacheableSeconds else {
+      lock.lock()
+      defer { lock.unlock() }
+      formatter.timeZone = tz
+      computeCount += 1
+      return formatter.string(from: date)
+    }
+    let localSeconds = floor(t) + Double(tz.secondsFromGMT(for: date))
+    let key = Int64(floor(localSeconds / 86_400))
+    lock.lock()
+    defer { lock.unlock() }
+    if let hit = entries[key] {
+      return hit
+    }
+    formatter.timeZone = tz
+    let formatted = formatter.string(from: date)
+    if entries.count >= Self.limit { entries.removeAll(keepingCapacity: true) }
+    entries[key] = formatted
+    computeCount += 1
+    return formatted
+  }
+
+  internal var totalComputations: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return computeCount
+  }
+
+  internal func resetForTesting() {
+    lock.lock()
+    entries.removeAll()
+    computeCount = 0
+    lock.unlock()
   }
 }
 
@@ -253,7 +507,7 @@ public struct Calendar: View {
     self.tint = tint
   }
 
-  private var math: DayMath { DayMath(weekStartsOn: weekStartsOn) }
+  private var math: DayMath { DayMath.cached(weekStartsOn: weekStartsOn) }
 
   private var todayDay: Date { math.startOfDay(today ?? Date()) }
 
@@ -366,7 +620,7 @@ public struct Calendar: View {
         monthView(index: index, month: month, cell: cell, vars: vars, state: days)
       }
     }
-    .onHover { if !$0 { hovered = nil } }
+    .onHover { if !$0, hovered != nil { hovered = nil } }
     // One focus stop for the whole grid, which lands on the day last reached.
     .focusable()
     .focused($gridFocused)
@@ -378,9 +632,12 @@ public struct Calendar: View {
   private func monthView(
     index: Int, month: Date, cell: CGFloat, vars: ThemeVariables, state: DayState
   ) -> some View {
-    let current = state.math.addMonths(month, index)
-    let days = state.math.monthGrid(current)
-    let nextMonth = state.math.addMonths(current, 1)
+    let current = index == 0 ? month : state.math.addMonths(month, index)
+    let grid = state.math.cachedMonthGrid(current)
+    let days = grid.days
+    let dayNumbers = grid.dayNumbers
+    let monthStart = grid.monthStart
+    let nextMonth = grid.nextMonth
     let width = 7 * cell + 6 * vars.calendarCellGap
 
     return VStack(spacing: vars.spacing1) {
@@ -423,8 +680,17 @@ public struct Calendar: View {
       VStack(spacing: vars.calendarCellGap) {
         ForEach(0..<6, id: \.self) { row in
           HStack(spacing: vars.calendarCellGap) {
-            ForEach(days[row * 7..<row * 7 + 7], id: \.self) { day in
-              dayView(day, outside: day < current || day >= nextMonth, cell: cell, vars: vars, state: state)
+            ForEach(0..<7, id: \.self) { col in
+              let slot = row * 7 + col
+              let day = days[slot]
+              dayView(
+                day,
+                dayNumber: dayNumbers[slot],
+                outside: day < monthStart || day >= nextMonth,
+                cell: cell,
+                vars: vars,
+                state: state
+              )
             }
           }
         }
@@ -462,9 +728,11 @@ public struct Calendar: View {
   }
 
   private func dayView(
-    _ day: Date, outside: Bool, cell: CGFloat, vars: ThemeVariables, state: DayState
+    _ day: Date, dayNumber: Int, outside: Bool, cell: CGFloat, vars: ThemeVariables, state: DayState
   ) -> some View {
-    let midnight = state.math.startOfDay(day)
+    // `monthGrid` produces local-midnight dates directly, so `day` is already
+    // normalized to `startOfDay`.
+    let midnight = day
     let isStart = midnight == state.start
     let isEnd = midnight == state.end
     let picked = mode == .range ? isStart || isEnd : isStart
@@ -475,7 +743,6 @@ public struct Calendar: View {
     let isToday = midnight == state.today
     let off = state.min.map { midnight < $0 } == true || state.max.map { midnight > $0 } == true
     let isFocused = midnight == state.focus
-    let dayNumber = state.math.day(day)
     let radius = vars.radiusSmall
 
     return Pressable(action: { pick(day) }, enabled: !off, cornerRadius: radius) { state in
@@ -488,7 +755,7 @@ public struct Calendar: View {
         // At rest: the row's drawing, not the quiet accent control's.
         let surface =
           state.enabled && (state.hovered || state.pressed)
-          ? vars.resolve(vars.descriptor(.normal, .surface), tint: tint, state: .hovered)
+          ? vars.controlColor(.normal, .surface, tint: tint, state: .hovered)
           : Color.clear
         let content =
           off || outside
@@ -536,8 +803,8 @@ public struct Calendar: View {
     // The grid holds the focus; a day of its own would be a second stop.
     .focusable(false)
     .onHover { over in
-      guard mode == .range else { return }
-      if over { hovered = day }
+      guard pending else { return }
+      if over, hovered != day { hovered = day }
     }
     .focusRing(
       visible: isFocused, color: vars.focusRing, cornerRadius: radius, width: vars.focusWidth

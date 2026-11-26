@@ -43,7 +43,6 @@ public struct Card<Header: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @State private var hovered = false
 
   public init(
@@ -84,6 +83,7 @@ public struct Card<Header: View, Content: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let box = Group {
       if let header {
         VStack(alignment: .leading, spacing: 0) {

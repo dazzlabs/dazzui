@@ -77,35 +77,40 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
 
   @Environment(\.theme) private var theme
   @Environment(\.menuPresentation) private var presentation
-  @State private var anchor: CGSize = .zero
+  #if !os(macOS)
+    @State private var anchor: CGSize = .zero
+  #endif
 
   func body(content: Content) -> some View {
-    let measured = content.background {
-      GeometryReader { proxy in
-        Color.clear
-          .onAppear { anchor = proxy.size }
-          .onChange(of: proxy.size) { anchor = $0 }
-      }
-    }
-
     #if os(macOS)
-      let margin = Self.margin(theme.vars.shadowLg)
-      measured.background(
-        FloatingPanelAnchor(
-          isPresented: $isPresented,
-          placement: Placement(side: side, align: align, gap: gap, margin: margin),
-          modal: modal,
-          panel: AnyView(
-            panel(anchor)
-              .padding(margin)
-              .environment(\.theme, theme)
-              .font(theme.vars.bodyMedium.font)
-              .environment(\.colorScheme, theme.colorScheme)
-              .menuPresentation(presentation)
+      content.background {
+        if isPresented {
+          let margin = Self.margin(theme.vars.shadowLg)
+          FloatingPanelAnchor(
+            isPresented: $isPresented,
+            placement: Placement(side: side, align: align, gap: gap, margin: margin),
+            modal: modal,
+            makePanel: { anchorSize in
+              AnyView(
+                panel(anchorSize)
+                  .padding(margin)
+                  .environment(\.theme, theme)
+                  .font(theme.vars.bodyMedium.font)
+                  .environment(\.colorScheme, theme.colorScheme)
+                  .menuPresentation(presentation)
+              )
+            }
           )
-        )
-      )
+        }
+      }
     #elseif os(Windows) || os(Linux) || os(WASI)
+      let measured = content.background {
+        GeometryReader { proxy in
+          Color.clear
+            .onAppear { anchor = proxy.size }
+            .onChange(of: proxy.size) { anchor = $0 }
+        }
+      }
       measured.popover(
         isPresented: $isPresented,
         arrowEdge: side == .top
@@ -122,6 +127,13 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
     #else
       // No second window to draw in: the overlay is as far as the platform
       // goes, raised above its own siblings at least.
+      let measured = content.background {
+        GeometryReader { proxy in
+          Color.clear
+            .onAppear { anchor = proxy.size }
+            .onChange(of: proxy.size) { anchor = $0 }
+        }
+      }
       measured
         .anchored(side, align, gap: gap) {
           if isPresented { panel(anchor) }
@@ -215,7 +227,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
     @Binding var isPresented: Bool
     let placement: Placement
     let modal: Bool
-    let panel: AnyView
+    let makePanel: (CGSize) -> AnyView
 
     func makeNSView(context: Context) -> AnchorView {
       AnchorView()
@@ -225,7 +237,8 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
       view.placement = placement
       view.modal = modal
       view.dismiss = { isPresented = false }
-      view.update(presented: isPresented, content: panel)
+      view.makePanel = makePanel
+      view.update(presented: isPresented)
     }
 
     static func dismantleNSView(_ view: AnchorView, coordinator: ()) {
@@ -239,46 +252,73 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
     var placement = Placement(side: .bottom, align: .start, gap: 0, margin: 0)
     var modal = true
     var dismiss: () -> Void = {}
+    var makePanel: (CGSize) -> AnyView = { _ in AnyView(EmptyView()) }
 
     private var panel: FloatingWindow?
     private var host: FirstMouseHostingView?
     private var monitor: Any?
     private var observers: [NSObjectProtocol] = []
+    private var pendingOpen = false
+    private var lastAnchorSize: CGSize = .zero
 
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 
     override func viewDidMoveToWindow() {
       super.viewDidMoveToWindow()
-      if window == nil, panel != nil {
-        close()
-        dismiss()
+      if window == nil {
+        pendingOpen = false
+        if panel != nil {
+          close()
+          dismiss()
+        }
+      } else if pendingOpen, panel == nil {
+        pendingOpen = false
+        open()
       }
     }
 
-    func update(presented: Bool, content: AnyView) {
+    override func layout() {
+      super.layout()
+      let currentSize = bounds.size
+      if host != nil, currentSize != lastAnchorSize {
+        lastAnchorSize = currentSize
+        DispatchQueue.main.async { [weak self] in
+          guard let self, let host = self.host else { return }
+          host.rootView = self.makePanel(self.bounds.size)
+          self.place()
+        }
+      }
+    }
+
+    func update(presented: Bool) {
       if presented {
         if let host {
-          host.rootView = content
+          lastAnchorSize = bounds.size
+          host.rootView = makePanel(bounds.size)
           place()
         } else {
-          open(content)
+          open()
         }
       } else {
+        pendingOpen = false
         close()
       }
     }
 
-    private func open(_ content: AnyView) {
+    private func open() {
       guard let parent = window else {
         // Not in a window yet — the first layout pass has not attached it.
+        pendingOpen = true
         DispatchQueue.main.async { [weak self] in
-          guard let self, self.window != nil, self.panel == nil else { return }
-          self.open(content)
+          guard let self, self.pendingOpen, self.window != nil, self.panel == nil else { return }
+          self.pendingOpen = false
+          self.open()
         }
         return
       }
 
-      let host = FirstMouseHostingView(rootView: content)
+      lastAnchorSize = bounds.size
+      let host = FirstMouseHostingView(rootView: makePanel(bounds.size))
       let panel = FloatingWindow(
         contentRect: .zero,
         styleMask: [.borderless, .nonactivatingPanel],

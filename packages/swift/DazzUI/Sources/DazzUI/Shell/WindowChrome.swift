@@ -78,7 +78,6 @@ public struct WindowTitlebar<Leading: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     title: String? = nil,
@@ -125,7 +124,7 @@ public struct WindowTitlebar<Leading: View, Content: View>: View {
       }
     }
     .background(vars.colorSurfaceChrome)
-    .rule(vars.colorBorder, edge: .bottom, width: hairline)
+    .rule(vars.colorBorder, edge: .bottom, width: vars.strokeHairline)
   }
 }
 
@@ -184,7 +183,6 @@ public struct WindowToolbar<Leading: View, Content: View, Trailing: View>: View 
   @ViewBuilder public var trailing: () -> Trailing
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     title: String? = nil,
@@ -235,7 +233,7 @@ public struct WindowToolbar<Leading: View, Content: View, Trailing: View>: View 
     .frame(height: height ?? vars.frameTitlebarSize)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(vars.colorSurfaceChrome)
-    .rule(vars.colorBorder, edge: .bottom, width: hairline)
+    .rule(vars.colorBorder, edge: .bottom, width: vars.strokeHairline)
   }
 }
 
@@ -311,7 +309,6 @@ public struct WindowFooter<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(@ViewBuilder content: @escaping () -> Content) {
     self.content = content
@@ -327,6 +324,6 @@ public struct WindowFooter<Content: View>: View {
     .padding(.vertical, vars.spacing3)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(vars.colorSurfaceChrome)
-    .rule(vars.colorBorder, edge: .top, width: hairline)
+    .rule(vars.colorBorder, edge: .top, width: vars.strokeHairline)
   }
 }

@@ -40,14 +40,16 @@ public struct Progress: View {
   public var body: some View {
     let vars = theme.vars
 
-    GeometryReader { geometry in
+    Group {
       if let clamped {
-        fill
-          .frame(width: geometry.size.width * clamped / 100)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .animation(travel, value: clamped)
+        ProportionalBarLayout(fraction: clamped / 100) {
+          fill
+        }
+        .animation(travel, value: clamped)
       } else {
-        Sweep(reduceMotion: reduceMotion, track: geometry.size.width) { fill }
+        GeometryReader { geometry in
+          Sweep(reduceMotion: reduceMotion, track: geometry.size.width) { fill }
+        }
       }
     }
     .frame(height: thickness)

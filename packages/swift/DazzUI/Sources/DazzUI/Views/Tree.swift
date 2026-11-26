@@ -151,10 +151,12 @@ public struct Tree: View {
 
   /// The visible rows, in the order the eye reads them.
   private var rows: [TreeRow] {
+    let expandedSet = Set(expanded ?? ownExpanded)
     var out: [TreeRow] = []
+    out.reserveCapacity(items.count)
     func walk(_ nodes: [TreeNode], _ level: Int) {
       for node in nodes {
-        let open = node.isBranch && (expanded ?? ownExpanded).contains(node.id)
+        let open = node.isBranch && expandedSet.contains(node.id)
         out.append(TreeRow(id: node.id, node: node, level: level, open: open))
         if open, let children = node.children {
           walk(children, level + 1)
@@ -253,19 +255,19 @@ private struct Row: View {
   private func surface(_ state: PressableState) -> Color {
     let vars = theme.vars
     if selected {
-      return vars.resolve(vars.descriptor(.tinted, .surface), tint: tint, state: .normal)
+      return vars.controlColor(.tinted, .surface, tint: tint, state: .normal)
     }
     guard state.enabled, state.hovered || state.pressed else { return .clear }
     // The neutral control's wash — the card step — which is what a menu item, a
     // table row and a tree row all want. `plain` would come off the tinted ramp
     // and sit heavier than the selection one rung below it.
-    return vars.resolve(vars.descriptor(.normal, .surface), tint: .neutral, state: .hovered)
+    return vars.controlColor(.normal, .surface, tint: .neutral, state: .hovered)
   }
 
   private func content(_ state: PressableState) -> Color {
     let vars = theme.vars
     if selected {
-      return vars.resolve(vars.descriptor(.tinted, .content), tint: tint, state: .normal)
+      return vars.controlColor(.tinted, .content, tint: tint, state: .normal)
     }
     if !node.enabled { return vars.colorContentFaint }
     return state.hovered ? vars.colorContent : vars.colorContentNav

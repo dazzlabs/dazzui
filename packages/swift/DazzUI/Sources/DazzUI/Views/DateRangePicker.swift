@@ -85,8 +85,54 @@ public struct DateRangePickerStrings: Sendable {
     return formatter
   }()
 
+  internal static let dayCache = LocalDayStringCache()
+
   @Sendable public static func day(_ date: Date) -> String {
-    dayFormatter.string(from: date)
+    dayCache.string(for: date, formatter: dayFormatter)
+  }
+}
+
+internal final class TimeOptionsCache: @unchecked Sendable {
+  static let shared = TimeOptionsCache()
+  private static let limit = 32
+  private let lock = NSLock()
+  private var entries: [Int: [SelectOption<String>]] = [:]
+  private var computeCount = 0
+
+  func options(step: Int) -> [SelectOption<String>] {
+    let validStep = max(1, step)
+    lock.lock()
+    if let hit = entries[validStep] {
+      lock.unlock()
+      return hit
+    }
+    lock.unlock()
+    var built: [SelectOption<String>] = []
+    built.reserveCapacity(24 * 60 / validStep + 1)
+    for m in stride(from: 0, to: 24 * 60, by: validStep) {
+      let label = "\(pad(m / 60)):\(pad(m % 60))"
+      built.append(SelectOption(value: label, label: label))
+    }
+    lock.lock()
+    defer { lock.unlock() }
+    if let raced = entries[validStep] { return raced }
+    if entries.count >= Self.limit { entries.removeAll(keepingCapacity: true) }
+    entries[validStep] = built
+    computeCount += 1
+    return built
+  }
+
+  internal var totalComputations: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return computeCount
+  }
+
+  internal func resetForTesting() {
+    lock.lock()
+    entries.removeAll()
+    computeCount = 0
+    lock.unlock()
   }
 }
 
@@ -235,7 +281,6 @@ public struct DateRangePicker: View {
   public var enabled: Bool
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.dazzStretchedControl) private var stretchedControl
   @FocusState private var focused: Bool
   @State private var open = false
@@ -321,7 +366,7 @@ public struct DateRangePicker: View {
       DateRangeTriggerBox(
         minWidth: vars.dateRangePickerTriggerMinWidth,
         height: metrics.size,
-        paddingInline: vars.spacing3 + hairline,
+        paddingInline: vars.spacing3 + vars.strokeHairline,
         gap: vars.spacing2,
         stretch: stretchedControl
       ) {
@@ -361,6 +406,7 @@ public struct DateRangePicker: View {
   /// and a footer, hairlined off each other.
   @ViewBuilder private var sheet: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
 
     VStack(spacing: 0) {
       HStack(alignment: .top, spacing: 0) {
@@ -488,14 +534,15 @@ public struct DateRangePicker: View {
     label: String, at date: Date, allDay: Bool, onTime: @escaping (Int, Int) -> Void
   ) -> some View {
     let vars = theme.vars
-    let current = clock(date, math)
-    var options = (stride(from: 0, to: 24 * 60, by: timeStep)).map { m -> SelectOption<String> in
-      let label = "\(pad(m / 60)):\(pad(m % 60))"
-      return SelectOption(value: label, label: label)
-    }
+    let parts = math.calendar.dateComponents([.hour, .minute], from: date)
+    let hour = parts.hour ?? 0
+    let minute = parts.minute ?? 0
+    let current = "\(pad(hour)):\(pad(minute))"
+    let step = max(1, timeStep)
+    var options = TimeOptionsCache.shared.options(step: step)
     // A time list that starts on the step but still shows a value off it —
     // a span handed in at 14:07 keeps 14:07 until the reader moves it.
-    if !options.contains(where: { $0.value == current }) {
+    if (hour * 60 + minute) % step != 0 {
       options.insert(SelectOption(value: current, label: current), at: 0)
     }
 
@@ -617,44 +664,57 @@ private struct Summary: View {
 struct FlowRow: Layout {
   var spacing: CGFloat
 
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    arrange(proposal: proposal, subviews: subviews).size
+  struct Cache {
+    var sizes: [CGSize]
   }
 
-  func placeSubviews(
-    in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()
-  ) {
-    let placed = arrange(proposal: proposal, subviews: subviews)
-    for (index, origin) in placed.origins.enumerated() {
-      subviews[index].place(
-        at: CGPoint(x: bounds.minX + origin.x, y: bounds.minY + origin.y),
-        proposal: .unspecified
-      )
-    }
+  func makeCache(subviews: Subviews) -> Cache {
+    Cache(sizes: subviews.map { $0.sizeThatFits(.unspecified) })
   }
 
-  private func arrange(proposal: ProposedViewSize, subviews: Subviews)
-    -> (size: CGSize, origins: [CGPoint])
-  {
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache.sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
     let width = proposal.width ?? .infinity
-    var origins: [CGPoint] = []
     var x: CGFloat = 0
     var y: CGFloat = 0
     var rowHeight: CGFloat = 0
     var widest: CGFloat = 0
-    for subview in subviews {
-      let size = subview.sizeThatFits(.unspecified)
+    for size in cache.sizes {
       if x > 0, x + size.width > width {
         x = 0
         y += rowHeight + spacing
         rowHeight = 0
       }
-      origins.append(CGPoint(x: x, y: y))
       x += size.width + spacing
       rowHeight = Swift.max(rowHeight, size.height)
       widest = Swift.max(widest, x - spacing)
     }
-    return (CGSize(width: widest, height: y + rowHeight), origins)
+    return CGSize(width: widest, height: y + rowHeight)
+  }
+
+  func placeSubviews(
+    in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache
+  ) {
+    let width = proposal.width ?? bounds.width
+    var x: CGFloat = 0
+    var y: CGFloat = 0
+    var rowHeight: CGFloat = 0
+    for (index, size) in cache.sizes.enumerated() {
+      if x > 0, x + size.width > width {
+        x = 0
+        y += rowHeight + spacing
+        rowHeight = 0
+      }
+      subviews[index].place(
+        at: CGPoint(x: bounds.minX + x, y: bounds.minY + y),
+        proposal: ProposedViewSize(size)
+      )
+      x += size.width + spacing
+      rowHeight = Swift.max(rowHeight, size.height)
+    }
   }
 }
 
@@ -668,12 +728,31 @@ private struct DateRangeTriggerBox: Layout {
   var gap: CGFloat
   var stretch: Bool
 
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+  struct Cache {
+    var leading: CGSize
+    var label: CGSize
+    var trailing: CGSize
+  }
+
+  func makeCache(subviews: Subviews) -> Cache {
+    guard subviews.count == 3 else {
+      return Cache(leading: .zero, label: .zero, trailing: .zero)
+    }
+    return Cache(
+      leading: subviews[0].sizeThatFits(.unspecified),
+      label: subviews[1].sizeThatFits(.unspecified),
+      trailing: subviews[2].sizeThatFits(.unspecified)
+    )
+  }
+
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache = makeCache(subviews: subviews)
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
     guard subviews.count == 3 else { return CGSize(width: minWidth, height: height) }
-    let leading = subviews[0].sizeThatFits(.unspecified).width
-    let label = subviews[1].sizeThatFits(.unspecified).width
-    let trailing = subviews[2].sizeThatFits(.unspecified).width
-    let intrinsic = paddingInline * 2 + leading + gap + label + gap + trailing
+    let intrinsic =
+      paddingInline * 2 + cache.leading.width + gap + cache.label.width + gap + cache.trailing.width
     let width: CGFloat
     if stretch, let offered = proposal.width, offered.isFinite {
       width = Swift.max(minWidth, offered)
@@ -685,11 +764,11 @@ private struct DateRangeTriggerBox: Layout {
     return CGSize(width: width, height: height)
   }
 
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
     guard subviews.count == 3 else { return }
-    let leading = subviews[0].sizeThatFits(.unspecified)
-    let label = subviews[1].sizeThatFits(.unspecified)
-    let trailing = subviews[2].sizeThatFits(.unspecified)
+    let leading = cache.leading
+    let label = cache.label
+    let trailing = cache.trailing
     let leadingX = bounds.minX + paddingInline
     let trailingX = bounds.maxX - paddingInline - trailing.width
     let labelX = leadingX + leading.width + gap

@@ -38,13 +38,8 @@ public struct Rail<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   @State private var ownWidth: CGFloat?
-  @State private var dragOrigin: CGFloat?
-  @State private var dragging = false
-  @State private var hoveringResizer = false
-  @FocusState private var resizerFocused: Bool
 
   public init(
     resizable: Bool = false,
@@ -93,9 +88,20 @@ public struct Rail<Content: View>: View {
     }
     .frame(width: resolvedWidth)
     .background(surface == .rail ? vars.railSurface : vars.colorSurface)
-    .rule(vars.colorBorder, edge: .trailing, width: hairline)
+    .rule(vars.colorBorder, edge: .trailing, width: vars.strokeHairline)
     .overlay(alignment: .trailing) {
-      if resizable { resizer(vars: vars) }
+      if resizable {
+        RailResizer(
+          vars: vars,
+          tint: tint,
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          naturalWidth: naturalWidth,
+          resolvedWidth: resolvedWidth,
+          resizeLabel: resizeLabel,
+          commit: commit
+        )
+      }
     }
   }
 
@@ -107,28 +113,51 @@ public struct Rail<Content: View>: View {
     defaultWidth ?? theme.vars.frameRailWidth
   }
 
-  private func clamp(_ value: CGFloat) -> CGFloat {
-    min(maxWidth, max(minWidth, value)).rounded()
-  }
-
   private func commit(_ next: CGFloat) {
+    guard next != resolvedWidth else { return }
     if let width {
       width.wrappedValue = next
     } else {
       ownWidth = next
     }
   }
+}
 
-  private func settle(_ change: () -> Void) {
-    withAnimation(theme.vars.motion, change)
-  }
+private final class RailDragState {
+  var origin: CGFloat?
+}
+
+/// Isolated resizer handle so hover, focus, and drag state updates never
+/// re-evaluate the rail's `content` subtree.
+private struct RailResizer: View {
+  let vars: ThemeVariables
+  let tint: Tint
+  let minWidth: CGFloat
+  let maxWidth: CGFloat
+  let naturalWidth: CGFloat
+  let resolvedWidth: CGFloat
+  let resizeLabel: String
+  let commit: (CGFloat) -> Void
+
+  @State private var dragState = RailDragState()
+  @State private var dragging = false
+  @State private var hovering = false
+  @FocusState private var focused: Bool
 
   private var lineOpacity: Double {
     if dragging { return 1 }
-    return hoveringResizer || resizerFocused ? railResizerHintOpacity : 0
+    return hovering || focused ? railResizerHintOpacity : 0
   }
 
-  private func resizer(vars: ThemeVariables) -> some View {
+  private func clamp(_ value: CGFloat) -> CGFloat {
+    min(maxWidth, max(minWidth, value)).rounded()
+  }
+
+  private func settle(_ change: () -> Void) {
+    withAnimation(vars.motion, change)
+  }
+
+  var body: some View {
     withResizerFocus(
       Color.clear
         .frame(width: vars.spacing2)
@@ -148,18 +177,19 @@ public struct Rail<Content: View>: View {
         .gesture(
           DragGesture(minimumDistance: 1, coordinateSpace: .global)
             .onChanged { value in
-              let from = dragOrigin ?? resolvedWidth
-              dragOrigin = from
-              dragging = true
+              let from = dragState.origin ?? resolvedWidth
+              dragState.origin = from
+              if !dragging { dragging = true }
               commit(clamp(from + value.translation.width))
             }
             .onEnded { _ in
-              dragOrigin = nil
-              dragging = false
+              dragState.origin = nil
+              if dragging { dragging = false }
             }
         )
         .onHover { inside in
-          hoveringResizer = inside
+          guard hovering != inside else { return }
+          hovering = inside
           #if os(macOS)
             if inside {
               NSCursor.resizeLeftRight.push()
@@ -170,11 +200,13 @@ public struct Rail<Content: View>: View {
         }
         .onDisappear {
           #if os(macOS)
-            if hoveringResizer {
+            if hovering {
               NSCursor.pop()
-              hoveringResizer = false
+              hovering = false
             }
           #endif
+          dragState.origin = nil
+          dragging = false
         }
     )
     .accessibilityElement()
@@ -195,10 +227,10 @@ public struct Rail<Content: View>: View {
   private func withResizerFocus<V: View>(_ view: V) -> some View {
     #if os(macOS)
       if #available(macOS 14.0, *) {
-        withResizerMoveCommands(view.focusable(resizable, interactions: .activate))
+        withResizerMoveCommands(view.focusable(true, interactions: .activate))
           .focusEffectDisabled()
       } else {
-        withResizerMoveCommands(view.focusable(resizable))
+        withResizerMoveCommands(view.focusable(true))
       }
     #else
       view
@@ -208,7 +240,7 @@ public struct Rail<Content: View>: View {
   #if os(macOS)
     private func withResizerMoveCommands<V: View>(_ view: V) -> some View {
       view
-        .focused($resizerFocused)
+        .focused($focused)
         .onMoveCommand { direction in
           let step = NSEvent.modifierFlags.contains(.shift) ? railCoarseKeyStep : railKeyStep
           switch direction {

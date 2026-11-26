@@ -113,7 +113,7 @@ public struct Avatar<Fallback: View>: View {
   /// It is not interactive, so it reads the resting recipe directly rather
   /// than joining the shared state machine.
   private func recipe(_ part: ControlPart) -> Color {
-    theme.vars.resolve(theme.vars.descriptor(.tinted, part), tint: tint, state: .normal)
+    theme.vars.controlColor(.tinted, part, tint: tint, state: .normal)
   }
 
   /// The square takes the container corner rather than the control corner. An

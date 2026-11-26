@@ -15,7 +15,9 @@ public struct Theme: Sendable, Equatable {
 
   // Each themed view captures the environment. Share the token table across
   // those captures, including the resolved system-sizing snapshot.
-  public var vars: ThemeVariables { resolved.variables }
+  public var vars: ThemeVariables {
+    _read { yield resolved.variables }
+  }
 
   public init(_ name: ThemeName) {
     self.name = name
@@ -25,7 +27,11 @@ public struct Theme: Sendable, Equatable {
   }
 
   @MainActor public init(_ name: ThemeName, sizing: ThemeSizing) {
-    self.init(name, sizing: sizing, metrics: SystemSizingMetrics.current())
+    if sizing == .system {
+      self.init(name, sizing: .system, metrics: SystemSizingMetrics.current())
+    } else {
+      self.init(name)
+    }
   }
 
   internal init(_ name: ThemeName, sizing: ThemeSizing, metrics: SystemSizingMetrics) {

@@ -42,7 +42,6 @@ struct PopoverPanel<Content: View>: View {
   @ViewBuilder var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
@@ -57,7 +56,7 @@ struct PopoverPanel<Content: View>: View {
     .frame(maxWidth: maxWidth, alignment: .leading)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
-    .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusLarge)
+    .border(vars.colorBorderStrong, width: vars.strokeHairline, cornerRadius: vars.radiusLarge)
     .tokenShadow(vars.shadowLg)
     .fixedSize(horizontal: width == nil && maxWidth == nil, vertical: true)
     .accessibilityElement(children: .contain)

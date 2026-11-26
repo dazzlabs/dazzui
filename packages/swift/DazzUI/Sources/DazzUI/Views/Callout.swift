@@ -35,7 +35,6 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
   @ViewBuilder public var trailing: () -> Trailing
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     size: CalloutSize = .medium,
@@ -55,6 +54,7 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
 
     HStack(alignment: hasDescription ? .top : .center, spacing: vars.spacing25) {
       leading()
@@ -94,11 +94,7 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
 
   /// The text grades of the tint, not its fill.
   private func grade(_ state: ControlState) -> Color {
-    theme.vars.resolve(
-      theme.vars.descriptor(.tinted, .content),
-      tint: tint,
-      state: state
-    )
+    theme.vars.controlColor(.tinted, .content, tint: tint, state: state)
   }
 
   private var paddingBlock: CGFloat {

@@ -153,7 +153,6 @@ private struct Stepper: View {
   let decrease: (() -> Void)?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
@@ -166,7 +165,7 @@ private struct Stepper: View {
     // profile, whose box is barely two glyphs tall.
     .frame(height: max(0, height))
     .padding(.leading, vars.spacing1)
-    .rule(vars.colorBorder, edge: .leading, width: hairline)
+    .rule(vars.colorBorder, edge: .leading, width: vars.strokeHairline)
   }
 }
 
@@ -198,20 +197,12 @@ private struct StepButton: View {
 
   private func wash(state: PressableState) -> Color {
     guard state.enabled, state.hovered || state.pressed else { return .clear }
-    return theme.vars.resolve(
-      theme.vars.descriptor(.normal, .surface),
-      tint: .neutral,
-      state: .hovered
-    )
+    return theme.vars.controlColor(.normal, .surface, tint: .neutral, state: .hovered)
   }
 
   private func ink(state: PressableState) -> Color {
     guard state.enabled else {
-      return theme.vars.resolve(
-        theme.vars.descriptor(.normal, .content),
-        tint: .neutral,
-        state: .disabled
-      )
+      return theme.vars.controlColor(.normal, .content, tint: .neutral, state: .disabled)
     }
     return state.hovered ? theme.vars.colorContent : theme.vars.colorContentSubtle
   }

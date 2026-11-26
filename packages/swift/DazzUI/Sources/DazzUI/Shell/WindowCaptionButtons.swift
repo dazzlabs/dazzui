@@ -20,7 +20,6 @@ public struct WindowsCaptionButtons: View {
   public var onClose: () -> Void
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     isMaximized: Bool = false,
@@ -54,7 +53,7 @@ public struct WindowsCaptionButtons: View {
     if isFullScreen {
       EmptyView()
     } else {
-      let resolvedHeight = max(0, (height ?? theme.vars.frameTitlebarSize) - hairline)
+      let resolvedHeight = max(0, (height ?? theme.vars.frameTitlebarSize) - theme.vars.strokeHairline)
       HStack(spacing: 0) {
         captionButton(
           kind: .minimize,
@@ -126,7 +125,6 @@ public struct WindowsCaptionCloseButton: View {
   public var action: () -> Void
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     height: CGFloat? = nil,
@@ -142,7 +140,7 @@ public struct WindowsCaptionCloseButton: View {
 
   public var body: some View {
     let vars = theme.vars
-    let resolvedHeight = max(0, (height ?? vars.frameTitlebarSize) - hairline)
+    let resolvedHeight = max(0, (height ?? vars.frameTitlebarSize) - vars.strokeHairline)
     let closeHover = Color(red: 0xc4 / 255.0, green: 0x2b / 255.0, blue: 0x1c / 255.0)
     let closePress = Color(red: 0xb1 / 255.0, green: 0x26 / 255.0, blue: 0x18 / 255.0)
 
@@ -315,7 +313,6 @@ public struct LinuxWindowControlButtons: View {
   public var onClose: () -> Void
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     style: LinuxDesktopStyle = .detect(),
@@ -349,7 +346,7 @@ public struct LinuxWindowControlButtons: View {
     if isFullScreen {
       EmptyView()
     } else {
-      let resolvedHeight = max(0, (height ?? theme.vars.frameTitlebarSize) - hairline)
+      let resolvedHeight = max(0, (height ?? theme.vars.frameTitlebarSize) - theme.vars.strokeHairline)
       HStack(spacing: buttonSpacing) {
         controlButton(
           kind: .minimize,

@@ -198,12 +198,12 @@ public struct Combobox<Value: Hashable>: View {
   }
 
   private var matches: [ComboboxOption<Value>] {
-    let needle = query.trimmingCharacters(in: .whitespaces).lowercased()
+    let needle = query.trimmingCharacters(in: .whitespaces)
     guard !needle.isEmpty else { return options }
     return options.filter { option in
       // The chosen option's own label is not a query: a list that emptied
       // itself the moment it was reopened would look broken.
-      option.label.lowercased() == needle || option.label.lowercased().contains(needle)
+      option.label.range(of: needle, options: .caseInsensitive) != nil
     }
   }
 }
@@ -266,10 +266,11 @@ public struct Autocomplete: View {
       modal: false
     ) { anchor in
       AnchoredMenuSheet(width: anchor.width) {
-        if matches.isEmpty {
+        let kept = matches
+        if kept.isEmpty {
           MenuEmpty(label: emptyLabel)
         } else {
-          ForEach(matches, id: \.self) { item in
+          ForEach(kept, id: \.self) { item in
             MenuRow(item: MenuItem(item), tint: .neutral) {
               selectedText = item
               text = item
@@ -282,9 +283,9 @@ public struct Autocomplete: View {
   }
 
   private var matches: [String] {
-    let needle = text.trimmingCharacters(in: .whitespaces).lowercased()
+    let needle = text.trimmingCharacters(in: .whitespaces)
     guard !needle.isEmpty else { return items }
-    return items.filter { $0.lowercased().contains(needle) }
+    return items.filter { $0.range(of: needle, options: .caseInsensitive) != nil }
   }
 }
 private struct FieldAction: View {
@@ -308,7 +309,7 @@ private struct FieldAction: View {
   }
 
   private var wash: Color {
-    theme.vars.resolve(theme.vars.descriptor(.normal, .surface), tint: .neutral, state: .hovered)
+    theme.vars.controlColor(.normal, .surface, tint: .neutral, state: .hovered)
   }
 }
 extension Array {

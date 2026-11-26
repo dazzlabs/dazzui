@@ -203,7 +203,8 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
             selected: item.value == value,
             compact: false,
             select: {},
-            close: onClose.map { _ in {} }
+            close: onClose.map { _ in {} },
+            isRuler: true
           )
             .fixedSize()
             .background(TabsMeasureReport(key: .whole(index)))
@@ -211,7 +212,14 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
       }
       HStack(spacing: 0) {
         ForEach(Array(rulerItems.enumerated()), id: \.offset) { index, item in
-          TabsTab(item: item, selected: false, compact: true, select: {}, close: onClose.map { _ in {} })
+          TabsTab(
+            item: item,
+            selected: false,
+            compact: true,
+            select: {},
+            close: onClose.map { _ in {} },
+            isRuler: true
+          )
             .fixedSize()
             .background(TabsMeasureReport(key: .compact(index)))
         }
@@ -344,6 +352,7 @@ private struct TabsTab<Value: Hashable>: View {
   let compact: Bool
   let select: () -> Void
   let close: (() -> Void)?
+  var isRuler: Bool = false
 
   @Environment(\.theme) private var theme
   @State private var hovered = false
@@ -351,77 +360,93 @@ private struct TabsTab<Value: Hashable>: View {
 
   var body: some View {
     let vars = theme.vars
-    HStack(spacing: 0) {
-      SwiftUI.Button(action: select) {
-        HStack(spacing: vars.spacing15) {
-          if let status = item.status {
-            Circle()
-              .fill(dot(status, vars))
-              .frame(width: vars.spacing15, height: vars.spacing15)
-              .opacity(item.busy && pulse ? 0.35 : 1)
-              .onAppear {
-                guard item.busy else { return }
-                withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) { pulse = true }
-              }
+    let labelStack = HStack(spacing: vars.spacing15) {
+      if let status = item.status {
+        Circle()
+          .fill(dot(status, vars))
+          .frame(width: vars.spacing15, height: vars.spacing15)
+          .opacity(item.busy && pulse ? 0.35 : 1)
+          .onAppear {
+            guard !isRuler, item.busy else { return }
+            withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) { pulse = true }
           }
-          if let icon = item.icon {
-            Icon(icon, size: 14)
-          }
-          if !(compact && item.icon != nil) {
-            Text(item.label).lineLimit(1).truncationMode(.tail)
-            if let detail = item.detail {
-              Text(detail).fontWeight(vars.labelMedium.weight).foregroundStyle(vars.colorContentSubtle)
-            }
-          }
-          if let count = item.count {
-            Text("\(count)")
-              .font(vars.captionSmall.font)
-              .fontWeight(vars.labelMedium.weight)
-              .monospacedDigit()
-              .foregroundStyle(vars.colorContentSubtle)
-          }
-        }
-        .font(vars.labelMedium.font)
-        .fontWeight(selected ? vars.labelStrong.weight : vars.labelMedium.weight)
-        .foregroundStyle(selected || hovered ? vars.colorContent : vars.colorContentSubtle)
-        .padding(.horizontal, vars.spacing25)
-        .frame(maxHeight: .infinity)
-        .contentShape(Rectangle())
       }
-      .buttonStyle(.plain)
-      .disabled(item.disabled)
-      .opacity(item.disabled ? 0.5 : 1)
-      .help(item.title ?? (compact ? item.label : ""))
-      // Drawn as its icon alone, the tab is still called by its name.
-      .modifier(TabsListLabel(label: compact && item.icon != nil ? item.label : nil))
-      .accessibilityAddTraits(selected ? [.isSelected] : [])
-      if item.closable, let close, !compact {
-        // Offered on the tab that is showing and under the pointer; it keeps
-        // its place either way, so a tab is one width whether it shows or not.
-        IconButton(label: "Close \(item.label)", action: close) {
-          Icon(.dismiss20Regular, size: 12)
+      if let icon = item.icon {
+        Icon(icon, size: 14)
+      }
+      if !(compact && item.icon != nil) {
+        Text(item.label).lineLimit(1).truncationMode(.tail)
+        if let detail = item.detail {
+          Text(detail).fontWeight(vars.labelMedium.weight).foregroundStyle(vars.colorContentSubtle)
         }
-        .padding(.leading, -vars.spacing15)
-        .padding(.trailing, vars.spacing1)
-        // `visibility: hidden`, not only unseen: a close that cannot be seen
-        // cannot be pressed either.
-        .opacity(closeShown ? 1 : 0)
-        .allowsHitTesting(closeShown)
-        .accessibilityHidden(!closeShown)
+      }
+      if let count = item.count {
+        Text("\(count)")
+          .font(vars.captionSmall.font)
+          .fontWeight(vars.labelMedium.weight)
+          .monospacedDigit()
+          .foregroundStyle(vars.colorContentSubtle)
       }
     }
+    .font(vars.labelMedium.font)
+    .fontWeight(selected ? vars.labelStrong.weight : vars.labelMedium.weight)
+    .foregroundStyle(selected || hovered ? vars.colorContent : vars.colorContentSubtle)
+    .padding(.horizontal, vars.spacing25)
     .frame(maxHeight: .infinity)
-    // The rule under the tab that is showing, on the row's foot and inset to the label.
-    .overlay(alignment: .bottom) {
-      if selected {
-        Capsule()
-          .fill(vars.resolve(vars.descriptor(.filled, .surface), tint: .primary, state: .normal))
-          .frame(height: vars.strokeControl)
-          .padding(.horizontal, vars.spacing25)
+
+    if isRuler {
+      HStack(spacing: 0) {
+        labelStack
+        if item.closable, close != nil, !compact {
+          let closeSize = vars.metrics(.tiny).size
+          Color.clear
+            .frame(width: closeSize, height: closeSize)
+            .padding(.leading, -vars.spacing15)
+            .padding(.trailing, vars.spacing1)
+        }
       }
+      .frame(maxHeight: .infinity)
+    } else {
+      HStack(spacing: 0) {
+        SwiftUI.Button(action: select) {
+          labelStack
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(item.disabled)
+        .opacity(item.disabled ? 0.5 : 1)
+        .modifier(OptionalHelpModifier(help: item.title ?? (compact ? item.label : nil)))
+        // Drawn as its icon alone, the tab is still called by its name.
+        .modifier(TabsListLabel(label: compact && item.icon != nil ? item.label : nil))
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+        if item.closable, let close, !compact {
+          // Offered on the tab that is showing and under the pointer; it keeps
+          // its place either way, so a tab is one width whether it shows or not.
+          IconButton(label: "Close \(item.label)", action: close) {
+            Icon(.dismiss20Regular, size: 12)
+          }
+          .padding(.leading, -vars.spacing15)
+          .padding(.trailing, vars.spacing1)
+          // `visibility: hidden`, not only unseen: a close that cannot be seen
+          // cannot be pressed either.
+          .opacity(closeShown ? 1 : 0)
+          .allowsHitTesting(closeShown)
+          .accessibilityHidden(!closeShown)
+        }
+      }
+      .frame(maxHeight: .infinity)
+      // The rule under the tab that is showing, on the row's foot and inset to the label.
+      .overlay(alignment: .bottom) {
+        if selected {
+          Capsule()
+            .fill(vars.controlColor(.filled, .surface, tint: .primary, state: .normal))
+            .frame(height: vars.strokeControl)
+            .padding(.horizontal, vars.spacing25)
+        }
+      }
+      .onHover { hovered = $0 }
+      .animation(vars.motion, value: hovered)
     }
-    .onHover { hovered = $0 }
-    .animation(vars.motion, value: hovered)
   }
 
   private var closeShown: Bool { selected || hovered }

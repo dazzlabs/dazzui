@@ -44,7 +44,6 @@ public struct TableHead<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(@ViewBuilder content: @escaping () -> Content) {
     self.content = content
@@ -52,6 +51,7 @@ public struct TableHead<Content: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
 
     HStack(spacing: 0) {
       content()
@@ -73,7 +73,6 @@ public struct TableRow<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.tableTint) private var tint
   @FocusState private var focused: Bool
 
@@ -111,6 +110,7 @@ public struct TableRow<Content: View>: View {
 
   private func row(hovered: Bool) -> some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
 
     return HStack(spacing: 0) {
       content()
@@ -135,11 +135,7 @@ public struct TableRow<Content: View>: View {
     if hovered {
       // Neutral, because the tinted selection sits one step lower on the ramp
       // and a tinted hover would read as the heavier of the two.
-      return vars.resolve(
-        vars.descriptor(.normal, .surface),
-        tint: tint,
-        state: .hovered
-      )
+      return vars.controlColor(.normal, .surface, tint: tint, state: .hovered)
     }
     guard active else { return .clear }
     // The surface wash, not the `tinted` recipe's chip fill: a selected row is
@@ -190,7 +186,9 @@ public struct TableCell<Content: View>: View {
         }
       }
     }
-      .modifier(HeadFace(head: head, vars: vars))
+      .modifier(
+        HeadFace(head: head, style: vars.labelSmall, color: vars.colorContentFaint)
+      )
       .frame(maxWidth: .infinity, alignment: align == .end ? .trailing : .leading)
       .multilineTextAlignment(align == .end ? .trailing : .leading)
       .padding(.vertical, head ? vars.spacing2 : 0)
@@ -201,17 +199,18 @@ public struct TableCell<Content: View>: View {
 /// whatever the row set.
 private struct HeadFace: ViewModifier {
   let head: Bool
-  let vars: ThemeVariables
+  let style: TypeStyle
+  let color: Color
 
   func body(content: Content) -> some View {
     if head {
       content
-        .font(vars.labelSmall.font)
-        .lineSpacing(vars.labelSmall.lineSpacing)
+        .font(style.font)
+        .lineSpacing(style.lineSpacing)
         // The heading's line box is shorter than the face's own line, and
         // CSS lets the face overhang it evenly above and below.
-        .padding(.vertical, min(0, vars.labelSmall.halfLeadingOverhang))
-        .foregroundStyle(vars.colorContentFaint)
+        .padding(.vertical, min(0, style.halfLeadingOverhang))
+        .foregroundStyle(color)
     } else {
       content
     }
@@ -226,31 +225,16 @@ private struct LineStrut: View {
   let style: TypeStyle
 
   var body: some View {
+    let baseline = style.cssBaseline
     Color.clear
       .frame(width: 0, height: style.lineHeight)
-      .alignmentGuide(.firstTextBaseline) { _ in style.cssBaseline }
-      .alignmentGuide(.lastTextBaseline) { _ in style.cssBaseline }
+      .alignmentGuide(.firstTextBaseline) { _ in baseline }
+      .alignmentGuide(.lastTextBaseline) { _ in baseline }
       .accessibilityHidden(true)
   }
 }
 
 private extension TypeStyle {
-  /// Where CSS sets the baseline in this face's line box: the face's ascent
-  /// below half of what the box has over its ascent and descent.
-  var cssBaseline: CGFloat {
-    #if os(macOS)
-      let face = family.first.flatMap { name in
-        name.hasPrefix("-apple-system") ? nil : NSFont(name: name, size: size)
-      } ?? NSFont.systemFont(ofSize: size)
-      let ascent = face.ascender
-      let descent = -face.descender
-    #else
-      let ascent = size * 0.8
-      let descent = size * 0.2
-    #endif
-    return (lineHeight - ascent - descent) / 2 + ascent
-  }
-
   /// Half of what the line box has over the face's own line — negative where
   /// the box is the shorter, as a label's `line-height: 1` is.
   var halfLeadingOverhang: CGFloat {

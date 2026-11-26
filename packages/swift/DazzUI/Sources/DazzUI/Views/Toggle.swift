@@ -281,11 +281,13 @@ public struct ToggleGroup: View {
     let metrics = vars.metrics(size)
     // The run's own edge, read at rest: one ring for the whole group rather
     // than one per member, so the corners land only at the two ends.
-    let edge = vars.resolve(
-      vars.descriptor(variant, .border),
+    let edge = vars.controlColor(
+      variant,
+      .border,
       tint: tint,
       state: enabled ? .normal : .disabled
     )
+    let selected = Set(value)
 
     HStack(spacing: 0) {
       ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
@@ -294,7 +296,7 @@ public struct ToggleGroup: View {
           Rectangle().fill(edge).frame(width: vars.spacingPx)
         }
         Toggle(
-          pressed: value.contains(item.value),
+          pressed: selected.contains(item.value),
           size: size,
           variant: variant,
           tint: tint,

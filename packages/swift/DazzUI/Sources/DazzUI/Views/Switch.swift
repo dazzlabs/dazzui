@@ -73,11 +73,7 @@ public struct Switch: View {
   /// going through the shared state machine.
   private var trackColor: Color {
     guard checked else { return theme.vars.colorSurfaceSunken }
-    return theme.vars.resolve(
-      theme.vars.descriptor(.filled, .surface),
-      tint: tint,
-      state: .normal
-    )
+    return theme.vars.controlColor(.filled, .surface, tint: tint, state: .normal)
   }
 
   /// Faint ink while off — a grey thumb in a grey groove, deliberately
@@ -88,11 +84,7 @@ public struct Switch: View {
   /// be white on every theme — and darker than the track on a dark canvas.
   private var thumbColor: Color {
     guard checked else { return theme.vars.colorContentFaint }
-    return theme.vars.resolve(
-      theme.vars.descriptor(.filled, .content),
-      tint: tint,
-      state: .normal
-    )
+    return theme.vars.controlColor(.filled, .content, tint: tint, state: .normal)
   }
 
   private var width: CGFloat {

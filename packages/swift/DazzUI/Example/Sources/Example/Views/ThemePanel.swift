@@ -11,7 +11,6 @@ struct ThemePanel: View {
   var onFollowOmarchy: ((Bool) -> Void)?
 
   @Environment(\.theme) private var current
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = current.vars
@@ -35,10 +34,14 @@ struct ThemePanel: View {
       .padding(.horizontal, vars.spacing4)
       .frame(height: vars.frameTitlebarSize)
       .overlay(alignment: .bottom) {
-        Rectangle().fill(vars.colorBorder).frame(height: hairline)
+        Rectangle().fill(vars.colorBorder).frame(height: vars.strokeHairline)
       }
       ScrollView {
-        VStack(alignment: .leading, spacing: 0) {
+        let columns = Array(
+          repeating: GridItem(.flexible(), spacing: vars.spacing2),
+          count: 3
+        )
+        LazyVStack(alignment: .leading, spacing: 0) {
           #if os(macOS)
             DazzUI.Toggle(
               pressed: sizing == .system, size: .small,
@@ -66,17 +69,13 @@ struct ThemePanel: View {
               SectionLabel { Text("This machine") }
                 .font(vars.labelSmall.font)
                 .frame(height: vars.spacing5)
-              Grid(horizontalSpacing: vars.spacing2, verticalSpacing: vars.spacing2) {
-                GridRow {
-                  tile(
-                    vars: half(omarchy, dark: theme.dark).themeVariables,
-                    title: omarchy.title ?? "Omarchy",
-                    selected: followingOmarchy,
-                    action: { onFollowOmarchy?(true) }
-                  )
-                  Color.clear.gridCellUnsizedAxes([.vertical])
-                  Color.clear.gridCellUnsizedAxes([.vertical])
-                }
+              LazyVGrid(columns: columns, spacing: vars.spacing2) {
+                tile(
+                  palette: ThemePreviewPalette(vars: half(omarchy, dark: theme.dark).themeVariables),
+                  title: omarchy.title ?? "Omarchy",
+                  selected: followingOmarchy,
+                  action: { onFollowOmarchy?(true) }
+                )
               }
             }
             .padding(.vertical, vars.spacing2)
@@ -87,17 +86,9 @@ struct ThemePanel: View {
               SectionLabel { Text(group.title) }
                 .font(vars.labelSmall.font)
                 .frame(height: vars.spacing5)
-              Grid(horizontalSpacing: vars.spacing2, verticalSpacing: vars.spacing2) {
-                ForEach(rows(group.families), id: \.first) { row in
-                  GridRow {
-                    ForEach(0..<3, id: \.self) { index in
-                      if index < row.count {
-                        familyTile(row[index])
-                      } else {
-                        Color.clear.gridCellUnsizedAxes([.vertical])
-                      }
-                    }
-                  }
+              LazyVGrid(columns: columns, spacing: vars.spacing2) {
+                ForEach(group.families, id: \.self) { family in
+                  familyTile(family)
                 }
               }
             }
@@ -111,12 +102,6 @@ struct ThemePanel: View {
     .frame(maxHeight: .infinity)
   }
 
-  private func rows(_ families: [ThemeFamily]) -> [[ThemeFamily]] {
-    stride(from: 0, to: families.count, by: 3).map {
-      Array(families[$0..<min($0 + 3, families.count)])
-    }
-  }
-
   /// The Omarchy theme in the half asked for: as it ships, or its opposite.
   private func half(_ palette: OmarchyPalette, dark: Bool) -> OmarchyPalette {
     (palette.colorScheme == .dark) == dark ? palette : palette.opposite
@@ -126,7 +111,7 @@ struct ThemePanel: View {
     var choice = theme
     choice.family = family.value
     return tile(
-      vars: choice.name.variables,
+      palette: ThemePreviewPalette.forTheme(choice.name),
       title: family.title,
       selected: !followingOmarchy && family.value == theme.family,
       action: {
@@ -137,7 +122,7 @@ struct ThemePanel: View {
   }
 
   private func tile(
-    vars previewVars: ThemeVariables,
+    palette: ThemePreviewPalette,
     title: String,
     selected: Bool,
     action: @escaping () -> Void
@@ -150,7 +135,7 @@ struct ThemePanel: View {
       action: action,
       title: {
         VStack(spacing: 0) {
-          ThemePreview(vars: previewVars, height: vars.spacing10, framed: false)
+          ThemePreview(palette: palette, height: vars.spacing10, framed: false)
           Text(title)
             .font(vars.labelSmall.font)
             .lineLimit(1)

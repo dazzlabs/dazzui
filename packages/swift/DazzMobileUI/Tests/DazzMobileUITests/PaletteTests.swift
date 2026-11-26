@@ -136,4 +136,17 @@ final class PaletteTests: XCTestCase {
     XCTAssertNotNil(schemeThemed)
     XCTAssertNotNil(modeThemed)
   }
+
+  func testPaletteIsPointerSizedEquatableWithCopyOnWriteIsolation() {
+    XCTAssertEqual(MemoryLayout<Palette>.size, MemoryLayout<AnyObject>.size)
+    let original = Palette.studioLight
+    XCTAssertEqual(original, Palette.studioLight)
+    XCTAssertNotEqual(original, Palette.studioDark)
+
+    var copy = original
+    XCTAssertEqual(copy, original)
+    copy.colorSurface = .red
+    XCTAssertNotEqual(copy, original)
+    XCTAssertEqual(original, Palette.studioLight)
+  }
 }

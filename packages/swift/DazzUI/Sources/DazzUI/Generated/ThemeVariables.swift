@@ -1,10 +1,960 @@
+import Foundation
 import SwiftUI
+#if canImport(os)
+  import os
+#endif
 
 /// The complete token set for one theme.
 ///
 /// DO NOT EDIT - This file is auto-generated
 public struct ThemeVariables: Sendable {
-  internal var systemSizing: SystemSizingMetrics?
+  /// Reference-counted backing storage so passing and reading `ThemeVariables`
+  /// through SwiftUI view bodies copies one 8-byte pointer instead of the
+  /// entire token table, while preserving value semantics via copy-on-write.
+  private final class Storage: @unchecked Sendable {
+    var systemSizing: SystemSizingMetrics?
+    var colorPrimary: ColorSwatch
+    var colorNeutral: ColorSwatch
+    var colorInfo: ColorSwatch
+    var colorSuccess: ColorSwatch
+    var colorWarning: ColorSwatch
+    var colorDanger: ColorSwatch
+    var colorCanvas: Color
+    var colorSurface: Color
+    var colorSurfaceMuted: Color
+    var colorSurfaceSunken: Color
+    var colorSurfaceSubtle: Color
+    var colorSurfaceInset: Color
+    var colorSurfaceRaised: Color
+    var colorSurfaceOverlay: Color
+    var colorSurfaceChrome: Color
+    var colorSurfaceColumn: Color
+    var colorContent: Color
+    var colorContentSecondary: Color
+    var colorContentNav: Color
+    var colorContentMuted: Color
+    var colorContentSubtle: Color
+    var colorContentFaint: Color
+    var colorBorder: Color
+    var colorBorderStrong: Color
+    var colorBorderMuted: Color
+    var colorOnAccent: Color
+    var controlPressedAlpha: CGFloat
+    var controlFieldRadius: CGFloat
+    var controlContainerRadius: CGFloat
+    var controlTinySize: CGFloat
+    var controlSmallSize: CGFloat
+    var controlMediumPaddingInline: CGFloat
+    var controlMediumSize: CGFloat
+    var controlLargeSize: CGFloat
+    var shadow2xs: [TokenShadow]
+    var shadowXs: [TokenShadow]
+    var shadowSm: [TokenShadow]
+    var shadowMd: [TokenShadow]
+    var shadowLg: [TokenShadow]
+    var shadowXl: [TokenShadow]
+    var shadow2xl: [TokenShadow]
+    var focusWidth: CGFloat
+    var focusOffset: CGFloat
+    var focusGlowShade: Int
+    var focusGlowAlpha: CGFloat
+    var focusRingShade: Int
+    var focusRingAlpha: CGFloat
+    var frameWindowRadius: CGFloat
+    var frameWindowWidth: CGFloat
+    var framePopoverRadius: CGFloat
+    var frameTitlebarSize: CGFloat
+    var frameSidebarWidth: CGFloat
+    var frameSidebarIconWidth: CGFloat
+    var frameRailWidth: CGFloat
+    var frameAsideWidth: CGFloat
+    var frameNavGap: CGFloat
+    var iconSmall: CGFloat
+    var iconMedium: CGFloat
+    var iconLarge: CGFloat
+    var motionReducedDuration: Double
+    var motionDuration: Double
+    var motionEasing: BezierCurve
+    var motionLoopEasing: BezierCurve
+    var radiusNone: CGFloat
+    var radiusTiny: CGFloat
+    var radiusSmall: CGFloat
+    var radiusMedium: CGFloat
+    var radiusLarge: CGFloat
+    var radiusBig: CGFloat
+    var radiusFull: CGFloat
+    var spacingPx: CGFloat
+    var spacing0: CGFloat
+    var spacing05: CGFloat
+    var spacing1: CGFloat
+    var spacing15: CGFloat
+    var spacing2: CGFloat
+    var spacing25: CGFloat
+    var spacing3: CGFloat
+    var spacing35: CGFloat
+    var spacing4: CGFloat
+    var spacing5: CGFloat
+    var spacing6: CGFloat
+    var spacing7: CGFloat
+    var spacing8: CGFloat
+    var spacing9: CGFloat
+    var spacing10: CGFloat
+    var spacing11: CGFloat
+    var spacing12: CGFloat
+    var spacing14: CGFloat
+    var spacing16: CGFloat
+    var spacing20: CGFloat
+    var strokeHairline: CGFloat
+    var strokeControl: CGFloat
+    var fontUi: [String]
+    var fontDisplay: [String]
+    var fontCode: [String]
+    var headlineSmall: TypeStyle
+    var headlineMedium: TypeStyle
+    var headlineLarge: TypeStyle
+    var titleSmall: TypeStyle
+    var titleMedium: TypeStyle
+    var titleLarge: TypeStyle
+    var bodySmall: TypeStyle
+    var bodyMedium: TypeStyle
+    var bodyLarge: TypeStyle
+    var labelQuiet: TypeStyle
+    var labelStrong: TypeStyle
+    var labelSmall: TypeStyle
+    var labelMedium: TypeStyle
+    var labelLarge: TypeStyle
+    var captionSmall: TypeStyle
+    var captionMedium: TypeStyle
+    var captionLarge: TypeStyle
+    var washSurface: CGFloat
+    var washEdge: CGFloat
+    var calendarCellGap: CGFloat
+    var checkboxRadius: CGFloat
+    var codeBlockCopyFeedbackDuration: Double
+    var dateRangePickerSideWidth: CGFloat
+    var dateRangePickerTriggerMinWidth: CGFloat
+    var dateRangePickerTimeMinWidth: CGFloat
+    var dateRangePickerKeyTracking: CGFloat
+    var dialogTransitionScale: CGFloat
+    var dialogWidth: CGFloat
+    var dialogScrimAlpha: CGFloat
+    var dialogDangerBorderAlpha: CGFloat
+    var drawerSize: CGFloat
+    var spinnerDuration: Double
+    var spinnerReducedDuration: Double
+    var spinnerTrackAlpha: CGFloat
+    var spinnerOnAccentTrackAlpha: CGFloat
+    var menuTypeaheadResetDuration: Double
+    var menuMinWidth: CGFloat
+    var menuItemPadding: CGFloat
+    var preferencesWidth: CGFloat
+    var previewCardOpenDelay: Double
+    var previewCardCloseDelay: Double
+    var previewCardWidth: CGFloat
+    var progressSweepDuration: Double
+    var progressReducedSweepDuration: Double
+    var progressSweepWidth: CGFloat
+    var progressGradientFrom: Color
+    var progressGradientTo: Color
+    var searchFieldInputWidth: CGFloat
+    var segmentedControlInset: CGFloat
+    var shortcutRecorderWidth: CGFloat
+    var shortcutRecorderRejectDuration: Double
+    var sidebarGroupLabelHeight: CGFloat
+    var skeletonSweepDuration: Double
+    var skeletonLastLineWidth: CGFloat
+    var sliderMediumTrack: CGFloat
+    var sliderMediumThumb: CGFloat
+    var sliderThumbInk: Int
+    var sliderThumbLift: Int
+    var sliderThumbEdgeWidth: CGFloat
+    var sliderThumbHotScale: CGFloat
+    var splitterKeyStep: Int
+    var splitterKeyCoarseStep: Int
+    var stepListDoneAlpha: CGFloat
+    var stepListIdleOpacity: CGFloat
+    var switchMediumWidth: CGFloat
+    var switchMediumHeight: CGFloat
+    var switchMediumThumb: CGFloat
+    var tabsPulseDuration: Double
+    var tabsPulseOpacity: CGFloat
+    var badgeLineHeight: CGFloat
+    var calloutTitleLeading: CGFloat
+    var calloutDescriptionLeading: CGFloat
+    var textFieldMultilineLeading: CGFloat
+    var optionCardDescriptionLeading: CGFloat
+    var formFieldHintLeading: CGFloat
+    var preferencesDescriptionLeading: CGFloat
+    var toastMessageLineHeight: CGFloat
+    var toastNoticeDuration: Double
+    var toastActionDuration: Double
+    var toastTransitionDuration: Double
+    var toastTransitionX1: CGFloat
+    var toastTransitionY1: CGFloat
+    var toastTransitionX2: CGFloat
+    var toastTransitionY2: CGFloat
+    var toastTransitionScale: CGFloat
+    var toastMaxWidth: CGFloat
+    var tooltipOpenDelay: Double
+    var tooltipCloseDelay: Double
+    var treeTypeaheadWindow: Double
+    var controlColorRecessedBorder: ColorDescriptor
+    var controlColorFilledSurfaceNormalShade: Int
+    var controlColorFilledSurfaceHoveredShade: Int
+    var controlColorFilledSurfacePressedShade: Int
+    var controlColorFilledBorder: ColorDescriptor
+    var controlColorTintedContentNormalShade: Int
+    var controlColorTintedContentHoveredShade: Int
+    var controlColorTintedContentPressedShade: Int
+    var controlColorTintedBorder: ColorDescriptor
+    var controlColorOutlinedContentNormalShade: Int
+    var controlColorOutlinedContentHoveredShade: Int
+    var controlColorOutlinedContentPressedShade: Int
+    var controlColorOutlinedBorder: ColorDescriptor
+    var controlColorPlainSurface: ColorDescriptor
+    var controlColorPlainContentNormalShade: Int
+    var controlColorPlainContentHoveredShade: Int
+    var controlColorPlainContentPressedShade: Int
+    var controlColorPlainBorder: ColorDescriptor
+    private struct CacheState: Sendable {
+      var controlColors: [ControlColors]?
+      var controlMetrics: ControlMetricsTable?
+    }
+
+    #if canImport(os)
+      private let cache = OSAllocatedUnfairLock(initialState: CacheState())
+
+      func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+        if let hit = cache.withLock({ $0.controlColors?[index] }) {
+          return hit
+        }
+        let built = build()
+        return cache.withLock { state in
+          if let raced = state.controlColors { return raced[index] }
+          state.controlColors = built
+          return built[index]
+        }
+      }
+
+      func cachedControlMetrics(
+        for size: ControlSize,
+        _ build: () -> ControlMetricsTable
+      ) -> ControlMetrics {
+        if let hit = cache.withLock({ $0.controlMetrics?[size] }) {
+          return hit
+        }
+        let built = build()
+        return cache.withLock { state in
+          if let raced = state.controlMetrics { return raced[size] }
+          state.controlMetrics = built
+          return built[size]
+        }
+      }
+
+      func invalidateCache() {
+        cache.withLock { state in
+          state.controlColors = nil
+          state.controlMetrics = nil
+        }
+      }
+    #else
+      private let cacheLock = NSLock()
+      private var cacheState = CacheState()
+
+      func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+        cacheLock.lock()
+        if let hit = cacheState.controlColors?[index] {
+          cacheLock.unlock()
+          return hit
+        }
+        cacheLock.unlock()
+        let built = build()
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if let raced = cacheState.controlColors { return raced[index] }
+        cacheState.controlColors = built
+        return built[index]
+      }
+
+      func cachedControlMetrics(
+        for size: ControlSize,
+        _ build: () -> ControlMetricsTable
+      ) -> ControlMetrics {
+        cacheLock.lock()
+        if let hit = cacheState.controlMetrics?[size] {
+          cacheLock.unlock()
+          return hit
+        }
+        cacheLock.unlock()
+        let built = build()
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if let raced = cacheState.controlMetrics { return raced[size] }
+        cacheState.controlMetrics = built
+        return built[size]
+      }
+
+      func invalidateCache() {
+        cacheLock.lock()
+        cacheState.controlColors = nil
+        cacheState.controlMetrics = nil
+        cacheLock.unlock()
+      }
+    #endif
+
+    init(
+      colorPrimary: ColorSwatch,
+      colorNeutral: ColorSwatch,
+      colorInfo: ColorSwatch,
+      colorSuccess: ColorSwatch,
+      colorWarning: ColorSwatch,
+      colorDanger: ColorSwatch,
+      colorCanvas: Color,
+      colorSurface: Color,
+      colorSurfaceMuted: Color,
+      colorSurfaceSunken: Color,
+      colorSurfaceSubtle: Color,
+      colorSurfaceInset: Color,
+      colorSurfaceRaised: Color,
+      colorSurfaceOverlay: Color,
+      colorSurfaceChrome: Color,
+      colorSurfaceColumn: Color,
+      colorContent: Color,
+      colorContentSecondary: Color,
+      colorContentNav: Color,
+      colorContentMuted: Color,
+      colorContentSubtle: Color,
+      colorContentFaint: Color,
+      colorBorder: Color,
+      colorBorderStrong: Color,
+      colorBorderMuted: Color,
+      colorOnAccent: Color,
+      controlPressedAlpha: CGFloat,
+      controlFieldRadius: CGFloat,
+      controlContainerRadius: CGFloat,
+      controlTinySize: CGFloat,
+      controlSmallSize: CGFloat,
+      controlMediumPaddingInline: CGFloat,
+      controlMediumSize: CGFloat,
+      controlLargeSize: CGFloat,
+      shadow2xs: [TokenShadow],
+      shadowXs: [TokenShadow],
+      shadowSm: [TokenShadow],
+      shadowMd: [TokenShadow],
+      shadowLg: [TokenShadow],
+      shadowXl: [TokenShadow],
+      shadow2xl: [TokenShadow],
+      focusWidth: CGFloat,
+      focusOffset: CGFloat,
+      focusGlowShade: Int,
+      focusGlowAlpha: CGFloat,
+      focusRingShade: Int,
+      focusRingAlpha: CGFloat,
+      frameWindowRadius: CGFloat,
+      frameWindowWidth: CGFloat,
+      framePopoverRadius: CGFloat,
+      frameTitlebarSize: CGFloat,
+      frameSidebarWidth: CGFloat,
+      frameSidebarIconWidth: CGFloat,
+      frameRailWidth: CGFloat,
+      frameAsideWidth: CGFloat,
+      frameNavGap: CGFloat,
+      iconSmall: CGFloat,
+      iconMedium: CGFloat,
+      iconLarge: CGFloat,
+      motionReducedDuration: Double,
+      motionDuration: Double,
+      motionEasing: BezierCurve,
+      motionLoopEasing: BezierCurve,
+      radiusNone: CGFloat,
+      radiusTiny: CGFloat,
+      radiusSmall: CGFloat,
+      radiusMedium: CGFloat,
+      radiusLarge: CGFloat,
+      radiusBig: CGFloat,
+      radiusFull: CGFloat,
+      spacingPx: CGFloat,
+      spacing0: CGFloat,
+      spacing05: CGFloat,
+      spacing1: CGFloat,
+      spacing15: CGFloat,
+      spacing2: CGFloat,
+      spacing25: CGFloat,
+      spacing3: CGFloat,
+      spacing35: CGFloat,
+      spacing4: CGFloat,
+      spacing5: CGFloat,
+      spacing6: CGFloat,
+      spacing7: CGFloat,
+      spacing8: CGFloat,
+      spacing9: CGFloat,
+      spacing10: CGFloat,
+      spacing11: CGFloat,
+      spacing12: CGFloat,
+      spacing14: CGFloat,
+      spacing16: CGFloat,
+      spacing20: CGFloat,
+      strokeHairline: CGFloat,
+      strokeControl: CGFloat,
+      fontUi: [String],
+      fontDisplay: [String],
+      fontCode: [String],
+      headlineSmall: TypeStyle,
+      headlineMedium: TypeStyle,
+      headlineLarge: TypeStyle,
+      titleSmall: TypeStyle,
+      titleMedium: TypeStyle,
+      titleLarge: TypeStyle,
+      bodySmall: TypeStyle,
+      bodyMedium: TypeStyle,
+      bodyLarge: TypeStyle,
+      labelQuiet: TypeStyle,
+      labelStrong: TypeStyle,
+      labelSmall: TypeStyle,
+      labelMedium: TypeStyle,
+      labelLarge: TypeStyle,
+      captionSmall: TypeStyle,
+      captionMedium: TypeStyle,
+      captionLarge: TypeStyle,
+      washSurface: CGFloat,
+      washEdge: CGFloat,
+      calendarCellGap: CGFloat,
+      checkboxRadius: CGFloat,
+      codeBlockCopyFeedbackDuration: Double,
+      dateRangePickerSideWidth: CGFloat,
+      dateRangePickerTriggerMinWidth: CGFloat,
+      dateRangePickerTimeMinWidth: CGFloat,
+      dateRangePickerKeyTracking: CGFloat,
+      dialogTransitionScale: CGFloat,
+      dialogWidth: CGFloat,
+      dialogScrimAlpha: CGFloat,
+      dialogDangerBorderAlpha: CGFloat,
+      drawerSize: CGFloat,
+      spinnerDuration: Double,
+      spinnerReducedDuration: Double,
+      spinnerTrackAlpha: CGFloat,
+      spinnerOnAccentTrackAlpha: CGFloat,
+      menuTypeaheadResetDuration: Double,
+      menuMinWidth: CGFloat,
+      menuItemPadding: CGFloat,
+      preferencesWidth: CGFloat,
+      previewCardOpenDelay: Double,
+      previewCardCloseDelay: Double,
+      previewCardWidth: CGFloat,
+      progressSweepDuration: Double,
+      progressReducedSweepDuration: Double,
+      progressSweepWidth: CGFloat,
+      progressGradientFrom: Color,
+      progressGradientTo: Color,
+      searchFieldInputWidth: CGFloat,
+      segmentedControlInset: CGFloat,
+      shortcutRecorderWidth: CGFloat,
+      shortcutRecorderRejectDuration: Double,
+      sidebarGroupLabelHeight: CGFloat,
+      skeletonSweepDuration: Double,
+      skeletonLastLineWidth: CGFloat,
+      sliderMediumTrack: CGFloat,
+      sliderMediumThumb: CGFloat,
+      sliderThumbInk: Int,
+      sliderThumbLift: Int,
+      sliderThumbEdgeWidth: CGFloat,
+      sliderThumbHotScale: CGFloat,
+      splitterKeyStep: Int,
+      splitterKeyCoarseStep: Int,
+      stepListDoneAlpha: CGFloat,
+      stepListIdleOpacity: CGFloat,
+      switchMediumWidth: CGFloat,
+      switchMediumHeight: CGFloat,
+      switchMediumThumb: CGFloat,
+      tabsPulseDuration: Double,
+      tabsPulseOpacity: CGFloat,
+      badgeLineHeight: CGFloat,
+      calloutTitleLeading: CGFloat,
+      calloutDescriptionLeading: CGFloat,
+      textFieldMultilineLeading: CGFloat,
+      optionCardDescriptionLeading: CGFloat,
+      formFieldHintLeading: CGFloat,
+      preferencesDescriptionLeading: CGFloat,
+      toastMessageLineHeight: CGFloat,
+      toastNoticeDuration: Double,
+      toastActionDuration: Double,
+      toastTransitionDuration: Double,
+      toastTransitionX1: CGFloat,
+      toastTransitionY1: CGFloat,
+      toastTransitionX2: CGFloat,
+      toastTransitionY2: CGFloat,
+      toastTransitionScale: CGFloat,
+      toastMaxWidth: CGFloat,
+      tooltipOpenDelay: Double,
+      tooltipCloseDelay: Double,
+      treeTypeaheadWindow: Double,
+      controlColorRecessedBorder: ColorDescriptor,
+      controlColorFilledSurfaceNormalShade: Int,
+      controlColorFilledSurfaceHoveredShade: Int,
+      controlColorFilledSurfacePressedShade: Int,
+      controlColorFilledBorder: ColorDescriptor,
+      controlColorTintedContentNormalShade: Int,
+      controlColorTintedContentHoveredShade: Int,
+      controlColorTintedContentPressedShade: Int,
+      controlColorTintedBorder: ColorDescriptor,
+      controlColorOutlinedContentNormalShade: Int,
+      controlColorOutlinedContentHoveredShade: Int,
+      controlColorOutlinedContentPressedShade: Int,
+      controlColorOutlinedBorder: ColorDescriptor,
+      controlColorPlainSurface: ColorDescriptor,
+      controlColorPlainContentNormalShade: Int,
+      controlColorPlainContentHoveredShade: Int,
+      controlColorPlainContentPressedShade: Int,
+      controlColorPlainBorder: ColorDescriptor
+    ) {
+      self.colorPrimary = colorPrimary
+      self.colorNeutral = colorNeutral
+      self.colorInfo = colorInfo
+      self.colorSuccess = colorSuccess
+      self.colorWarning = colorWarning
+      self.colorDanger = colorDanger
+      self.colorCanvas = colorCanvas
+      self.colorSurface = colorSurface
+      self.colorSurfaceMuted = colorSurfaceMuted
+      self.colorSurfaceSunken = colorSurfaceSunken
+      self.colorSurfaceSubtle = colorSurfaceSubtle
+      self.colorSurfaceInset = colorSurfaceInset
+      self.colorSurfaceRaised = colorSurfaceRaised
+      self.colorSurfaceOverlay = colorSurfaceOverlay
+      self.colorSurfaceChrome = colorSurfaceChrome
+      self.colorSurfaceColumn = colorSurfaceColumn
+      self.colorContent = colorContent
+      self.colorContentSecondary = colorContentSecondary
+      self.colorContentNav = colorContentNav
+      self.colorContentMuted = colorContentMuted
+      self.colorContentSubtle = colorContentSubtle
+      self.colorContentFaint = colorContentFaint
+      self.colorBorder = colorBorder
+      self.colorBorderStrong = colorBorderStrong
+      self.colorBorderMuted = colorBorderMuted
+      self.colorOnAccent = colorOnAccent
+      self.controlPressedAlpha = controlPressedAlpha
+      self.controlFieldRadius = controlFieldRadius
+      self.controlContainerRadius = controlContainerRadius
+      self.controlTinySize = controlTinySize
+      self.controlSmallSize = controlSmallSize
+      self.controlMediumPaddingInline = controlMediumPaddingInline
+      self.controlMediumSize = controlMediumSize
+      self.controlLargeSize = controlLargeSize
+      self.shadow2xs = shadow2xs
+      self.shadowXs = shadowXs
+      self.shadowSm = shadowSm
+      self.shadowMd = shadowMd
+      self.shadowLg = shadowLg
+      self.shadowXl = shadowXl
+      self.shadow2xl = shadow2xl
+      self.focusWidth = focusWidth
+      self.focusOffset = focusOffset
+      self.focusGlowShade = focusGlowShade
+      self.focusGlowAlpha = focusGlowAlpha
+      self.focusRingShade = focusRingShade
+      self.focusRingAlpha = focusRingAlpha
+      self.frameWindowRadius = frameWindowRadius
+      self.frameWindowWidth = frameWindowWidth
+      self.framePopoverRadius = framePopoverRadius
+      self.frameTitlebarSize = frameTitlebarSize
+      self.frameSidebarWidth = frameSidebarWidth
+      self.frameSidebarIconWidth = frameSidebarIconWidth
+      self.frameRailWidth = frameRailWidth
+      self.frameAsideWidth = frameAsideWidth
+      self.frameNavGap = frameNavGap
+      self.iconSmall = iconSmall
+      self.iconMedium = iconMedium
+      self.iconLarge = iconLarge
+      self.motionReducedDuration = motionReducedDuration
+      self.motionDuration = motionDuration
+      self.motionEasing = motionEasing
+      self.motionLoopEasing = motionLoopEasing
+      self.radiusNone = radiusNone
+      self.radiusTiny = radiusTiny
+      self.radiusSmall = radiusSmall
+      self.radiusMedium = radiusMedium
+      self.radiusLarge = radiusLarge
+      self.radiusBig = radiusBig
+      self.radiusFull = radiusFull
+      self.spacingPx = spacingPx
+      self.spacing0 = spacing0
+      self.spacing05 = spacing05
+      self.spacing1 = spacing1
+      self.spacing15 = spacing15
+      self.spacing2 = spacing2
+      self.spacing25 = spacing25
+      self.spacing3 = spacing3
+      self.spacing35 = spacing35
+      self.spacing4 = spacing4
+      self.spacing5 = spacing5
+      self.spacing6 = spacing6
+      self.spacing7 = spacing7
+      self.spacing8 = spacing8
+      self.spacing9 = spacing9
+      self.spacing10 = spacing10
+      self.spacing11 = spacing11
+      self.spacing12 = spacing12
+      self.spacing14 = spacing14
+      self.spacing16 = spacing16
+      self.spacing20 = spacing20
+      self.strokeHairline = strokeHairline
+      self.strokeControl = strokeControl
+      self.fontUi = fontUi
+      self.fontDisplay = fontDisplay
+      self.fontCode = fontCode
+      self.headlineSmall = headlineSmall
+      self.headlineMedium = headlineMedium
+      self.headlineLarge = headlineLarge
+      self.titleSmall = titleSmall
+      self.titleMedium = titleMedium
+      self.titleLarge = titleLarge
+      self.bodySmall = bodySmall
+      self.bodyMedium = bodyMedium
+      self.bodyLarge = bodyLarge
+      self.labelQuiet = labelQuiet
+      self.labelStrong = labelStrong
+      self.labelSmall = labelSmall
+      self.labelMedium = labelMedium
+      self.labelLarge = labelLarge
+      self.captionSmall = captionSmall
+      self.captionMedium = captionMedium
+      self.captionLarge = captionLarge
+      self.washSurface = washSurface
+      self.washEdge = washEdge
+      self.calendarCellGap = calendarCellGap
+      self.checkboxRadius = checkboxRadius
+      self.codeBlockCopyFeedbackDuration = codeBlockCopyFeedbackDuration
+      self.dateRangePickerSideWidth = dateRangePickerSideWidth
+      self.dateRangePickerTriggerMinWidth = dateRangePickerTriggerMinWidth
+      self.dateRangePickerTimeMinWidth = dateRangePickerTimeMinWidth
+      self.dateRangePickerKeyTracking = dateRangePickerKeyTracking
+      self.dialogTransitionScale = dialogTransitionScale
+      self.dialogWidth = dialogWidth
+      self.dialogScrimAlpha = dialogScrimAlpha
+      self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
+      self.drawerSize = drawerSize
+      self.spinnerDuration = spinnerDuration
+      self.spinnerReducedDuration = spinnerReducedDuration
+      self.spinnerTrackAlpha = spinnerTrackAlpha
+      self.spinnerOnAccentTrackAlpha = spinnerOnAccentTrackAlpha
+      self.menuTypeaheadResetDuration = menuTypeaheadResetDuration
+      self.menuMinWidth = menuMinWidth
+      self.menuItemPadding = menuItemPadding
+      self.preferencesWidth = preferencesWidth
+      self.previewCardOpenDelay = previewCardOpenDelay
+      self.previewCardCloseDelay = previewCardCloseDelay
+      self.previewCardWidth = previewCardWidth
+      self.progressSweepDuration = progressSweepDuration
+      self.progressReducedSweepDuration = progressReducedSweepDuration
+      self.progressSweepWidth = progressSweepWidth
+      self.progressGradientFrom = progressGradientFrom
+      self.progressGradientTo = progressGradientTo
+      self.searchFieldInputWidth = searchFieldInputWidth
+      self.segmentedControlInset = segmentedControlInset
+      self.shortcutRecorderWidth = shortcutRecorderWidth
+      self.shortcutRecorderRejectDuration = shortcutRecorderRejectDuration
+      self.sidebarGroupLabelHeight = sidebarGroupLabelHeight
+      self.skeletonSweepDuration = skeletonSweepDuration
+      self.skeletonLastLineWidth = skeletonLastLineWidth
+      self.sliderMediumTrack = sliderMediumTrack
+      self.sliderMediumThumb = sliderMediumThumb
+      self.sliderThumbInk = sliderThumbInk
+      self.sliderThumbLift = sliderThumbLift
+      self.sliderThumbEdgeWidth = sliderThumbEdgeWidth
+      self.sliderThumbHotScale = sliderThumbHotScale
+      self.splitterKeyStep = splitterKeyStep
+      self.splitterKeyCoarseStep = splitterKeyCoarseStep
+      self.stepListDoneAlpha = stepListDoneAlpha
+      self.stepListIdleOpacity = stepListIdleOpacity
+      self.switchMediumWidth = switchMediumWidth
+      self.switchMediumHeight = switchMediumHeight
+      self.switchMediumThumb = switchMediumThumb
+      self.tabsPulseDuration = tabsPulseDuration
+      self.tabsPulseOpacity = tabsPulseOpacity
+      self.badgeLineHeight = badgeLineHeight
+      self.calloutTitleLeading = calloutTitleLeading
+      self.calloutDescriptionLeading = calloutDescriptionLeading
+      self.textFieldMultilineLeading = textFieldMultilineLeading
+      self.optionCardDescriptionLeading = optionCardDescriptionLeading
+      self.formFieldHintLeading = formFieldHintLeading
+      self.preferencesDescriptionLeading = preferencesDescriptionLeading
+      self.toastMessageLineHeight = toastMessageLineHeight
+      self.toastNoticeDuration = toastNoticeDuration
+      self.toastActionDuration = toastActionDuration
+      self.toastTransitionDuration = toastTransitionDuration
+      self.toastTransitionX1 = toastTransitionX1
+      self.toastTransitionY1 = toastTransitionY1
+      self.toastTransitionX2 = toastTransitionX2
+      self.toastTransitionY2 = toastTransitionY2
+      self.toastTransitionScale = toastTransitionScale
+      self.toastMaxWidth = toastMaxWidth
+      self.tooltipOpenDelay = tooltipOpenDelay
+      self.tooltipCloseDelay = tooltipCloseDelay
+      self.treeTypeaheadWindow = treeTypeaheadWindow
+      self.controlColorRecessedBorder = controlColorRecessedBorder
+      self.controlColorFilledSurfaceNormalShade = controlColorFilledSurfaceNormalShade
+      self.controlColorFilledSurfaceHoveredShade = controlColorFilledSurfaceHoveredShade
+      self.controlColorFilledSurfacePressedShade = controlColorFilledSurfacePressedShade
+      self.controlColorFilledBorder = controlColorFilledBorder
+      self.controlColorTintedContentNormalShade = controlColorTintedContentNormalShade
+      self.controlColorTintedContentHoveredShade = controlColorTintedContentHoveredShade
+      self.controlColorTintedContentPressedShade = controlColorTintedContentPressedShade
+      self.controlColorTintedBorder = controlColorTintedBorder
+      self.controlColorOutlinedContentNormalShade = controlColorOutlinedContentNormalShade
+      self.controlColorOutlinedContentHoveredShade = controlColorOutlinedContentHoveredShade
+      self.controlColorOutlinedContentPressedShade = controlColorOutlinedContentPressedShade
+      self.controlColorOutlinedBorder = controlColorOutlinedBorder
+      self.controlColorPlainSurface = controlColorPlainSurface
+      self.controlColorPlainContentNormalShade = controlColorPlainContentNormalShade
+      self.controlColorPlainContentHoveredShade = controlColorPlainContentHoveredShade
+      self.controlColorPlainContentPressedShade = controlColorPlainContentPressedShade
+      self.controlColorPlainBorder = controlColorPlainBorder
+    }
+
+    func copy() -> Storage {
+      let duplicate = Storage(
+        colorPrimary: colorPrimary,
+        colorNeutral: colorNeutral,
+        colorInfo: colorInfo,
+        colorSuccess: colorSuccess,
+        colorWarning: colorWarning,
+        colorDanger: colorDanger,
+        colorCanvas: colorCanvas,
+        colorSurface: colorSurface,
+        colorSurfaceMuted: colorSurfaceMuted,
+        colorSurfaceSunken: colorSurfaceSunken,
+        colorSurfaceSubtle: colorSurfaceSubtle,
+        colorSurfaceInset: colorSurfaceInset,
+        colorSurfaceRaised: colorSurfaceRaised,
+        colorSurfaceOverlay: colorSurfaceOverlay,
+        colorSurfaceChrome: colorSurfaceChrome,
+        colorSurfaceColumn: colorSurfaceColumn,
+        colorContent: colorContent,
+        colorContentSecondary: colorContentSecondary,
+        colorContentNav: colorContentNav,
+        colorContentMuted: colorContentMuted,
+        colorContentSubtle: colorContentSubtle,
+        colorContentFaint: colorContentFaint,
+        colorBorder: colorBorder,
+        colorBorderStrong: colorBorderStrong,
+        colorBorderMuted: colorBorderMuted,
+        colorOnAccent: colorOnAccent,
+        controlPressedAlpha: controlPressedAlpha,
+        controlFieldRadius: controlFieldRadius,
+        controlContainerRadius: controlContainerRadius,
+        controlTinySize: controlTinySize,
+        controlSmallSize: controlSmallSize,
+        controlMediumPaddingInline: controlMediumPaddingInline,
+        controlMediumSize: controlMediumSize,
+        controlLargeSize: controlLargeSize,
+        shadow2xs: shadow2xs,
+        shadowXs: shadowXs,
+        shadowSm: shadowSm,
+        shadowMd: shadowMd,
+        shadowLg: shadowLg,
+        shadowXl: shadowXl,
+        shadow2xl: shadow2xl,
+        focusWidth: focusWidth,
+        focusOffset: focusOffset,
+        focusGlowShade: focusGlowShade,
+        focusGlowAlpha: focusGlowAlpha,
+        focusRingShade: focusRingShade,
+        focusRingAlpha: focusRingAlpha,
+        frameWindowRadius: frameWindowRadius,
+        frameWindowWidth: frameWindowWidth,
+        framePopoverRadius: framePopoverRadius,
+        frameTitlebarSize: frameTitlebarSize,
+        frameSidebarWidth: frameSidebarWidth,
+        frameSidebarIconWidth: frameSidebarIconWidth,
+        frameRailWidth: frameRailWidth,
+        frameAsideWidth: frameAsideWidth,
+        frameNavGap: frameNavGap,
+        iconSmall: iconSmall,
+        iconMedium: iconMedium,
+        iconLarge: iconLarge,
+        motionReducedDuration: motionReducedDuration,
+        motionDuration: motionDuration,
+        motionEasing: motionEasing,
+        motionLoopEasing: motionLoopEasing,
+        radiusNone: radiusNone,
+        radiusTiny: radiusTiny,
+        radiusSmall: radiusSmall,
+        radiusMedium: radiusMedium,
+        radiusLarge: radiusLarge,
+        radiusBig: radiusBig,
+        radiusFull: radiusFull,
+        spacingPx: spacingPx,
+        spacing0: spacing0,
+        spacing05: spacing05,
+        spacing1: spacing1,
+        spacing15: spacing15,
+        spacing2: spacing2,
+        spacing25: spacing25,
+        spacing3: spacing3,
+        spacing35: spacing35,
+        spacing4: spacing4,
+        spacing5: spacing5,
+        spacing6: spacing6,
+        spacing7: spacing7,
+        spacing8: spacing8,
+        spacing9: spacing9,
+        spacing10: spacing10,
+        spacing11: spacing11,
+        spacing12: spacing12,
+        spacing14: spacing14,
+        spacing16: spacing16,
+        spacing20: spacing20,
+        strokeHairline: strokeHairline,
+        strokeControl: strokeControl,
+        fontUi: fontUi,
+        fontDisplay: fontDisplay,
+        fontCode: fontCode,
+        headlineSmall: headlineSmall,
+        headlineMedium: headlineMedium,
+        headlineLarge: headlineLarge,
+        titleSmall: titleSmall,
+        titleMedium: titleMedium,
+        titleLarge: titleLarge,
+        bodySmall: bodySmall,
+        bodyMedium: bodyMedium,
+        bodyLarge: bodyLarge,
+        labelQuiet: labelQuiet,
+        labelStrong: labelStrong,
+        labelSmall: labelSmall,
+        labelMedium: labelMedium,
+        labelLarge: labelLarge,
+        captionSmall: captionSmall,
+        captionMedium: captionMedium,
+        captionLarge: captionLarge,
+        washSurface: washSurface,
+        washEdge: washEdge,
+        calendarCellGap: calendarCellGap,
+        checkboxRadius: checkboxRadius,
+        codeBlockCopyFeedbackDuration: codeBlockCopyFeedbackDuration,
+        dateRangePickerSideWidth: dateRangePickerSideWidth,
+        dateRangePickerTriggerMinWidth: dateRangePickerTriggerMinWidth,
+        dateRangePickerTimeMinWidth: dateRangePickerTimeMinWidth,
+        dateRangePickerKeyTracking: dateRangePickerKeyTracking,
+        dialogTransitionScale: dialogTransitionScale,
+        dialogWidth: dialogWidth,
+        dialogScrimAlpha: dialogScrimAlpha,
+        dialogDangerBorderAlpha: dialogDangerBorderAlpha,
+        drawerSize: drawerSize,
+        spinnerDuration: spinnerDuration,
+        spinnerReducedDuration: spinnerReducedDuration,
+        spinnerTrackAlpha: spinnerTrackAlpha,
+        spinnerOnAccentTrackAlpha: spinnerOnAccentTrackAlpha,
+        menuTypeaheadResetDuration: menuTypeaheadResetDuration,
+        menuMinWidth: menuMinWidth,
+        menuItemPadding: menuItemPadding,
+        preferencesWidth: preferencesWidth,
+        previewCardOpenDelay: previewCardOpenDelay,
+        previewCardCloseDelay: previewCardCloseDelay,
+        previewCardWidth: previewCardWidth,
+        progressSweepDuration: progressSweepDuration,
+        progressReducedSweepDuration: progressReducedSweepDuration,
+        progressSweepWidth: progressSweepWidth,
+        progressGradientFrom: progressGradientFrom,
+        progressGradientTo: progressGradientTo,
+        searchFieldInputWidth: searchFieldInputWidth,
+        segmentedControlInset: segmentedControlInset,
+        shortcutRecorderWidth: shortcutRecorderWidth,
+        shortcutRecorderRejectDuration: shortcutRecorderRejectDuration,
+        sidebarGroupLabelHeight: sidebarGroupLabelHeight,
+        skeletonSweepDuration: skeletonSweepDuration,
+        skeletonLastLineWidth: skeletonLastLineWidth,
+        sliderMediumTrack: sliderMediumTrack,
+        sliderMediumThumb: sliderMediumThumb,
+        sliderThumbInk: sliderThumbInk,
+        sliderThumbLift: sliderThumbLift,
+        sliderThumbEdgeWidth: sliderThumbEdgeWidth,
+        sliderThumbHotScale: sliderThumbHotScale,
+        splitterKeyStep: splitterKeyStep,
+        splitterKeyCoarseStep: splitterKeyCoarseStep,
+        stepListDoneAlpha: stepListDoneAlpha,
+        stepListIdleOpacity: stepListIdleOpacity,
+        switchMediumWidth: switchMediumWidth,
+        switchMediumHeight: switchMediumHeight,
+        switchMediumThumb: switchMediumThumb,
+        tabsPulseDuration: tabsPulseDuration,
+        tabsPulseOpacity: tabsPulseOpacity,
+        badgeLineHeight: badgeLineHeight,
+        calloutTitleLeading: calloutTitleLeading,
+        calloutDescriptionLeading: calloutDescriptionLeading,
+        textFieldMultilineLeading: textFieldMultilineLeading,
+        optionCardDescriptionLeading: optionCardDescriptionLeading,
+        formFieldHintLeading: formFieldHintLeading,
+        preferencesDescriptionLeading: preferencesDescriptionLeading,
+        toastMessageLineHeight: toastMessageLineHeight,
+        toastNoticeDuration: toastNoticeDuration,
+        toastActionDuration: toastActionDuration,
+        toastTransitionDuration: toastTransitionDuration,
+        toastTransitionX1: toastTransitionX1,
+        toastTransitionY1: toastTransitionY1,
+        toastTransitionX2: toastTransitionX2,
+        toastTransitionY2: toastTransitionY2,
+        toastTransitionScale: toastTransitionScale,
+        toastMaxWidth: toastMaxWidth,
+        tooltipOpenDelay: tooltipOpenDelay,
+        tooltipCloseDelay: tooltipCloseDelay,
+        treeTypeaheadWindow: treeTypeaheadWindow,
+        controlColorRecessedBorder: controlColorRecessedBorder,
+        controlColorFilledSurfaceNormalShade: controlColorFilledSurfaceNormalShade,
+        controlColorFilledSurfaceHoveredShade: controlColorFilledSurfaceHoveredShade,
+        controlColorFilledSurfacePressedShade: controlColorFilledSurfacePressedShade,
+        controlColorFilledBorder: controlColorFilledBorder,
+        controlColorTintedContentNormalShade: controlColorTintedContentNormalShade,
+        controlColorTintedContentHoveredShade: controlColorTintedContentHoveredShade,
+        controlColorTintedContentPressedShade: controlColorTintedContentPressedShade,
+        controlColorTintedBorder: controlColorTintedBorder,
+        controlColorOutlinedContentNormalShade: controlColorOutlinedContentNormalShade,
+        controlColorOutlinedContentHoveredShade: controlColorOutlinedContentHoveredShade,
+        controlColorOutlinedContentPressedShade: controlColorOutlinedContentPressedShade,
+        controlColorOutlinedBorder: controlColorOutlinedBorder,
+        controlColorPlainSurface: controlColorPlainSurface,
+        controlColorPlainContentNormalShade: controlColorPlainContentNormalShade,
+        controlColorPlainContentHoveredShade: controlColorPlainContentHoveredShade,
+        controlColorPlainContentPressedShade: controlColorPlainContentPressedShade,
+        controlColorPlainBorder: controlColorPlainBorder
+      )
+      duplicate.systemSizing = systemSizing
+      return duplicate
+    }
+  }
+
+  private var storage: Storage
+
+  private mutating func ensureUnique() {
+    if !isKnownUniquelyReferenced(&storage) {
+      storage = storage.copy()
+    } else {
+      storage.invalidateCache()
+    }
+  }
+
+  internal var systemSizing: SystemSizingMetrics? {
+    get { storage.systemSizing }
+    set {
+      ensureUnique()
+      storage.systemSizing = newValue
+    }
+  }
+
+  internal func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+    storage.cachedControlColor(at: index, build)
+  }
+
+  internal func cachedControlMetrics(
+    for size: ControlSize,
+    _ build: () -> ControlMetricsTable
+  ) -> ControlMetrics {
+    storage.cachedControlMetrics(for: size, build)
+  }
+
+  internal var storageIdentity: ObjectIdentifier {
+    ObjectIdentifier(storage)
+  }
   public init(
     colorPrimary: ColorSwatch = Colors.ink,
     colorNeutral: ColorSwatch = Colors.neutral,
@@ -245,433 +1195,1653 @@ public struct ThemeVariables: Sendable {
     disabledColor: Colors.transparent
   )
   ) {
-    self.colorPrimary = colorPrimary
-    self.colorNeutral = colorNeutral
-    self.colorInfo = colorInfo
-    self.colorSuccess = colorSuccess
-    self.colorWarning = colorWarning
-    self.colorDanger = colorDanger
-    self.colorCanvas = colorCanvas
-    self.colorSurface = colorSurface
-    self.colorSurfaceMuted = colorSurfaceMuted
-    self.colorSurfaceSunken = colorSurfaceSunken
-    self.colorSurfaceSubtle = colorSurfaceSubtle
-    self.colorSurfaceInset = colorSurfaceInset
-    self.colorSurfaceRaised = colorSurfaceRaised
-    self.colorSurfaceOverlay = colorSurfaceOverlay
-    self.colorSurfaceChrome = colorSurfaceChrome
-    self.colorSurfaceColumn = colorSurfaceColumn
-    self.colorContent = colorContent
-    self.colorContentSecondary = colorContentSecondary
-    self.colorContentNav = colorContentNav
-    self.colorContentMuted = colorContentMuted
-    self.colorContentSubtle = colorContentSubtle
-    self.colorContentFaint = colorContentFaint
-    self.colorBorder = colorBorder
-    self.colorBorderStrong = colorBorderStrong
-    self.colorBorderMuted = colorBorderMuted
-    self.colorOnAccent = colorOnAccent
-    self.controlPressedAlpha = controlPressedAlpha
-    self.controlFieldRadius = controlFieldRadius
-    self.controlContainerRadius = controlContainerRadius
-    self.controlTinySize = controlTinySize
-    self.controlSmallSize = controlSmallSize
-    self.controlMediumPaddingInline = controlMediumPaddingInline
-    self.controlMediumSize = controlMediumSize
-    self.controlLargeSize = controlLargeSize
-    self.shadow2xs = shadow2xs
-    self.shadowXs = shadowXs
-    self.shadowSm = shadowSm
-    self.shadowMd = shadowMd
-    self.shadowLg = shadowLg
-    self.shadowXl = shadowXl
-    self.shadow2xl = shadow2xl
-    self.focusWidth = focusWidth
-    self.focusOffset = focusOffset
-    self.focusGlowShade = focusGlowShade
-    self.focusGlowAlpha = focusGlowAlpha
-    self.focusRingShade = focusRingShade
-    self.focusRingAlpha = focusRingAlpha
-    self.frameWindowRadius = frameWindowRadius
-    self.frameWindowWidth = frameWindowWidth
-    self.framePopoverRadius = framePopoverRadius
-    self.frameTitlebarSize = frameTitlebarSize
-    self.frameSidebarWidth = frameSidebarWidth
-    self.frameSidebarIconWidth = frameSidebarIconWidth
-    self.frameRailWidth = frameRailWidth
-    self.frameAsideWidth = frameAsideWidth
-    self.frameNavGap = frameNavGap
-    self.iconSmall = iconSmall
-    self.iconMedium = iconMedium
-    self.iconLarge = iconLarge
-    self.motionReducedDuration = motionReducedDuration
-    self.motionDuration = motionDuration
-    self.motionEasing = motionEasing
-    self.motionLoopEasing = motionLoopEasing
-    self.radiusNone = radiusNone
-    self.radiusTiny = radiusTiny
-    self.radiusSmall = radiusSmall
-    self.radiusMedium = radiusMedium
-    self.radiusLarge = radiusLarge
-    self.radiusBig = radiusBig
-    self.radiusFull = radiusFull
-    self.spacingPx = spacingPx
-    self.spacing0 = spacing0
-    self.spacing05 = spacing05
-    self.spacing1 = spacing1
-    self.spacing15 = spacing15
-    self.spacing2 = spacing2
-    self.spacing25 = spacing25
-    self.spacing3 = spacing3
-    self.spacing35 = spacing35
-    self.spacing4 = spacing4
-    self.spacing5 = spacing5
-    self.spacing6 = spacing6
-    self.spacing7 = spacing7
-    self.spacing8 = spacing8
-    self.spacing9 = spacing9
-    self.spacing10 = spacing10
-    self.spacing11 = spacing11
-    self.spacing12 = spacing12
-    self.spacing14 = spacing14
-    self.spacing16 = spacing16
-    self.spacing20 = spacing20
-    self.strokeHairline = strokeHairline
-    self.strokeControl = strokeControl
-    self.fontUi = fontUi
-    self.fontDisplay = fontDisplay
-    self.fontCode = fontCode
-    self.headlineSmall = headlineSmall
-    self.headlineMedium = headlineMedium
-    self.headlineLarge = headlineLarge
-    self.titleSmall = titleSmall
-    self.titleMedium = titleMedium
-    self.titleLarge = titleLarge
-    self.bodySmall = bodySmall
-    self.bodyMedium = bodyMedium
-    self.bodyLarge = bodyLarge
-    self.labelQuiet = labelQuiet
-    self.labelStrong = labelStrong
-    self.labelSmall = labelSmall
-    self.labelMedium = labelMedium
-    self.labelLarge = labelLarge
-    self.captionSmall = captionSmall
-    self.captionMedium = captionMedium
-    self.captionLarge = captionLarge
-    self.washSurface = washSurface
-    self.washEdge = washEdge
-    self.calendarCellGap = calendarCellGap
-    self.checkboxRadius = checkboxRadius
-    self.codeBlockCopyFeedbackDuration = codeBlockCopyFeedbackDuration
-    self.dateRangePickerSideWidth = dateRangePickerSideWidth
-    self.dateRangePickerTriggerMinWidth = dateRangePickerTriggerMinWidth
-    self.dateRangePickerTimeMinWidth = dateRangePickerTimeMinWidth
-    self.dateRangePickerKeyTracking = dateRangePickerKeyTracking
-    self.dialogTransitionScale = dialogTransitionScale
-    self.dialogWidth = dialogWidth
-    self.dialogScrimAlpha = dialogScrimAlpha
-    self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
-    self.drawerSize = drawerSize
-    self.spinnerDuration = spinnerDuration
-    self.spinnerReducedDuration = spinnerReducedDuration
-    self.spinnerTrackAlpha = spinnerTrackAlpha
-    self.spinnerOnAccentTrackAlpha = spinnerOnAccentTrackAlpha
-    self.menuTypeaheadResetDuration = menuTypeaheadResetDuration
-    self.menuMinWidth = menuMinWidth
-    self.menuItemPadding = menuItemPadding
-    self.preferencesWidth = preferencesWidth
-    self.previewCardOpenDelay = previewCardOpenDelay
-    self.previewCardCloseDelay = previewCardCloseDelay
-    self.previewCardWidth = previewCardWidth
-    self.progressSweepDuration = progressSweepDuration
-    self.progressReducedSweepDuration = progressReducedSweepDuration
-    self.progressSweepWidth = progressSweepWidth
-    self.progressGradientFrom = progressGradientFrom
-    self.progressGradientTo = progressGradientTo
-    self.searchFieldInputWidth = searchFieldInputWidth
-    self.segmentedControlInset = segmentedControlInset
-    self.shortcutRecorderWidth = shortcutRecorderWidth
-    self.shortcutRecorderRejectDuration = shortcutRecorderRejectDuration
-    self.sidebarGroupLabelHeight = sidebarGroupLabelHeight
-    self.skeletonSweepDuration = skeletonSweepDuration
-    self.skeletonLastLineWidth = skeletonLastLineWidth
-    self.sliderMediumTrack = sliderMediumTrack
-    self.sliderMediumThumb = sliderMediumThumb
-    self.sliderThumbInk = sliderThumbInk
-    self.sliderThumbLift = sliderThumbLift
-    self.sliderThumbEdgeWidth = sliderThumbEdgeWidth
-    self.sliderThumbHotScale = sliderThumbHotScale
-    self.splitterKeyStep = splitterKeyStep
-    self.splitterKeyCoarseStep = splitterKeyCoarseStep
-    self.stepListDoneAlpha = stepListDoneAlpha
-    self.stepListIdleOpacity = stepListIdleOpacity
-    self.switchMediumWidth = switchMediumWidth
-    self.switchMediumHeight = switchMediumHeight
-    self.switchMediumThumb = switchMediumThumb
-    self.tabsPulseDuration = tabsPulseDuration
-    self.tabsPulseOpacity = tabsPulseOpacity
-    self.badgeLineHeight = badgeLineHeight
-    self.calloutTitleLeading = calloutTitleLeading
-    self.calloutDescriptionLeading = calloutDescriptionLeading
-    self.textFieldMultilineLeading = textFieldMultilineLeading
-    self.optionCardDescriptionLeading = optionCardDescriptionLeading
-    self.formFieldHintLeading = formFieldHintLeading
-    self.preferencesDescriptionLeading = preferencesDescriptionLeading
-    self.toastMessageLineHeight = toastMessageLineHeight
-    self.toastNoticeDuration = toastNoticeDuration
-    self.toastActionDuration = toastActionDuration
-    self.toastTransitionDuration = toastTransitionDuration
-    self.toastTransitionX1 = toastTransitionX1
-    self.toastTransitionY1 = toastTransitionY1
-    self.toastTransitionX2 = toastTransitionX2
-    self.toastTransitionY2 = toastTransitionY2
-    self.toastTransitionScale = toastTransitionScale
-    self.toastMaxWidth = toastMaxWidth
-    self.tooltipOpenDelay = tooltipOpenDelay
-    self.tooltipCloseDelay = tooltipCloseDelay
-    self.treeTypeaheadWindow = treeTypeaheadWindow
-    self.controlColorRecessedBorder = controlColorRecessedBorder
-    self.controlColorFilledSurfaceNormalShade = controlColorFilledSurfaceNormalShade
-    self.controlColorFilledSurfaceHoveredShade = controlColorFilledSurfaceHoveredShade
-    self.controlColorFilledSurfacePressedShade = controlColorFilledSurfacePressedShade
-    self.controlColorFilledBorder = controlColorFilledBorder
-    self.controlColorTintedContentNormalShade = controlColorTintedContentNormalShade
-    self.controlColorTintedContentHoveredShade = controlColorTintedContentHoveredShade
-    self.controlColorTintedContentPressedShade = controlColorTintedContentPressedShade
-    self.controlColorTintedBorder = controlColorTintedBorder
-    self.controlColorOutlinedContentNormalShade = controlColorOutlinedContentNormalShade
-    self.controlColorOutlinedContentHoveredShade = controlColorOutlinedContentHoveredShade
-    self.controlColorOutlinedContentPressedShade = controlColorOutlinedContentPressedShade
-    self.controlColorOutlinedBorder = controlColorOutlinedBorder
-    self.controlColorPlainSurface = controlColorPlainSurface
-    self.controlColorPlainContentNormalShade = controlColorPlainContentNormalShade
-    self.controlColorPlainContentHoveredShade = controlColorPlainContentHoveredShade
-    self.controlColorPlainContentPressedShade = controlColorPlainContentPressedShade
-    self.controlColorPlainBorder = controlColorPlainBorder
+    self.storage = Storage(
+      colorPrimary: colorPrimary,
+      colorNeutral: colorNeutral,
+      colorInfo: colorInfo,
+      colorSuccess: colorSuccess,
+      colorWarning: colorWarning,
+      colorDanger: colorDanger,
+      colorCanvas: colorCanvas,
+      colorSurface: colorSurface,
+      colorSurfaceMuted: colorSurfaceMuted,
+      colorSurfaceSunken: colorSurfaceSunken,
+      colorSurfaceSubtle: colorSurfaceSubtle,
+      colorSurfaceInset: colorSurfaceInset,
+      colorSurfaceRaised: colorSurfaceRaised,
+      colorSurfaceOverlay: colorSurfaceOverlay,
+      colorSurfaceChrome: colorSurfaceChrome,
+      colorSurfaceColumn: colorSurfaceColumn,
+      colorContent: colorContent,
+      colorContentSecondary: colorContentSecondary,
+      colorContentNav: colorContentNav,
+      colorContentMuted: colorContentMuted,
+      colorContentSubtle: colorContentSubtle,
+      colorContentFaint: colorContentFaint,
+      colorBorder: colorBorder,
+      colorBorderStrong: colorBorderStrong,
+      colorBorderMuted: colorBorderMuted,
+      colorOnAccent: colorOnAccent,
+      controlPressedAlpha: controlPressedAlpha,
+      controlFieldRadius: controlFieldRadius,
+      controlContainerRadius: controlContainerRadius,
+      controlTinySize: controlTinySize,
+      controlSmallSize: controlSmallSize,
+      controlMediumPaddingInline: controlMediumPaddingInline,
+      controlMediumSize: controlMediumSize,
+      controlLargeSize: controlLargeSize,
+      shadow2xs: shadow2xs,
+      shadowXs: shadowXs,
+      shadowSm: shadowSm,
+      shadowMd: shadowMd,
+      shadowLg: shadowLg,
+      shadowXl: shadowXl,
+      shadow2xl: shadow2xl,
+      focusWidth: focusWidth,
+      focusOffset: focusOffset,
+      focusGlowShade: focusGlowShade,
+      focusGlowAlpha: focusGlowAlpha,
+      focusRingShade: focusRingShade,
+      focusRingAlpha: focusRingAlpha,
+      frameWindowRadius: frameWindowRadius,
+      frameWindowWidth: frameWindowWidth,
+      framePopoverRadius: framePopoverRadius,
+      frameTitlebarSize: frameTitlebarSize,
+      frameSidebarWidth: frameSidebarWidth,
+      frameSidebarIconWidth: frameSidebarIconWidth,
+      frameRailWidth: frameRailWidth,
+      frameAsideWidth: frameAsideWidth,
+      frameNavGap: frameNavGap,
+      iconSmall: iconSmall,
+      iconMedium: iconMedium,
+      iconLarge: iconLarge,
+      motionReducedDuration: motionReducedDuration,
+      motionDuration: motionDuration,
+      motionEasing: motionEasing,
+      motionLoopEasing: motionLoopEasing,
+      radiusNone: radiusNone,
+      radiusTiny: radiusTiny,
+      radiusSmall: radiusSmall,
+      radiusMedium: radiusMedium,
+      radiusLarge: radiusLarge,
+      radiusBig: radiusBig,
+      radiusFull: radiusFull,
+      spacingPx: spacingPx,
+      spacing0: spacing0,
+      spacing05: spacing05,
+      spacing1: spacing1,
+      spacing15: spacing15,
+      spacing2: spacing2,
+      spacing25: spacing25,
+      spacing3: spacing3,
+      spacing35: spacing35,
+      spacing4: spacing4,
+      spacing5: spacing5,
+      spacing6: spacing6,
+      spacing7: spacing7,
+      spacing8: spacing8,
+      spacing9: spacing9,
+      spacing10: spacing10,
+      spacing11: spacing11,
+      spacing12: spacing12,
+      spacing14: spacing14,
+      spacing16: spacing16,
+      spacing20: spacing20,
+      strokeHairline: strokeHairline,
+      strokeControl: strokeControl,
+      fontUi: fontUi,
+      fontDisplay: fontDisplay,
+      fontCode: fontCode,
+      headlineSmall: headlineSmall,
+      headlineMedium: headlineMedium,
+      headlineLarge: headlineLarge,
+      titleSmall: titleSmall,
+      titleMedium: titleMedium,
+      titleLarge: titleLarge,
+      bodySmall: bodySmall,
+      bodyMedium: bodyMedium,
+      bodyLarge: bodyLarge,
+      labelQuiet: labelQuiet,
+      labelStrong: labelStrong,
+      labelSmall: labelSmall,
+      labelMedium: labelMedium,
+      labelLarge: labelLarge,
+      captionSmall: captionSmall,
+      captionMedium: captionMedium,
+      captionLarge: captionLarge,
+      washSurface: washSurface,
+      washEdge: washEdge,
+      calendarCellGap: calendarCellGap,
+      checkboxRadius: checkboxRadius,
+      codeBlockCopyFeedbackDuration: codeBlockCopyFeedbackDuration,
+      dateRangePickerSideWidth: dateRangePickerSideWidth,
+      dateRangePickerTriggerMinWidth: dateRangePickerTriggerMinWidth,
+      dateRangePickerTimeMinWidth: dateRangePickerTimeMinWidth,
+      dateRangePickerKeyTracking: dateRangePickerKeyTracking,
+      dialogTransitionScale: dialogTransitionScale,
+      dialogWidth: dialogWidth,
+      dialogScrimAlpha: dialogScrimAlpha,
+      dialogDangerBorderAlpha: dialogDangerBorderAlpha,
+      drawerSize: drawerSize,
+      spinnerDuration: spinnerDuration,
+      spinnerReducedDuration: spinnerReducedDuration,
+      spinnerTrackAlpha: spinnerTrackAlpha,
+      spinnerOnAccentTrackAlpha: spinnerOnAccentTrackAlpha,
+      menuTypeaheadResetDuration: menuTypeaheadResetDuration,
+      menuMinWidth: menuMinWidth,
+      menuItemPadding: menuItemPadding,
+      preferencesWidth: preferencesWidth,
+      previewCardOpenDelay: previewCardOpenDelay,
+      previewCardCloseDelay: previewCardCloseDelay,
+      previewCardWidth: previewCardWidth,
+      progressSweepDuration: progressSweepDuration,
+      progressReducedSweepDuration: progressReducedSweepDuration,
+      progressSweepWidth: progressSweepWidth,
+      progressGradientFrom: progressGradientFrom,
+      progressGradientTo: progressGradientTo,
+      searchFieldInputWidth: searchFieldInputWidth,
+      segmentedControlInset: segmentedControlInset,
+      shortcutRecorderWidth: shortcutRecorderWidth,
+      shortcutRecorderRejectDuration: shortcutRecorderRejectDuration,
+      sidebarGroupLabelHeight: sidebarGroupLabelHeight,
+      skeletonSweepDuration: skeletonSweepDuration,
+      skeletonLastLineWidth: skeletonLastLineWidth,
+      sliderMediumTrack: sliderMediumTrack,
+      sliderMediumThumb: sliderMediumThumb,
+      sliderThumbInk: sliderThumbInk,
+      sliderThumbLift: sliderThumbLift,
+      sliderThumbEdgeWidth: sliderThumbEdgeWidth,
+      sliderThumbHotScale: sliderThumbHotScale,
+      splitterKeyStep: splitterKeyStep,
+      splitterKeyCoarseStep: splitterKeyCoarseStep,
+      stepListDoneAlpha: stepListDoneAlpha,
+      stepListIdleOpacity: stepListIdleOpacity,
+      switchMediumWidth: switchMediumWidth,
+      switchMediumHeight: switchMediumHeight,
+      switchMediumThumb: switchMediumThumb,
+      tabsPulseDuration: tabsPulseDuration,
+      tabsPulseOpacity: tabsPulseOpacity,
+      badgeLineHeight: badgeLineHeight,
+      calloutTitleLeading: calloutTitleLeading,
+      calloutDescriptionLeading: calloutDescriptionLeading,
+      textFieldMultilineLeading: textFieldMultilineLeading,
+      optionCardDescriptionLeading: optionCardDescriptionLeading,
+      formFieldHintLeading: formFieldHintLeading,
+      preferencesDescriptionLeading: preferencesDescriptionLeading,
+      toastMessageLineHeight: toastMessageLineHeight,
+      toastNoticeDuration: toastNoticeDuration,
+      toastActionDuration: toastActionDuration,
+      toastTransitionDuration: toastTransitionDuration,
+      toastTransitionX1: toastTransitionX1,
+      toastTransitionY1: toastTransitionY1,
+      toastTransitionX2: toastTransitionX2,
+      toastTransitionY2: toastTransitionY2,
+      toastTransitionScale: toastTransitionScale,
+      toastMaxWidth: toastMaxWidth,
+      tooltipOpenDelay: tooltipOpenDelay,
+      tooltipCloseDelay: tooltipCloseDelay,
+      treeTypeaheadWindow: treeTypeaheadWindow,
+      controlColorRecessedBorder: controlColorRecessedBorder,
+      controlColorFilledSurfaceNormalShade: controlColorFilledSurfaceNormalShade,
+      controlColorFilledSurfaceHoveredShade: controlColorFilledSurfaceHoveredShade,
+      controlColorFilledSurfacePressedShade: controlColorFilledSurfacePressedShade,
+      controlColorFilledBorder: controlColorFilledBorder,
+      controlColorTintedContentNormalShade: controlColorTintedContentNormalShade,
+      controlColorTintedContentHoveredShade: controlColorTintedContentHoveredShade,
+      controlColorTintedContentPressedShade: controlColorTintedContentPressedShade,
+      controlColorTintedBorder: controlColorTintedBorder,
+      controlColorOutlinedContentNormalShade: controlColorOutlinedContentNormalShade,
+      controlColorOutlinedContentHoveredShade: controlColorOutlinedContentHoveredShade,
+      controlColorOutlinedContentPressedShade: controlColorOutlinedContentPressedShade,
+      controlColorOutlinedBorder: controlColorOutlinedBorder,
+      controlColorPlainSurface: controlColorPlainSurface,
+      controlColorPlainContentNormalShade: controlColorPlainContentNormalShade,
+      controlColorPlainContentHoveredShade: controlColorPlainContentHoveredShade,
+      controlColorPlainContentPressedShade: controlColorPlainContentPressedShade,
+      controlColorPlainBorder: controlColorPlainBorder
+    )
   }
 
-  public var colorPrimary: ColorSwatch
-  public var colorNeutral: ColorSwatch
-  public var colorInfo: ColorSwatch
-  public var colorSuccess: ColorSwatch
-  public var colorWarning: ColorSwatch
-  public var colorDanger: ColorSwatch
-  public var colorCanvas: Color
-  public var colorSurface: Color
-  public var colorSurfaceMuted: Color
-  public var colorSurfaceSunken: Color
-  public var colorSurfaceSubtle: Color
-  public var colorSurfaceInset: Color
-  public var colorSurfaceRaised: Color
-  public var colorSurfaceOverlay: Color
-  public var colorSurfaceChrome: Color
-  public var colorSurfaceColumn: Color
-  public var colorContent: Color
-  public var colorContentSecondary: Color
-  public var colorContentNav: Color
-  public var colorContentMuted: Color
-  public var colorContentSubtle: Color
-  public var colorContentFaint: Color
-  public var colorBorder: Color
-  public var colorBorderStrong: Color
-  public var colorBorderMuted: Color
-  public var colorOnAccent: Color
-  public var controlPressedAlpha: CGFloat
-  public var controlFieldRadius: CGFloat
-  public var controlContainerRadius: CGFloat
-  public var controlTinySize: CGFloat
-  public var controlSmallSize: CGFloat
-  public var controlMediumPaddingInline: CGFloat
-  public var controlMediumSize: CGFloat
-  public var controlLargeSize: CGFloat
-  public var shadow2xs: [TokenShadow]
-  public var shadowXs: [TokenShadow]
-  public var shadowSm: [TokenShadow]
-  public var shadowMd: [TokenShadow]
-  public var shadowLg: [TokenShadow]
-  public var shadowXl: [TokenShadow]
-  public var shadow2xl: [TokenShadow]
-  public var focusWidth: CGFloat
-  public var focusOffset: CGFloat
-  public var focusGlowShade: Int
-  public var focusGlowAlpha: CGFloat
-  public var focusRingShade: Int
-  public var focusRingAlpha: CGFloat
-  public var frameWindowRadius: CGFloat
-  public var frameWindowWidth: CGFloat
-  public var framePopoverRadius: CGFloat
-  public var frameTitlebarSize: CGFloat
-  public var frameSidebarWidth: CGFloat
-  public var frameSidebarIconWidth: CGFloat
-  public var frameRailWidth: CGFloat
-  public var frameAsideWidth: CGFloat
-  public var frameNavGap: CGFloat
-  public var iconSmall: CGFloat
-  public var iconMedium: CGFloat
-  public var iconLarge: CGFloat
+  public var colorPrimary: ColorSwatch {
+    get { storage.colorPrimary }
+    set {
+      ensureUnique()
+      storage.colorPrimary = newValue
+    }
+  }
+  public var colorNeutral: ColorSwatch {
+    get { storage.colorNeutral }
+    set {
+      ensureUnique()
+      storage.colorNeutral = newValue
+    }
+  }
+  public var colorInfo: ColorSwatch {
+    get { storage.colorInfo }
+    set {
+      ensureUnique()
+      storage.colorInfo = newValue
+    }
+  }
+  public var colorSuccess: ColorSwatch {
+    get { storage.colorSuccess }
+    set {
+      ensureUnique()
+      storage.colorSuccess = newValue
+    }
+  }
+  public var colorWarning: ColorSwatch {
+    get { storage.colorWarning }
+    set {
+      ensureUnique()
+      storage.colorWarning = newValue
+    }
+  }
+  public var colorDanger: ColorSwatch {
+    get { storage.colorDanger }
+    set {
+      ensureUnique()
+      storage.colorDanger = newValue
+    }
+  }
+  public var colorCanvas: Color {
+    get { storage.colorCanvas }
+    set {
+      ensureUnique()
+      storage.colorCanvas = newValue
+    }
+  }
+  public var colorSurface: Color {
+    get { storage.colorSurface }
+    set {
+      ensureUnique()
+      storage.colorSurface = newValue
+    }
+  }
+  public var colorSurfaceMuted: Color {
+    get { storage.colorSurfaceMuted }
+    set {
+      ensureUnique()
+      storage.colorSurfaceMuted = newValue
+    }
+  }
+  public var colorSurfaceSunken: Color {
+    get { storage.colorSurfaceSunken }
+    set {
+      ensureUnique()
+      storage.colorSurfaceSunken = newValue
+    }
+  }
+  public var colorSurfaceSubtle: Color {
+    get { storage.colorSurfaceSubtle }
+    set {
+      ensureUnique()
+      storage.colorSurfaceSubtle = newValue
+    }
+  }
+  public var colorSurfaceInset: Color {
+    get { storage.colorSurfaceInset }
+    set {
+      ensureUnique()
+      storage.colorSurfaceInset = newValue
+    }
+  }
+  public var colorSurfaceRaised: Color {
+    get { storage.colorSurfaceRaised }
+    set {
+      ensureUnique()
+      storage.colorSurfaceRaised = newValue
+    }
+  }
+  public var colorSurfaceOverlay: Color {
+    get { storage.colorSurfaceOverlay }
+    set {
+      ensureUnique()
+      storage.colorSurfaceOverlay = newValue
+    }
+  }
+  public var colorSurfaceChrome: Color {
+    get { storage.colorSurfaceChrome }
+    set {
+      ensureUnique()
+      storage.colorSurfaceChrome = newValue
+    }
+  }
+  public var colorSurfaceColumn: Color {
+    get { storage.colorSurfaceColumn }
+    set {
+      ensureUnique()
+      storage.colorSurfaceColumn = newValue
+    }
+  }
+  public var colorContent: Color {
+    get { storage.colorContent }
+    set {
+      ensureUnique()
+      storage.colorContent = newValue
+    }
+  }
+  public var colorContentSecondary: Color {
+    get { storage.colorContentSecondary }
+    set {
+      ensureUnique()
+      storage.colorContentSecondary = newValue
+    }
+  }
+  public var colorContentNav: Color {
+    get { storage.colorContentNav }
+    set {
+      ensureUnique()
+      storage.colorContentNav = newValue
+    }
+  }
+  public var colorContentMuted: Color {
+    get { storage.colorContentMuted }
+    set {
+      ensureUnique()
+      storage.colorContentMuted = newValue
+    }
+  }
+  public var colorContentSubtle: Color {
+    get { storage.colorContentSubtle }
+    set {
+      ensureUnique()
+      storage.colorContentSubtle = newValue
+    }
+  }
+  public var colorContentFaint: Color {
+    get { storage.colorContentFaint }
+    set {
+      ensureUnique()
+      storage.colorContentFaint = newValue
+    }
+  }
+  public var colorBorder: Color {
+    get { storage.colorBorder }
+    set {
+      ensureUnique()
+      storage.colorBorder = newValue
+    }
+  }
+  public var colorBorderStrong: Color {
+    get { storage.colorBorderStrong }
+    set {
+      ensureUnique()
+      storage.colorBorderStrong = newValue
+    }
+  }
+  public var colorBorderMuted: Color {
+    get { storage.colorBorderMuted }
+    set {
+      ensureUnique()
+      storage.colorBorderMuted = newValue
+    }
+  }
+  public var colorOnAccent: Color {
+    get { storage.colorOnAccent }
+    set {
+      ensureUnique()
+      storage.colorOnAccent = newValue
+    }
+  }
+  public var controlPressedAlpha: CGFloat {
+    get { storage.controlPressedAlpha }
+    set {
+      ensureUnique()
+      storage.controlPressedAlpha = newValue
+    }
+  }
+  public var controlFieldRadius: CGFloat {
+    get { storage.controlFieldRadius }
+    set {
+      ensureUnique()
+      storage.controlFieldRadius = newValue
+    }
+  }
+  public var controlContainerRadius: CGFloat {
+    get { storage.controlContainerRadius }
+    set {
+      ensureUnique()
+      storage.controlContainerRadius = newValue
+    }
+  }
+  public var controlTinySize: CGFloat {
+    get { storage.controlTinySize }
+    set {
+      ensureUnique()
+      storage.controlTinySize = newValue
+    }
+  }
+  public var controlSmallSize: CGFloat {
+    get { storage.controlSmallSize }
+    set {
+      ensureUnique()
+      storage.controlSmallSize = newValue
+    }
+  }
+  public var controlMediumPaddingInline: CGFloat {
+    get { storage.controlMediumPaddingInline }
+    set {
+      ensureUnique()
+      storage.controlMediumPaddingInline = newValue
+    }
+  }
+  public var controlMediumSize: CGFloat {
+    get { storage.controlMediumSize }
+    set {
+      ensureUnique()
+      storage.controlMediumSize = newValue
+    }
+  }
+  public var controlLargeSize: CGFloat {
+    get { storage.controlLargeSize }
+    set {
+      ensureUnique()
+      storage.controlLargeSize = newValue
+    }
+  }
+  public var shadow2xs: [TokenShadow] {
+    get { storage.shadow2xs }
+    set {
+      ensureUnique()
+      storage.shadow2xs = newValue
+    }
+  }
+  public var shadowXs: [TokenShadow] {
+    get { storage.shadowXs }
+    set {
+      ensureUnique()
+      storage.shadowXs = newValue
+    }
+  }
+  public var shadowSm: [TokenShadow] {
+    get { storage.shadowSm }
+    set {
+      ensureUnique()
+      storage.shadowSm = newValue
+    }
+  }
+  public var shadowMd: [TokenShadow] {
+    get { storage.shadowMd }
+    set {
+      ensureUnique()
+      storage.shadowMd = newValue
+    }
+  }
+  public var shadowLg: [TokenShadow] {
+    get { storage.shadowLg }
+    set {
+      ensureUnique()
+      storage.shadowLg = newValue
+    }
+  }
+  public var shadowXl: [TokenShadow] {
+    get { storage.shadowXl }
+    set {
+      ensureUnique()
+      storage.shadowXl = newValue
+    }
+  }
+  public var shadow2xl: [TokenShadow] {
+    get { storage.shadow2xl }
+    set {
+      ensureUnique()
+      storage.shadow2xl = newValue
+    }
+  }
+  public var focusWidth: CGFloat {
+    get { storage.focusWidth }
+    set {
+      ensureUnique()
+      storage.focusWidth = newValue
+    }
+  }
+  public var focusOffset: CGFloat {
+    get { storage.focusOffset }
+    set {
+      ensureUnique()
+      storage.focusOffset = newValue
+    }
+  }
+  public var focusGlowShade: Int {
+    get { storage.focusGlowShade }
+    set {
+      ensureUnique()
+      storage.focusGlowShade = newValue
+    }
+  }
+  public var focusGlowAlpha: CGFloat {
+    get { storage.focusGlowAlpha }
+    set {
+      ensureUnique()
+      storage.focusGlowAlpha = newValue
+    }
+  }
+  public var focusRingShade: Int {
+    get { storage.focusRingShade }
+    set {
+      ensureUnique()
+      storage.focusRingShade = newValue
+    }
+  }
+  public var focusRingAlpha: CGFloat {
+    get { storage.focusRingAlpha }
+    set {
+      ensureUnique()
+      storage.focusRingAlpha = newValue
+    }
+  }
+  public var frameWindowRadius: CGFloat {
+    get { storage.frameWindowRadius }
+    set {
+      ensureUnique()
+      storage.frameWindowRadius = newValue
+    }
+  }
+  public var frameWindowWidth: CGFloat {
+    get { storage.frameWindowWidth }
+    set {
+      ensureUnique()
+      storage.frameWindowWidth = newValue
+    }
+  }
+  public var framePopoverRadius: CGFloat {
+    get { storage.framePopoverRadius }
+    set {
+      ensureUnique()
+      storage.framePopoverRadius = newValue
+    }
+  }
+  public var frameTitlebarSize: CGFloat {
+    get { storage.frameTitlebarSize }
+    set {
+      ensureUnique()
+      storage.frameTitlebarSize = newValue
+    }
+  }
+  public var frameSidebarWidth: CGFloat {
+    get { storage.frameSidebarWidth }
+    set {
+      ensureUnique()
+      storage.frameSidebarWidth = newValue
+    }
+  }
+  public var frameSidebarIconWidth: CGFloat {
+    get { storage.frameSidebarIconWidth }
+    set {
+      ensureUnique()
+      storage.frameSidebarIconWidth = newValue
+    }
+  }
+  public var frameRailWidth: CGFloat {
+    get { storage.frameRailWidth }
+    set {
+      ensureUnique()
+      storage.frameRailWidth = newValue
+    }
+  }
+  public var frameAsideWidth: CGFloat {
+    get { storage.frameAsideWidth }
+    set {
+      ensureUnique()
+      storage.frameAsideWidth = newValue
+    }
+  }
+  public var frameNavGap: CGFloat {
+    get { storage.frameNavGap }
+    set {
+      ensureUnique()
+      storage.frameNavGap = newValue
+    }
+  }
+  public var iconSmall: CGFloat {
+    get { storage.iconSmall }
+    set {
+      ensureUnique()
+      storage.iconSmall = newValue
+    }
+  }
+  public var iconMedium: CGFloat {
+    get { storage.iconMedium }
+    set {
+      ensureUnique()
+      storage.iconMedium = newValue
+    }
+  }
+  public var iconLarge: CGFloat {
+    get { storage.iconLarge }
+    set {
+      ensureUnique()
+      storage.iconLarge = newValue
+    }
+  }
   /// Finish decorative motion once under the reduced-motion clamp.
-  public var motionReducedDuration: Double
-  public var motionDuration: Double
-  public var motionEasing: BezierCurve
+  public var motionReducedDuration: Double {
+    get { storage.motionReducedDuration }
+    set {
+      ensureUnique()
+      storage.motionReducedDuration = newValue
+    }
+  }
+  public var motionDuration: Double {
+    get { storage.motionDuration }
+    set {
+      ensureUnique()
+      storage.motionDuration = newValue
+    }
+  }
+  public var motionEasing: BezierCurve {
+    get { storage.motionEasing }
+    set {
+      ensureUnique()
+      storage.motionEasing = newValue
+    }
+  }
   /// CSS ease-in-out for the loading sweeps.
-  public var motionLoopEasing: BezierCurve
-  public var radiusNone: CGFloat
-  public var radiusTiny: CGFloat
-  public var radiusSmall: CGFloat
-  public var radiusMedium: CGFloat
-  public var radiusLarge: CGFloat
-  public var radiusBig: CGFloat
-  public var radiusFull: CGFloat
-  public var spacingPx: CGFloat
-  public var spacing0: CGFloat
-  public var spacing05: CGFloat
-  public var spacing1: CGFloat
-  public var spacing15: CGFloat
-  public var spacing2: CGFloat
-  public var spacing25: CGFloat
-  public var spacing3: CGFloat
-  public var spacing35: CGFloat
-  public var spacing4: CGFloat
-  public var spacing5: CGFloat
-  public var spacing6: CGFloat
-  public var spacing7: CGFloat
-  public var spacing8: CGFloat
-  public var spacing9: CGFloat
-  public var spacing10: CGFloat
-  public var spacing11: CGFloat
-  public var spacing12: CGFloat
-  public var spacing14: CGFloat
-  public var spacing16: CGFloat
-  public var spacing20: CGFloat
-  public var strokeHairline: CGFloat
-  public var strokeControl: CGFloat
-  public var fontUi: [String]
-  public var fontDisplay: [String]
-  public var fontCode: [String]
-  public var headlineSmall: TypeStyle
-  public var headlineMedium: TypeStyle
-  public var headlineLarge: TypeStyle
-  public var titleSmall: TypeStyle
-  public var titleMedium: TypeStyle
-  public var titleLarge: TypeStyle
-  public var bodySmall: TypeStyle
-  public var bodyMedium: TypeStyle
-  public var bodyLarge: TypeStyle
-  public var labelQuiet: TypeStyle
-  public var labelStrong: TypeStyle
-  public var labelSmall: TypeStyle
-  public var labelMedium: TypeStyle
-  public var labelLarge: TypeStyle
-  public var captionSmall: TypeStyle
-  public var captionMedium: TypeStyle
-  public var captionLarge: TypeStyle
-  public var washSurface: CGFloat
-  public var washEdge: CGFloat
-  public var calendarCellGap: CGFloat
-  public var checkboxRadius: CGFloat
+  public var motionLoopEasing: BezierCurve {
+    get { storage.motionLoopEasing }
+    set {
+      ensureUnique()
+      storage.motionLoopEasing = newValue
+    }
+  }
+  public var radiusNone: CGFloat {
+    get { storage.radiusNone }
+    set {
+      ensureUnique()
+      storage.radiusNone = newValue
+    }
+  }
+  public var radiusTiny: CGFloat {
+    get { storage.radiusTiny }
+    set {
+      ensureUnique()
+      storage.radiusTiny = newValue
+    }
+  }
+  public var radiusSmall: CGFloat {
+    get { storage.radiusSmall }
+    set {
+      ensureUnique()
+      storage.radiusSmall = newValue
+    }
+  }
+  public var radiusMedium: CGFloat {
+    get { storage.radiusMedium }
+    set {
+      ensureUnique()
+      storage.radiusMedium = newValue
+    }
+  }
+  public var radiusLarge: CGFloat {
+    get { storage.radiusLarge }
+    set {
+      ensureUnique()
+      storage.radiusLarge = newValue
+    }
+  }
+  public var radiusBig: CGFloat {
+    get { storage.radiusBig }
+    set {
+      ensureUnique()
+      storage.radiusBig = newValue
+    }
+  }
+  public var radiusFull: CGFloat {
+    get { storage.radiusFull }
+    set {
+      ensureUnique()
+      storage.radiusFull = newValue
+    }
+  }
+  public var spacingPx: CGFloat {
+    get { storage.spacingPx }
+    set {
+      ensureUnique()
+      storage.spacingPx = newValue
+    }
+  }
+  public var spacing0: CGFloat {
+    get { storage.spacing0 }
+    set {
+      ensureUnique()
+      storage.spacing0 = newValue
+    }
+  }
+  public var spacing05: CGFloat {
+    get { storage.spacing05 }
+    set {
+      ensureUnique()
+      storage.spacing05 = newValue
+    }
+  }
+  public var spacing1: CGFloat {
+    get { storage.spacing1 }
+    set {
+      ensureUnique()
+      storage.spacing1 = newValue
+    }
+  }
+  public var spacing15: CGFloat {
+    get { storage.spacing15 }
+    set {
+      ensureUnique()
+      storage.spacing15 = newValue
+    }
+  }
+  public var spacing2: CGFloat {
+    get { storage.spacing2 }
+    set {
+      ensureUnique()
+      storage.spacing2 = newValue
+    }
+  }
+  public var spacing25: CGFloat {
+    get { storage.spacing25 }
+    set {
+      ensureUnique()
+      storage.spacing25 = newValue
+    }
+  }
+  public var spacing3: CGFloat {
+    get { storage.spacing3 }
+    set {
+      ensureUnique()
+      storage.spacing3 = newValue
+    }
+  }
+  public var spacing35: CGFloat {
+    get { storage.spacing35 }
+    set {
+      ensureUnique()
+      storage.spacing35 = newValue
+    }
+  }
+  public var spacing4: CGFloat {
+    get { storage.spacing4 }
+    set {
+      ensureUnique()
+      storage.spacing4 = newValue
+    }
+  }
+  public var spacing5: CGFloat {
+    get { storage.spacing5 }
+    set {
+      ensureUnique()
+      storage.spacing5 = newValue
+    }
+  }
+  public var spacing6: CGFloat {
+    get { storage.spacing6 }
+    set {
+      ensureUnique()
+      storage.spacing6 = newValue
+    }
+  }
+  public var spacing7: CGFloat {
+    get { storage.spacing7 }
+    set {
+      ensureUnique()
+      storage.spacing7 = newValue
+    }
+  }
+  public var spacing8: CGFloat {
+    get { storage.spacing8 }
+    set {
+      ensureUnique()
+      storage.spacing8 = newValue
+    }
+  }
+  public var spacing9: CGFloat {
+    get { storage.spacing9 }
+    set {
+      ensureUnique()
+      storage.spacing9 = newValue
+    }
+  }
+  public var spacing10: CGFloat {
+    get { storage.spacing10 }
+    set {
+      ensureUnique()
+      storage.spacing10 = newValue
+    }
+  }
+  public var spacing11: CGFloat {
+    get { storage.spacing11 }
+    set {
+      ensureUnique()
+      storage.spacing11 = newValue
+    }
+  }
+  public var spacing12: CGFloat {
+    get { storage.spacing12 }
+    set {
+      ensureUnique()
+      storage.spacing12 = newValue
+    }
+  }
+  public var spacing14: CGFloat {
+    get { storage.spacing14 }
+    set {
+      ensureUnique()
+      storage.spacing14 = newValue
+    }
+  }
+  public var spacing16: CGFloat {
+    get { storage.spacing16 }
+    set {
+      ensureUnique()
+      storage.spacing16 = newValue
+    }
+  }
+  public var spacing20: CGFloat {
+    get { storage.spacing20 }
+    set {
+      ensureUnique()
+      storage.spacing20 = newValue
+    }
+  }
+  public var strokeHairline: CGFloat {
+    get { storage.strokeHairline }
+    set {
+      ensureUnique()
+      storage.strokeHairline = newValue
+    }
+  }
+  public var strokeControl: CGFloat {
+    get { storage.strokeControl }
+    set {
+      ensureUnique()
+      storage.strokeControl = newValue
+    }
+  }
+  public var fontUi: [String] {
+    get { storage.fontUi }
+    set {
+      ensureUnique()
+      storage.fontUi = newValue
+    }
+  }
+  public var fontDisplay: [String] {
+    get { storage.fontDisplay }
+    set {
+      ensureUnique()
+      storage.fontDisplay = newValue
+    }
+  }
+  public var fontCode: [String] {
+    get { storage.fontCode }
+    set {
+      ensureUnique()
+      storage.fontCode = newValue
+    }
+  }
+  public var headlineSmall: TypeStyle {
+    get { storage.headlineSmall }
+    set {
+      ensureUnique()
+      storage.headlineSmall = newValue
+    }
+  }
+  public var headlineMedium: TypeStyle {
+    get { storage.headlineMedium }
+    set {
+      ensureUnique()
+      storage.headlineMedium = newValue
+    }
+  }
+  public var headlineLarge: TypeStyle {
+    get { storage.headlineLarge }
+    set {
+      ensureUnique()
+      storage.headlineLarge = newValue
+    }
+  }
+  public var titleSmall: TypeStyle {
+    get { storage.titleSmall }
+    set {
+      ensureUnique()
+      storage.titleSmall = newValue
+    }
+  }
+  public var titleMedium: TypeStyle {
+    get { storage.titleMedium }
+    set {
+      ensureUnique()
+      storage.titleMedium = newValue
+    }
+  }
+  public var titleLarge: TypeStyle {
+    get { storage.titleLarge }
+    set {
+      ensureUnique()
+      storage.titleLarge = newValue
+    }
+  }
+  public var bodySmall: TypeStyle {
+    get { storage.bodySmall }
+    set {
+      ensureUnique()
+      storage.bodySmall = newValue
+    }
+  }
+  public var bodyMedium: TypeStyle {
+    get { storage.bodyMedium }
+    set {
+      ensureUnique()
+      storage.bodyMedium = newValue
+    }
+  }
+  public var bodyLarge: TypeStyle {
+    get { storage.bodyLarge }
+    set {
+      ensureUnique()
+      storage.bodyLarge = newValue
+    }
+  }
+  public var labelQuiet: TypeStyle {
+    get { storage.labelQuiet }
+    set {
+      ensureUnique()
+      storage.labelQuiet = newValue
+    }
+  }
+  public var labelStrong: TypeStyle {
+    get { storage.labelStrong }
+    set {
+      ensureUnique()
+      storage.labelStrong = newValue
+    }
+  }
+  public var labelSmall: TypeStyle {
+    get { storage.labelSmall }
+    set {
+      ensureUnique()
+      storage.labelSmall = newValue
+    }
+  }
+  public var labelMedium: TypeStyle {
+    get { storage.labelMedium }
+    set {
+      ensureUnique()
+      storage.labelMedium = newValue
+    }
+  }
+  public var labelLarge: TypeStyle {
+    get { storage.labelLarge }
+    set {
+      ensureUnique()
+      storage.labelLarge = newValue
+    }
+  }
+  public var captionSmall: TypeStyle {
+    get { storage.captionSmall }
+    set {
+      ensureUnique()
+      storage.captionSmall = newValue
+    }
+  }
+  public var captionMedium: TypeStyle {
+    get { storage.captionMedium }
+    set {
+      ensureUnique()
+      storage.captionMedium = newValue
+    }
+  }
+  public var captionLarge: TypeStyle {
+    get { storage.captionLarge }
+    set {
+      ensureUnique()
+      storage.captionLarge = newValue
+    }
+  }
+  public var washSurface: CGFloat {
+    get { storage.washSurface }
+    set {
+      ensureUnique()
+      storage.washSurface = newValue
+    }
+  }
+  public var washEdge: CGFloat {
+    get { storage.washEdge }
+    set {
+      ensureUnique()
+      storage.washEdge = newValue
+    }
+  }
+  public var calendarCellGap: CGFloat {
+    get { storage.calendarCellGap }
+    set {
+      ensureUnique()
+      storage.calendarCellGap = newValue
+    }
+  }
+  public var checkboxRadius: CGFloat {
+    get { storage.checkboxRadius }
+    set {
+      ensureUnique()
+      storage.checkboxRadius = newValue
+    }
+  }
   /// How long the copy action shows its successful state.
-  public var codeBlockCopyFeedbackDuration: Double
-  public var dateRangePickerSideWidth: CGFloat
-  public var dateRangePickerTriggerMinWidth: CGFloat
-  public var dateRangePickerTimeMinWidth: CGFloat
-  public var dateRangePickerKeyTracking: CGFloat
-  public var dialogTransitionScale: CGFloat
-  public var dialogWidth: CGFloat
-  public var dialogScrimAlpha: CGFloat
-  public var dialogDangerBorderAlpha: CGFloat
-  public var drawerSize: CGFloat
-  public var spinnerDuration: Double
-  public var spinnerReducedDuration: Double
-  public var spinnerTrackAlpha: CGFloat
-  public var spinnerOnAccentTrackAlpha: CGFloat
-  public var menuTypeaheadResetDuration: Double
-  public var menuMinWidth: CGFloat
-  public var menuItemPadding: CGFloat
-  public var preferencesWidth: CGFloat
-  public var previewCardOpenDelay: Double
-  public var previewCardCloseDelay: Double
-  public var previewCardWidth: CGFloat
-  public var progressSweepDuration: Double
-  public var progressReducedSweepDuration: Double
-  public var progressSweepWidth: CGFloat
-  public var progressGradientFrom: Color
-  public var progressGradientTo: Color
-  public var searchFieldInputWidth: CGFloat
-  public var segmentedControlInset: CGFloat
-  public var shortcutRecorderWidth: CGFloat
-  public var shortcutRecorderRejectDuration: Double
-  public var sidebarGroupLabelHeight: CGFloat
+  public var codeBlockCopyFeedbackDuration: Double {
+    get { storage.codeBlockCopyFeedbackDuration }
+    set {
+      ensureUnique()
+      storage.codeBlockCopyFeedbackDuration = newValue
+    }
+  }
+  public var dateRangePickerSideWidth: CGFloat {
+    get { storage.dateRangePickerSideWidth }
+    set {
+      ensureUnique()
+      storage.dateRangePickerSideWidth = newValue
+    }
+  }
+  public var dateRangePickerTriggerMinWidth: CGFloat {
+    get { storage.dateRangePickerTriggerMinWidth }
+    set {
+      ensureUnique()
+      storage.dateRangePickerTriggerMinWidth = newValue
+    }
+  }
+  public var dateRangePickerTimeMinWidth: CGFloat {
+    get { storage.dateRangePickerTimeMinWidth }
+    set {
+      ensureUnique()
+      storage.dateRangePickerTimeMinWidth = newValue
+    }
+  }
+  public var dateRangePickerKeyTracking: CGFloat {
+    get { storage.dateRangePickerKeyTracking }
+    set {
+      ensureUnique()
+      storage.dateRangePickerKeyTracking = newValue
+    }
+  }
+  public var dialogTransitionScale: CGFloat {
+    get { storage.dialogTransitionScale }
+    set {
+      ensureUnique()
+      storage.dialogTransitionScale = newValue
+    }
+  }
+  public var dialogWidth: CGFloat {
+    get { storage.dialogWidth }
+    set {
+      ensureUnique()
+      storage.dialogWidth = newValue
+    }
+  }
+  public var dialogScrimAlpha: CGFloat {
+    get { storage.dialogScrimAlpha }
+    set {
+      ensureUnique()
+      storage.dialogScrimAlpha = newValue
+    }
+  }
+  public var dialogDangerBorderAlpha: CGFloat {
+    get { storage.dialogDangerBorderAlpha }
+    set {
+      ensureUnique()
+      storage.dialogDangerBorderAlpha = newValue
+    }
+  }
+  public var drawerSize: CGFloat {
+    get { storage.drawerSize }
+    set {
+      ensureUnique()
+      storage.drawerSize = newValue
+    }
+  }
+  public var spinnerDuration: Double {
+    get { storage.spinnerDuration }
+    set {
+      ensureUnique()
+      storage.spinnerDuration = newValue
+    }
+  }
+  public var spinnerReducedDuration: Double {
+    get { storage.spinnerReducedDuration }
+    set {
+      ensureUnique()
+      storage.spinnerReducedDuration = newValue
+    }
+  }
+  public var spinnerTrackAlpha: CGFloat {
+    get { storage.spinnerTrackAlpha }
+    set {
+      ensureUnique()
+      storage.spinnerTrackAlpha = newValue
+    }
+  }
+  public var spinnerOnAccentTrackAlpha: CGFloat {
+    get { storage.spinnerOnAccentTrackAlpha }
+    set {
+      ensureUnique()
+      storage.spinnerOnAccentTrackAlpha = newValue
+    }
+  }
+  public var menuTypeaheadResetDuration: Double {
+    get { storage.menuTypeaheadResetDuration }
+    set {
+      ensureUnique()
+      storage.menuTypeaheadResetDuration = newValue
+    }
+  }
+  public var menuMinWidth: CGFloat {
+    get { storage.menuMinWidth }
+    set {
+      ensureUnique()
+      storage.menuMinWidth = newValue
+    }
+  }
+  public var menuItemPadding: CGFloat {
+    get { storage.menuItemPadding }
+    set {
+      ensureUnique()
+      storage.menuItemPadding = newValue
+    }
+  }
+  public var preferencesWidth: CGFloat {
+    get { storage.preferencesWidth }
+    set {
+      ensureUnique()
+      storage.preferencesWidth = newValue
+    }
+  }
+  public var previewCardOpenDelay: Double {
+    get { storage.previewCardOpenDelay }
+    set {
+      ensureUnique()
+      storage.previewCardOpenDelay = newValue
+    }
+  }
+  public var previewCardCloseDelay: Double {
+    get { storage.previewCardCloseDelay }
+    set {
+      ensureUnique()
+      storage.previewCardCloseDelay = newValue
+    }
+  }
+  public var previewCardWidth: CGFloat {
+    get { storage.previewCardWidth }
+    set {
+      ensureUnique()
+      storage.previewCardWidth = newValue
+    }
+  }
+  public var progressSweepDuration: Double {
+    get { storage.progressSweepDuration }
+    set {
+      ensureUnique()
+      storage.progressSweepDuration = newValue
+    }
+  }
+  public var progressReducedSweepDuration: Double {
+    get { storage.progressReducedSweepDuration }
+    set {
+      ensureUnique()
+      storage.progressReducedSweepDuration = newValue
+    }
+  }
+  public var progressSweepWidth: CGFloat {
+    get { storage.progressSweepWidth }
+    set {
+      ensureUnique()
+      storage.progressSweepWidth = newValue
+    }
+  }
+  public var progressGradientFrom: Color {
+    get { storage.progressGradientFrom }
+    set {
+      ensureUnique()
+      storage.progressGradientFrom = newValue
+    }
+  }
+  public var progressGradientTo: Color {
+    get { storage.progressGradientTo }
+    set {
+      ensureUnique()
+      storage.progressGradientTo = newValue
+    }
+  }
+  public var searchFieldInputWidth: CGFloat {
+    get { storage.searchFieldInputWidth }
+    set {
+      ensureUnique()
+      storage.searchFieldInputWidth = newValue
+    }
+  }
+  public var segmentedControlInset: CGFloat {
+    get { storage.segmentedControlInset }
+    set {
+      ensureUnique()
+      storage.segmentedControlInset = newValue
+    }
+  }
+  public var shortcutRecorderWidth: CGFloat {
+    get { storage.shortcutRecorderWidth }
+    set {
+      ensureUnique()
+      storage.shortcutRecorderWidth = newValue
+    }
+  }
+  public var shortcutRecorderRejectDuration: Double {
+    get { storage.shortcutRecorderRejectDuration }
+    set {
+      ensureUnique()
+      storage.shortcutRecorderRejectDuration = newValue
+    }
+  }
+  public var sidebarGroupLabelHeight: CGFloat {
+    get { storage.sidebarGroupLabelHeight }
+    set {
+      ensureUnique()
+      storage.sidebarGroupLabelHeight = newValue
+    }
+  }
   /// A slow sweep behind content that has not arrived.
-  public var skeletonSweepDuration: Double
+  public var skeletonSweepDuration: Double {
+    get { storage.skeletonSweepDuration }
+    set {
+      ensureUnique()
+      storage.skeletonSweepDuration = newValue
+    }
+  }
   /// The final paragraph bar occupies three fifths of its measure.
-  public var skeletonLastLineWidth: CGFloat
-  public var sliderMediumTrack: CGFloat
-  public var sliderMediumThumb: CGFloat
-  public var sliderThumbInk: Int
-  public var sliderThumbLift: Int
-  public var sliderThumbEdgeWidth: CGFloat
-  public var sliderThumbHotScale: CGFloat
-  public var splitterKeyStep: Int
-  public var splitterKeyCoarseStep: Int
+  public var skeletonLastLineWidth: CGFloat {
+    get { storage.skeletonLastLineWidth }
+    set {
+      ensureUnique()
+      storage.skeletonLastLineWidth = newValue
+    }
+  }
+  public var sliderMediumTrack: CGFloat {
+    get { storage.sliderMediumTrack }
+    set {
+      ensureUnique()
+      storage.sliderMediumTrack = newValue
+    }
+  }
+  public var sliderMediumThumb: CGFloat {
+    get { storage.sliderMediumThumb }
+    set {
+      ensureUnique()
+      storage.sliderMediumThumb = newValue
+    }
+  }
+  public var sliderThumbInk: Int {
+    get { storage.sliderThumbInk }
+    set {
+      ensureUnique()
+      storage.sliderThumbInk = newValue
+    }
+  }
+  public var sliderThumbLift: Int {
+    get { storage.sliderThumbLift }
+    set {
+      ensureUnique()
+      storage.sliderThumbLift = newValue
+    }
+  }
+  public var sliderThumbEdgeWidth: CGFloat {
+    get { storage.sliderThumbEdgeWidth }
+    set {
+      ensureUnique()
+      storage.sliderThumbEdgeWidth = newValue
+    }
+  }
+  public var sliderThumbHotScale: CGFloat {
+    get { storage.sliderThumbHotScale }
+    set {
+      ensureUnique()
+      storage.sliderThumbHotScale = newValue
+    }
+  }
+  public var splitterKeyStep: Int {
+    get { storage.splitterKeyStep }
+    set {
+      ensureUnique()
+      storage.splitterKeyStep = newValue
+    }
+  }
+  public var splitterKeyCoarseStep: Int {
+    get { storage.splitterKeyCoarseStep }
+    set {
+      ensureUnique()
+      storage.splitterKeyCoarseStep = newValue
+    }
+  }
   /// The success wash behind a completed step's marker.
-  public var stepListDoneAlpha: CGFloat
+  public var stepListDoneAlpha: CGFloat {
+    get { storage.stepListDoneAlpha }
+    set {
+      ensureUnique()
+      storage.stepListDoneAlpha = newValue
+    }
+  }
   /// The opacity of a step that has not started.
-  public var stepListIdleOpacity: CGFloat
-  public var switchMediumWidth: CGFloat
-  public var switchMediumHeight: CGFloat
-  public var switchMediumThumb: CGFloat
-  public var tabsPulseDuration: Double
-  public var tabsPulseOpacity: CGFloat
-  public var badgeLineHeight: CGFloat
-  public var calloutTitleLeading: CGFloat
-  public var calloutDescriptionLeading: CGFloat
-  public var textFieldMultilineLeading: CGFloat
-  public var optionCardDescriptionLeading: CGFloat
-  public var formFieldHintLeading: CGFloat
-  public var preferencesDescriptionLeading: CGFloat
-  public var toastMessageLineHeight: CGFloat
-  public var toastNoticeDuration: Double
-  public var toastActionDuration: Double
-  public var toastTransitionDuration: Double
-  public var toastTransitionX1: CGFloat
-  public var toastTransitionY1: CGFloat
-  public var toastTransitionX2: CGFloat
-  public var toastTransitionY2: CGFloat
-  public var toastTransitionScale: CGFloat
-  public var toastMaxWidth: CGFloat
-  public var tooltipOpenDelay: Double
-  public var tooltipCloseDelay: Double
-  public var treeTypeaheadWindow: Double
-  public var controlColorRecessedBorder: ColorDescriptor
+  public var stepListIdleOpacity: CGFloat {
+    get { storage.stepListIdleOpacity }
+    set {
+      ensureUnique()
+      storage.stepListIdleOpacity = newValue
+    }
+  }
+  public var switchMediumWidth: CGFloat {
+    get { storage.switchMediumWidth }
+    set {
+      ensureUnique()
+      storage.switchMediumWidth = newValue
+    }
+  }
+  public var switchMediumHeight: CGFloat {
+    get { storage.switchMediumHeight }
+    set {
+      ensureUnique()
+      storage.switchMediumHeight = newValue
+    }
+  }
+  public var switchMediumThumb: CGFloat {
+    get { storage.switchMediumThumb }
+    set {
+      ensureUnique()
+      storage.switchMediumThumb = newValue
+    }
+  }
+  public var tabsPulseDuration: Double {
+    get { storage.tabsPulseDuration }
+    set {
+      ensureUnique()
+      storage.tabsPulseDuration = newValue
+    }
+  }
+  public var tabsPulseOpacity: CGFloat {
+    get { storage.tabsPulseOpacity }
+    set {
+      ensureUnique()
+      storage.tabsPulseOpacity = newValue
+    }
+  }
+  public var badgeLineHeight: CGFloat {
+    get { storage.badgeLineHeight }
+    set {
+      ensureUnique()
+      storage.badgeLineHeight = newValue
+    }
+  }
+  public var calloutTitleLeading: CGFloat {
+    get { storage.calloutTitleLeading }
+    set {
+      ensureUnique()
+      storage.calloutTitleLeading = newValue
+    }
+  }
+  public var calloutDescriptionLeading: CGFloat {
+    get { storage.calloutDescriptionLeading }
+    set {
+      ensureUnique()
+      storage.calloutDescriptionLeading = newValue
+    }
+  }
+  public var textFieldMultilineLeading: CGFloat {
+    get { storage.textFieldMultilineLeading }
+    set {
+      ensureUnique()
+      storage.textFieldMultilineLeading = newValue
+    }
+  }
+  public var optionCardDescriptionLeading: CGFloat {
+    get { storage.optionCardDescriptionLeading }
+    set {
+      ensureUnique()
+      storage.optionCardDescriptionLeading = newValue
+    }
+  }
+  public var formFieldHintLeading: CGFloat {
+    get { storage.formFieldHintLeading }
+    set {
+      ensureUnique()
+      storage.formFieldHintLeading = newValue
+    }
+  }
+  public var preferencesDescriptionLeading: CGFloat {
+    get { storage.preferencesDescriptionLeading }
+    set {
+      ensureUnique()
+      storage.preferencesDescriptionLeading = newValue
+    }
+  }
+  public var toastMessageLineHeight: CGFloat {
+    get { storage.toastMessageLineHeight }
+    set {
+      ensureUnique()
+      storage.toastMessageLineHeight = newValue
+    }
+  }
+  public var toastNoticeDuration: Double {
+    get { storage.toastNoticeDuration }
+    set {
+      ensureUnique()
+      storage.toastNoticeDuration = newValue
+    }
+  }
+  public var toastActionDuration: Double {
+    get { storage.toastActionDuration }
+    set {
+      ensureUnique()
+      storage.toastActionDuration = newValue
+    }
+  }
+  public var toastTransitionDuration: Double {
+    get { storage.toastTransitionDuration }
+    set {
+      ensureUnique()
+      storage.toastTransitionDuration = newValue
+    }
+  }
+  public var toastTransitionX1: CGFloat {
+    get { storage.toastTransitionX1 }
+    set {
+      ensureUnique()
+      storage.toastTransitionX1 = newValue
+    }
+  }
+  public var toastTransitionY1: CGFloat {
+    get { storage.toastTransitionY1 }
+    set {
+      ensureUnique()
+      storage.toastTransitionY1 = newValue
+    }
+  }
+  public var toastTransitionX2: CGFloat {
+    get { storage.toastTransitionX2 }
+    set {
+      ensureUnique()
+      storage.toastTransitionX2 = newValue
+    }
+  }
+  public var toastTransitionY2: CGFloat {
+    get { storage.toastTransitionY2 }
+    set {
+      ensureUnique()
+      storage.toastTransitionY2 = newValue
+    }
+  }
+  public var toastTransitionScale: CGFloat {
+    get { storage.toastTransitionScale }
+    set {
+      ensureUnique()
+      storage.toastTransitionScale = newValue
+    }
+  }
+  public var toastMaxWidth: CGFloat {
+    get { storage.toastMaxWidth }
+    set {
+      ensureUnique()
+      storage.toastMaxWidth = newValue
+    }
+  }
+  public var tooltipOpenDelay: Double {
+    get { storage.tooltipOpenDelay }
+    set {
+      ensureUnique()
+      storage.tooltipOpenDelay = newValue
+    }
+  }
+  public var tooltipCloseDelay: Double {
+    get { storage.tooltipCloseDelay }
+    set {
+      ensureUnique()
+      storage.tooltipCloseDelay = newValue
+    }
+  }
+  public var treeTypeaheadWindow: Double {
+    get { storage.treeTypeaheadWindow }
+    set {
+      ensureUnique()
+      storage.treeTypeaheadWindow = newValue
+    }
+  }
+  public var controlColorRecessedBorder: ColorDescriptor {
+    get { storage.controlColorRecessedBorder }
+    set {
+      ensureUnique()
+      storage.controlColorRecessedBorder = newValue
+    }
+  }
   /// The ramp step `controlColorFilledSurface` picks when normal; a theme re-points it.
-  public var controlColorFilledSurfaceNormalShade: Int
+  public var controlColorFilledSurfaceNormalShade: Int {
+    get { storage.controlColorFilledSurfaceNormalShade }
+    set {
+      ensureUnique()
+      storage.controlColorFilledSurfaceNormalShade = newValue
+    }
+  }
   /// The ramp step `controlColorFilledSurface` picks when hovered; a theme re-points it.
-  public var controlColorFilledSurfaceHoveredShade: Int
+  public var controlColorFilledSurfaceHoveredShade: Int {
+    get { storage.controlColorFilledSurfaceHoveredShade }
+    set {
+      ensureUnique()
+      storage.controlColorFilledSurfaceHoveredShade = newValue
+    }
+  }
   /// The ramp step `controlColorFilledSurface` picks when pressed; a theme re-points it.
-  public var controlColorFilledSurfacePressedShade: Int
-  public var controlColorFilledBorder: ColorDescriptor
+  public var controlColorFilledSurfacePressedShade: Int {
+    get { storage.controlColorFilledSurfacePressedShade }
+    set {
+      ensureUnique()
+      storage.controlColorFilledSurfacePressedShade = newValue
+    }
+  }
+  public var controlColorFilledBorder: ColorDescriptor {
+    get { storage.controlColorFilledBorder }
+    set {
+      ensureUnique()
+      storage.controlColorFilledBorder = newValue
+    }
+  }
   /// The ramp step `controlColorTintedContent` picks when normal; a theme re-points it.
-  public var controlColorTintedContentNormalShade: Int
+  public var controlColorTintedContentNormalShade: Int {
+    get { storage.controlColorTintedContentNormalShade }
+    set {
+      ensureUnique()
+      storage.controlColorTintedContentNormalShade = newValue
+    }
+  }
   /// The ramp step `controlColorTintedContent` picks when hovered; a theme re-points it.
-  public var controlColorTintedContentHoveredShade: Int
+  public var controlColorTintedContentHoveredShade: Int {
+    get { storage.controlColorTintedContentHoveredShade }
+    set {
+      ensureUnique()
+      storage.controlColorTintedContentHoveredShade = newValue
+    }
+  }
   /// The ramp step `controlColorTintedContent` picks when pressed; a theme re-points it.
-  public var controlColorTintedContentPressedShade: Int
-  public var controlColorTintedBorder: ColorDescriptor
+  public var controlColorTintedContentPressedShade: Int {
+    get { storage.controlColorTintedContentPressedShade }
+    set {
+      ensureUnique()
+      storage.controlColorTintedContentPressedShade = newValue
+    }
+  }
+  public var controlColorTintedBorder: ColorDescriptor {
+    get { storage.controlColorTintedBorder }
+    set {
+      ensureUnique()
+      storage.controlColorTintedBorder = newValue
+    }
+  }
   /// The ramp step `controlColorOutlinedContent` picks when normal; a theme re-points it.
-  public var controlColorOutlinedContentNormalShade: Int
+  public var controlColorOutlinedContentNormalShade: Int {
+    get { storage.controlColorOutlinedContentNormalShade }
+    set {
+      ensureUnique()
+      storage.controlColorOutlinedContentNormalShade = newValue
+    }
+  }
   /// The ramp step `controlColorOutlinedContent` picks when hovered; a theme re-points it.
-  public var controlColorOutlinedContentHoveredShade: Int
+  public var controlColorOutlinedContentHoveredShade: Int {
+    get { storage.controlColorOutlinedContentHoveredShade }
+    set {
+      ensureUnique()
+      storage.controlColorOutlinedContentHoveredShade = newValue
+    }
+  }
   /// The ramp step `controlColorOutlinedContent` picks when pressed; a theme re-points it.
-  public var controlColorOutlinedContentPressedShade: Int
-  public var controlColorOutlinedBorder: ColorDescriptor
-  public var controlColorPlainSurface: ColorDescriptor
+  public var controlColorOutlinedContentPressedShade: Int {
+    get { storage.controlColorOutlinedContentPressedShade }
+    set {
+      ensureUnique()
+      storage.controlColorOutlinedContentPressedShade = newValue
+    }
+  }
+  public var controlColorOutlinedBorder: ColorDescriptor {
+    get { storage.controlColorOutlinedBorder }
+    set {
+      ensureUnique()
+      storage.controlColorOutlinedBorder = newValue
+    }
+  }
+  public var controlColorPlainSurface: ColorDescriptor {
+    get { storage.controlColorPlainSurface }
+    set {
+      ensureUnique()
+      storage.controlColorPlainSurface = newValue
+    }
+  }
   /// The ramp step `controlColorPlainContent` picks when normal; a theme re-points it.
-  public var controlColorPlainContentNormalShade: Int
+  public var controlColorPlainContentNormalShade: Int {
+    get { storage.controlColorPlainContentNormalShade }
+    set {
+      ensureUnique()
+      storage.controlColorPlainContentNormalShade = newValue
+    }
+  }
   /// The ramp step `controlColorPlainContent` picks when hovered; a theme re-points it.
-  public var controlColorPlainContentHoveredShade: Int
+  public var controlColorPlainContentHoveredShade: Int {
+    get { storage.controlColorPlainContentHoveredShade }
+    set {
+      ensureUnique()
+      storage.controlColorPlainContentHoveredShade = newValue
+    }
+  }
   /// The ramp step `controlColorPlainContent` picks when pressed; a theme re-points it.
-  public var controlColorPlainContentPressedShade: Int
-  public var controlColorPlainBorder: ColorDescriptor
+  public var controlColorPlainContentPressedShade: Int {
+    get { storage.controlColorPlainContentPressedShade }
+    set {
+      ensureUnique()
+      storage.controlColorPlainContentPressedShade = newValue
+    }
+  }
+  public var controlColorPlainBorder: ColorDescriptor {
+    get { storage.controlColorPlainBorder }
+    set {
+      ensureUnique()
+      storage.controlColorPlainBorder = newValue
+    }
+  }
 
   public var controlLabelGlyphShrink: CGFloat { spacing05 }
   public var controlLabelGlyphInset: CGFloat { spacing05 }

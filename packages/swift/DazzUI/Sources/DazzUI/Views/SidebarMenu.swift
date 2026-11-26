@@ -98,7 +98,6 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowActi
   public var rowAction: (() -> RowAction)?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @Environment(\.sidebarCollapsed) private var sidebarCollapsed
   @Environment(\.sidebarCollapsible) private var sidebarCollapsible
   @FocusState private var focused: Bool
@@ -197,7 +196,7 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowActi
       .overlay {
         if let ring = ring(state) {
           RoundedRectangle(cornerRadius: radius, style: .circular)
-            .strokeBorder(ring, lineWidth: hairline)
+            .strokeBorder(ring, lineWidth: vars.strokeHairline)
         }
       }
       .animation(vars.motion, value: state.controlState)
@@ -257,7 +256,7 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowActi
       .overlay {
         if let ring = ring(state) {
           RoundedRectangle(cornerRadius: radius, style: .circular)
-            .strokeBorder(ring, lineWidth: hairline)
+            .strokeBorder(ring, lineWidth: vars.strokeHairline)
         }
       }
       .overlay(alignment: .trailing) {
@@ -273,17 +272,16 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowActi
       .animation(vars.motion, value: state.controlState)
       .animation(vars.motion, value: active)
     }
-    .overlay(alignment: .trailing) {
-      if let rowAction {
-        rowAction()
-          .environment(\.sidebarRowHovered, rowHovered || keepActionVisible)
-          .padding(.trailing, vars.spacing1)
-          .opacity(isActionVisible ? 1 : 0)
-          .allowsHitTesting(isActionVisible)
-          .animation(vars.motion, value: isActionVisible)
-      }
-    }
-    .onHover { rowHovered = $0 }
+    .modifier(
+      SidebarRowActionModifier(
+        rowAction: rowAction,
+        rowHovered: $rowHovered,
+        keepActionVisible: keepActionVisible,
+        isActionVisible: isActionVisible,
+        trailingPadding: vars.spacing1,
+        motion: vars.motion
+      )
+    )
     .focused($focused)
     .focusRing(
       visible: focused && enabled,
@@ -305,8 +303,7 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View, RowActi
   }
 
   private func color(_ variant: ControlVariant, _ part: ControlPart, _ state: ControlState) -> Color {
-    let vars = theme.vars
-    return vars.resolve(vars.descriptor(variant, part), tint: tint, state: state)
+    theme.vars.controlColor(variant, part, tint: tint, state: state)
   }
 
   private func background(_ state: PressableState) -> Color {
@@ -514,6 +511,34 @@ public extension SidebarMenuBadge where Content == Text {
   /// A count from a string.
   init(_ text: String) {
     self.init { Text(text) }
+  }
+}
+
+private struct SidebarRowActionModifier<RowAction: View>: ViewModifier {
+  let rowAction: (() -> RowAction)?
+  @Binding var rowHovered: Bool
+  let keepActionVisible: Bool
+  let isActionVisible: Bool
+  let trailingPadding: CGFloat
+  let motion: Animation?
+
+  func body(content: Content) -> some View {
+    if let rowAction {
+      content
+        .overlay(alignment: .trailing) {
+          rowAction()
+            .environment(\.sidebarRowHovered, rowHovered || keepActionVisible)
+            .padding(.trailing, trailingPadding)
+            .opacity(isActionVisible ? 1 : 0)
+            .allowsHitTesting(isActionVisible)
+            .animation(motion, value: isActionVisible)
+        }
+        .onHover { inside in
+          if rowHovered != inside { rowHovered = inside }
+        }
+    } else {
+      content
+    }
   }
 }
 

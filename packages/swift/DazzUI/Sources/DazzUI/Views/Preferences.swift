@@ -151,7 +151,6 @@ public struct PreferenceSection<Content: View, Action: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     label: String? = nil,
@@ -191,7 +190,7 @@ public struct PreferenceSection<Content: View, Action: View>: View {
         .padding(.horizontal, vars.spacing35)
         .background(vars.colorSurface)
         .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
-        .border(vars.colorBorder, width: hairline, cornerRadius: vars.radiusLarge)
+        .border(vars.colorBorder, width: vars.strokeHairline, cornerRadius: vars.radiusLarge)
       } else {
         VStack(alignment: .leading, spacing: vars.preferencesRowGap) {
           content()
@@ -454,8 +453,7 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
   /// row here opens something; a neutral wash is for rows that merely light.
   private func background(hovered: Bool) -> Color {
     guard hovered else { return .clear }
-    let vars = theme.vars
-    return vars.resolve(vars.descriptor(.plain, .surface), tint: tint, state: .hovered)
+    return theme.vars.controlColor(.plain, .surface, tint: tint, state: .hovered)
   }
 }
 
@@ -668,7 +666,7 @@ private struct PreferenceSwatch<Value: Hashable>: View {
             let gap = outer.strokeHairline
             let stroke = outer.strokeControl
             RoundedRectangle(cornerRadius: radius + gap + stroke / 2)
-              .stroke(outer.resolve(outer.descriptor(.outlined, .border),
+              .stroke(outer.controlColor(.outlined, .border,
                 tint: .primary, state: .normal), lineWidth: stroke)
               .padding(-gap - stroke / 2)
               .background {
@@ -693,47 +691,74 @@ private struct PreferenceSwatch<Value: Hashable>: View {
 private struct PreferenceSwatchLayout: Layout {
   var spacing: CGFloat
 
-  private func rows(_ subviews: Subviews, width: CGFloat) -> [[Int]] {
-    var result: [[Int]] = [[]]
-    var run: CGFloat = 0
-    for index in subviews.indices {
-      let size = subviews[index].sizeThatFits(.unspecified)
-      if run > 0, run + spacing + size.width > width {
-        result.append([])
-        run = 0
+  struct Cache {
+    var sizes: [CGSize]
+  }
+
+  func makeCache(subviews: Subviews) -> Cache {
+    Cache(sizes: subviews.map { $0.sizeThatFits(.unspecified) })
+  }
+
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache.sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+    let sizes = cache.sizes
+    guard !sizes.isEmpty else { return .zero }
+    let limit = proposal.width ?? .infinity
+    var totalWidth: CGFloat = 0
+    var totalHeight: CGFloat = 0
+    var rowWidth: CGFloat = 0
+    var rowHeight: CGFloat = 0
+    for size in sizes {
+      if rowWidth > 0, rowWidth + spacing + size.width > limit {
+        totalWidth = max(totalWidth, rowWidth)
+        totalHeight += rowHeight + spacing
+        rowWidth = size.width
+        rowHeight = size.height
+      } else {
+        rowWidth += (rowWidth > 0 ? spacing : 0) + size.width
+        rowHeight = max(rowHeight, size.height)
       }
-      result[result.count - 1].append(index)
-      run += (run > 0 ? spacing : 0) + size.width
     }
-    return result.filter { !$0.isEmpty }
+    totalWidth = max(totalWidth, rowWidth)
+    totalHeight += rowHeight
+    return CGSize(width: totalWidth, height: totalHeight)
   }
 
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let lines = rows(subviews, width: proposal.width ?? .infinity)
-    var size = CGSize.zero
-    for row in lines {
-      let sizes = row.map { subviews[$0].sizeThatFits(.unspecified) }
-      size.width = max(size.width, sizes.reduce(0) { $0 + $1.width }
-        + CGFloat(row.count - 1) * spacing)
-      size.height += (sizes.map(\.height).max() ?? 0) + spacing
-    }
-    size.height = max(0, size.height - spacing)
-    return size
-  }
-
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
-    subviews: Subviews, cache: inout ()) {
+  func placeSubviews(
+    in bounds: CGRect, proposal: ProposedViewSize,
+    subviews: Subviews, cache: inout Cache
+  ) {
+    let sizes = cache.sizes
+    let count = sizes.count
+    guard count > 0 else { return }
+    let limit = bounds.width
     var y = bounds.minY
-    for row in rows(subviews, width: bounds.width) {
-      let sizes = row.map { subviews[$0].sizeThatFits(.unspecified) }
-      let width = sizes.reduce(0) { $0 + $1.width } + CGFloat(row.count - 1) * spacing
-      var x = bounds.maxX - width
-      for (index, size) in zip(row, sizes) {
-        subviews[index].place(at: CGPoint(x: x, y: y), anchor: .topLeading,
+    var start = 0
+    while start < count {
+      var end = start
+      var rowWidth: CGFloat = 0
+      var rowHeight: CGFloat = 0
+      while end < count {
+        let size = sizes[end]
+        let nextWidth = rowWidth > 0 ? rowWidth + spacing + size.width : size.width
+        if rowWidth > 0, nextWidth > limit { break }
+        rowWidth = nextWidth
+        rowHeight = max(rowHeight, size.height)
+        end += 1
+      }
+      var x = bounds.maxX - rowWidth
+      for index in start..<end {
+        let size = sizes[index]
+        subviews[index].place(
+          at: CGPoint(x: x, y: y), anchor: .topLeading,
           proposal: ProposedViewSize(size))
         x += size.width + spacing
       }
-      y += (sizes.map(\.height).max() ?? 0) + spacing
+      y += rowHeight + spacing
+      start = end
     }
   }
 }

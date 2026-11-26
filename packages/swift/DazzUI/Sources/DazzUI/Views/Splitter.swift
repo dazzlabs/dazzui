@@ -87,7 +87,6 @@ public struct Splitter: View {
   public var onSizesChange: (([CGFloat]) -> Void)?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @State private var shares: [CGFloat] = []
 
   public init(
@@ -109,7 +108,7 @@ public struct Splitter: View {
     // What a handle takes of the run, and how far its target reaches.
     let (extent, target): (CGFloat, CGFloat) = switch seam {
     case .gutter: (vars.spacing2, vars.spacing2)
-    case .hairline: (hairline, hairline + 2 * vars.spacing1)
+    case .hairline: (vars.strokeHairline, vars.strokeHairline + 2 * vars.spacing1)
     }
     let seams = max(panels.count - 1, 0)
 
@@ -248,6 +247,7 @@ public struct Splitter: View {
     )
     next[index] = leading
     next[index + 1] = pair - leading
+    guard next != shares else { return }
     if settle {
       withAnimation(theme.vars.motion) { shares = next }
     } else {
@@ -255,6 +255,10 @@ public struct Splitter: View {
     }
     onSizesChange?(next)
   }
+}
+
+private final class SeamDragTracker {
+  var last: CGFloat = 0
 }
 
 /// The seam: a hit target with a rule inside it.
@@ -284,7 +288,7 @@ private struct Seam: View {
   @Environment(\.theme) private var theme
   @State private var hovered = false
   @State private var dragging = false
-  @State private var last: CGFloat = 0
+  @State private var dragTracker = SeamDragTracker()
   @FocusState private var focused: Bool
 
   /// How much wider the rule is drawn while the pointer is on it.
@@ -300,7 +304,7 @@ private struct Seam: View {
     let vars = theme.vars
     let lit = hovered || dragging || focused
     let ink = lit
-      ? vars.resolve(vars.descriptor(.filled, .surface), tint: .primary, state: .normal)
+      ? vars.controlColor(.filled, .surface, tint: .primary, state: .normal)
       : vars.colorBorder
     let weight = vars.strokeHairline * (lit ? Self.swell : 1)
 
@@ -328,6 +332,7 @@ private struct Seam: View {
                    maxHeight: horizontal ? .infinity : nil)
             .contentShape(Rectangle())
             .onHover { inside in
+              guard hovered != inside else { return }
               hovered = inside
               #if os(macOS)
                 // Pushed and popped in the same handler, so the stack stays
@@ -339,20 +344,31 @@ private struct Seam: View {
                 }
               #endif
             }
+            .onDisappear {
+              #if os(macOS)
+                if hovered {
+                  NSCursor.pop()
+                  hovered = false
+                }
+              #endif
+              dragging = false
+              dragTracker.last = 0
+            }
             .gesture(
               DragGesture(minimumDistance: 0, coordinateSpace: .global)
                 .onChanged { value in
                   let at = horizontal ? value.translation.width : value.translation.height
                   if !dragging {
                     dragging = true
-                    last = 0
+                    dragTracker.last = 0
                   }
-                  onDrag(at - last)
-                  last = at
+                  let delta = at - dragTracker.last
+                  dragTracker.last = at
+                  onDrag(delta)
                 }
                 .onEnded { _ in
                   dragging = false
-                  last = 0
+                  dragTracker.last = 0
                 }
             )
             // An even split of this pair alone, which is what a reader means by

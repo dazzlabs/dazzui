@@ -29,7 +29,6 @@ public struct Aside<Header: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     width: CGFloat? = nil,
@@ -57,6 +56,7 @@ public struct Aside<Header: View, Content: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let open = width ?? vars.frameAsideWidth
 
     VStack(spacing: 0) {

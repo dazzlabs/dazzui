@@ -209,7 +209,7 @@ private struct Segment<Value: Hashable>: View {
     switch activeStyle {
     case .raised: return vars.colorSurfaceRaised
     case .filled:
-      return vars.resolve(vars.descriptor(.filled, .surface), tint: tint, state: .normal)
+      return vars.controlColor(.filled, .surface, tint: tint, state: .normal)
     }
   }
 
@@ -219,7 +219,7 @@ private struct Segment<Value: Hashable>: View {
       switch activeStyle {
       case .raised: return vars.colorContent
       case .filled:
-        return vars.resolve(vars.descriptor(.filled, .content), tint: tint, state: .normal)
+        return vars.controlColor(.filled, .content, tint: tint, state: .normal)
       }
     }
     if state.enabled, state.hovered || state.pressed { return vars.colorContent }

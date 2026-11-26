@@ -31,7 +31,6 @@ public struct Drawer<Content: View, Footer: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     side: DrawerSide = .trailing,
@@ -90,7 +89,7 @@ public struct Drawer<Content: View, Footer: View>: View {
     // flush to an edge with all four corners rounded reads as floating just
     // off the screen rather than as attached to it.
     .clipShape(DrawerShape(side: side, corner: vars.frameWindowRadius))
-    .rule(vars.colorBorderStrong, edge: flushEdge, width: hairline)
+    .rule(vars.colorBorderStrong, edge: flushEdge, width: vars.strokeHairline)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
   }
 

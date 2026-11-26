@@ -70,8 +70,9 @@ public struct Link: View {
       // The `plain` recipe's content grade, and only its content: the wash that
       // recipe also carries would ragged the line it sits on, and the grade
       // change is what a link has always used to answer the pointer.
-      let content = vars.resolve(
-        vars.descriptor(.plain, .content),
+      let content = vars.controlColor(
+        .plain,
+        .content,
         tint: tint,
         state: state.controlState
       )

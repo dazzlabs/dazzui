@@ -14,7 +14,8 @@
   internal struct PortNativeMenuAnchor: SwiftUI.View {
     @Binding var isPresented: Bool
     let presentation: MenuPresentation
-    let entries: [NativeMenuEntry]
+    let hasEntries: Bool
+    let entries: () -> [NativeMenuEntry]
     let theme: Theme
     let align: MenuAlign
     let point: CGPoint?
@@ -30,7 +31,7 @@
       return GeometryReader { geometry in
         let snapshot = PortMenuGeometry(
           frame: geometry.frame(in: .global), shown: shown, presentation: presentation,
-          canSwitch: menuID != nil && !entries.isEmpty)
+          canSwitch: menuID != nil && hasEntries)
         Color.clear
           .onAppear { update(snapshot) }
           .onChange(of: snapshot) { update($0) }
@@ -66,6 +67,17 @@
       entries: [NativeMenuEntry], theme: Theme, align: MenuAlign, point: CGPoint?,
       bar: NativeMenuBar?, dismiss: @escaping () -> Void
     ) {
+      update(
+        window: window, shown: shown, presentation: presentation,
+        entries: { entries }, theme: theme, align: align, point: point, bar: bar,
+        dismiss: dismiss)
+    }
+
+    func update(
+      window: NativeAPI.Window?, shown: Bool, presentation: MenuPresentation,
+      entries: () -> [NativeMenuEntry], theme: Theme, align: MenuAlign, point: CGPoint?,
+      bar: NativeMenuBar?, dismiss: @escaping () -> Void
+    ) {
       let changed = self.presentation != nil && self.presentation != presentation
       self.presentation = presentation
       if self.window?.id != window?.id {
@@ -94,7 +106,7 @@
       }
       generation += 1
       let token = generation
-      let session = NativeMenuSession(entries: entries, theme: theme)
+      let session = NativeMenuSession(entries: entries(), theme: theme)
       self.session = session
       session.didClose = { [weak self] in
         guard let self, self.generation == token else { return }

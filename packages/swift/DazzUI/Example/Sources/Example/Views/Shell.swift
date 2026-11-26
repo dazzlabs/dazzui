@@ -160,7 +160,6 @@ private struct Toolbar: View {
   let toggleThemes: () -> Void
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
@@ -186,7 +185,7 @@ private struct Toolbar: View {
     .frame(height: vars.frameTitlebarSize)
     .background(vars.colorSurfaceChrome)
     .overlay(alignment: .bottom) {
-      Rectangle().fill(vars.colorBorder).frame(height: hairline)
+      Rectangle().fill(vars.colorBorder).frame(height: vars.strokeHairline)
     }
   }
 }

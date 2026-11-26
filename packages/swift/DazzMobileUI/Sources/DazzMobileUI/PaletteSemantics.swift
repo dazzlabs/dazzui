@@ -131,7 +131,12 @@ public extension ThemeFamily {
 
   /// Whether this family is one of the six drawn DazzUI families.
   var isDrawn: Bool {
-    Self.drawn.contains(self)
+    switch self {
+    case .bright, .studio, .frost, .graphite, .ember, .nocturne:
+      return true
+    default:
+      return false
+    }
   }
 
   /// Human-readable display name for pickers and theme lists.

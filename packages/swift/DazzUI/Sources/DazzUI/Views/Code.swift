@@ -91,14 +91,49 @@ public struct CodeBlock<Actions: View>: View {
     self.actions = actions
   }
 
-  private var body_: String {
-    var trimmed = code
-    while trimmed.hasSuffix("\n") { trimmed.removeLast() }
-    return trimmed
+  internal var trimmedBody: Substring {
+    // Scan UTF-8 bytes directly so `\r\n` (a single Swift grapheme cluster) is
+    // trimmed the same as `\n` without allocating a new `String`.
+    let utf8 = code.utf8
+    var end = utf8.endIndex
+    while end > utf8.startIndex {
+      let prev = utf8.index(before: end)
+      guard utf8[prev] == 0x0A else { break }
+      end = prev
+      if end > utf8.startIndex {
+        let beforeLF = utf8.index(before: end)
+        if utf8[beforeLF] == 0x0D {
+          end = beforeLF
+        }
+      }
+    }
+    return code[code.startIndex..<end]
   }
 
-  private var lines: [String] {
-    body_.components(separatedBy: "\n")
+  internal var lineSlices: [Substring] {
+    let body = trimmedBody
+    let utf8 = body.utf8
+    var lines: [Substring] = []
+    var lineStart = body.startIndex
+    var index = utf8.startIndex
+    while index < utf8.endIndex {
+      if utf8[index] == 0x0A {
+        let lineEnd: String.Index
+        if index > lineStart {
+          let prev = utf8.index(before: index)
+          lineEnd = utf8[prev] == 0x0D ? prev : index
+        } else {
+          lineEnd = index
+        }
+        lines.append(body[lineStart..<lineEnd])
+        index = utf8.index(after: index)
+        lineStart = index
+      } else {
+        index = utf8.index(after: index)
+      }
+    }
+    lines.append(body[lineStart..<body.endIndex])
+    return lines
   }
 
   private var hasHead: Bool {
@@ -107,12 +142,13 @@ public struct CodeBlock<Actions: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let lines = lineSlices
 
     VStack(alignment: .leading, spacing: 0) {
       if hasHead { head }
       HStack(alignment: .top, spacing: 0) {
-        if lineNumbers { gutter }
-        listing
+        if lineNumbers { gutter(lineCount: lines.count, vars: vars) }
+        listing(lines: lines, vars: vars)
       }
       .padding(.vertical, vars.spacing25)
     }
@@ -184,11 +220,9 @@ public struct CodeBlock<Actions: View>: View {
     }
   }
 
-  private var gutter: some View {
-    let vars = theme.vars
-
-    return VStack(alignment: .trailing, spacing: 0) {
-      ForEach(Array(lines.indices), id: \.self) { index in
+  private func gutter(lineCount: Int, vars: ThemeVariables) -> some View {
+    VStack(alignment: .trailing, spacing: 0) {
+      ForEach(0..<lineCount, id: \.self) { index in
         Text("\(index + 1)")
           .frame(height: vars.bodySmall.lineHeight)
       }
@@ -203,12 +237,10 @@ public struct CodeBlock<Actions: View>: View {
     .accessibilityHidden(true)
   }
 
-  private var listing: some View {
-    let vars = theme.vars
-
-    return VStack(alignment: .leading, spacing: 0) {
-      ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-        Text(line)
+  private func listing(lines: [Substring], vars: ThemeVariables) -> some View {
+    VStack(alignment: .leading, spacing: 0) {
+      ForEach(lines.indices, id: \.self) { index in
+        Text(lines[index])
           .fixedSize(horizontal: !wrap, vertical: false)
           .frame(
             maxWidth: .infinity,
@@ -225,14 +257,15 @@ public struct CodeBlock<Actions: View>: View {
   }
 
   private func copy() {
+    let text = String(trimmedBody)
     #if os(macOS)
       NSPasteboard.general.clearContents()
-      NSPasteboard.general.setString(body_, forType: .string)
+      NSPasteboard.general.setString(text, forType: .string)
     #elseif os(Windows) || os(Linux) || CROSS_SWIFTUI_HARMONY
-      guard NativeAPI.Clipboard.shared.writeText(body_) else { return }
+      guard NativeAPI.Clipboard.shared.writeText(text) else { return }
     #elseif os(WASI)
       guard let clipboard = JSObject.global.navigator.clipboard.object,
-        let promise = clipboard.writeText!(body_).object
+        let promise = clipboard.writeText!(text).object
       else { return }
       _ = JSPromise(unsafelyWrapping: promise).then(success: { _ in
         showCopied()

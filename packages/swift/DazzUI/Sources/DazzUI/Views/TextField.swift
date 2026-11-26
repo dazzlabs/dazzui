@@ -104,16 +104,8 @@ struct FieldStyle: Equatable {
     // at equal specificity in that order, so the later rule wins: disabled
     // outranks the error tone, which outranks the focused lift.
     if !enabled {
-      self.surface = vars.resolve(
-        vars.descriptor(.normal, .surface),
-        tint: tint,
-        state: .disabled
-      )
-      self.content = vars.resolve(
-        vars.descriptor(.normal, .content),
-        tint: tint,
-        state: .disabled
-      )
+      self.surface = vars.controlColor(.normal, .surface, tint: tint, state: .disabled)
+      self.content = vars.controlColor(.normal, .content, tint: tint, state: .disabled)
     } else if invalid {
       self.surface = ramp[50]
       self.content = ramp[800]
@@ -160,7 +152,7 @@ extension View {
       .foregroundStyle(style.content)
       .background(style.surface)
       .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .circular))
-      .modifier(FieldBorder(color: style.border, cornerRadius: cornerRadius))
+      .border(style.border, width: vars.strokeHairline, cornerRadius: cornerRadius)
       // A wash rather than the system ring: the field's focus signal is its
       // own tint, which is what makes an erroring field glow danger.
       .focusRing(
@@ -170,15 +162,6 @@ extension View {
         width: vars.focusWidth
       )
       .animation(vars.motion, value: style)
-  }
-}
-private struct FieldBorder: ViewModifier {
-  let color: Color
-  let cornerRadius: CGFloat
-  @Environment(\.hairline) private var hairline
-
-  func body(content: Content) -> some View {
-    content.border(color, width: hairline, cornerRadius: cornerRadius)
   }
 }
 public struct TextField: View {
@@ -218,7 +201,6 @@ public struct TextField: View {
   public var onSubmit: (() -> Void)?
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
   @FocusState private var focused: Bool
 
   public init(
@@ -434,7 +416,7 @@ public struct TextField: View {
         // and never under the floor its `min-height` sets.
         let height = max(
           vars.spacing20,
-          line.lineHeight * CGFloat(max(1, rows)) + vars.spacing25 * 2 + hairline * 2
+          line.lineHeight * CGFloat(max(1, rows)) + vars.spacing25 * 2 + vars.strokeHairline * 2
         )
         adorned
           .lineBox(line)
@@ -463,8 +445,8 @@ public struct TextField: View {
     }
     .background {
       #if os(macOS)
-        if multiline && submitOnReturn, let onSubmit {
-          IMESafeReturnKeyMonitor(active: focused && enabled, onSubmit: onSubmit)
+        if multiline && submitOnReturn && focused && enabled, let onSubmit {
+          IMESafeReturnKeyMonitor(active: true, onSubmit: onSubmit)
         }
       #endif
     }
@@ -653,14 +635,19 @@ public struct Select<Value: Hashable>: View {
       ) { anchor in
         AnchoredMenuSheet(width: anchor.width) { list }
       }
-      .nativeMenu(isPresented: $open, entries: nativeEntries)
+      .nativeMenu(
+        isPresented: $open,
+        hasEntries: !entries.isEmpty,
+        entries: { nativeEntries }
+      )
       .onChange(of: enabled) { if !$0 { open = false } }
   }
 
   private var trigger: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size.controlSize)
-    let all = options
+    let chosen = selectedOption()
+    let chosenLabel = chosen?.label ?? placeholder
 
     return Pressable(
       action: { open.toggle() },
@@ -672,12 +659,12 @@ public struct Select<Value: Hashable>: View {
         ZStack(alignment: .leading) {
           if width == .longestOption {
             // Every label, unseen, so the box is the longest one's width.
-            ForEach(all) { option in
+            ForEach(options) { option in
               Text(option.label).hidden()
             }
             Text(placeholder).hidden()
           }
-          if let chosen = all.first(where: { $0.value == selection }) {
+          if let chosen {
             Text(chosen.label)
           } else {
             Text(placeholder).foregroundStyle(vars.colorContentFaint)
@@ -707,7 +694,7 @@ public struct Select<Value: Hashable>: View {
       )
     }
     .focused($focused)
-    .accessibilityValue(selectedLabel)
+    .accessibilityValue(chosenLabel)
   }
 
   @ViewBuilder private var list: some View {
@@ -760,8 +747,22 @@ public struct Select<Value: Hashable>: View {
       })
   }
 
+  private func selectedOption() -> SelectOption<Value>? {
+    for entry in entries {
+      switch entry {
+      case .option(let option):
+        if option.value == selection { return option }
+      case .group(let group):
+        if let match = group.options.first(where: { $0.value == selection }) {
+          return match
+        }
+      }
+    }
+    return nil
+  }
+
   private var selectedLabel: String {
-    options.first { $0.value == selection }?.label ?? placeholder
+    selectedOption()?.label ?? placeholder
   }
 }
 extension Select {

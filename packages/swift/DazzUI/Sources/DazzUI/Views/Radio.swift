@@ -74,11 +74,7 @@ public struct Radio<Label: View>: View {
   /// shared state machine.
   private var box: some View {
     let vars = theme.vars
-    let selected = vars.resolve(
-      vars.descriptor(.filled, .surface),
-      tint: tint,
-      state: .normal
-    )
+    let selected = vars.controlColor(.filled, .surface, tint: tint, state: .normal)
 
     return ZStack {
       if checked {

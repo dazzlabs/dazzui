@@ -232,7 +232,10 @@ public struct Button<Label: View>: View {
   /// list would make the whole button a new view the moment it was disabled,
   /// and the fill would be swapped instead of crossfading.
   private func liftedShadow(state: PressableState) -> [TokenShadow] {
-    variant == .filled && state.enabled ? theme.vars.shadow2xs : [.none]
+    guard variant == .filled else { return [] }
+    let lift = theme.vars.shadow2xs
+    if state.enabled { return lift }
+    return lift.isEmpty ? [] : Array(repeating: .none, count: lift.count)
   }
 }
 

@@ -76,8 +76,61 @@ public enum ThemeFamily: String, CaseIterable, Sendable, Identifiable, Hashable 
   /// The imported families (desktops, applications, and Omarchy).
   public static let imported: [ThemeFamily] = allCases.filter { !$0.isDrawn }
 
+  private static let drawnFamilies: [ThemeFamily] = [
+    .bright,
+    .studio,
+    .frost,
+    .graphite,
+    .ember,
+    .nocturne,
+  ]
+
+  private static let desktopsFamilies: [ThemeFamily] = [
+    .macos27,
+    .macos15,
+    .windows11,
+    .ubuntu,
+    .debian,
+    .fedora,
+    .kde,
+  ]
+
+  private static let applicationsFamilies: [ThemeFamily] = [
+    .spotify,
+  ]
+
+  private static let omarchyFamilies: [ThemeFamily] = [
+    .omarchyTokyoNight,
+    .omarchyCatppuccin,
+    .omarchyCatppuccinLatte,
+    .omarchyEthereal,
+    .omarchyEverforest,
+    .omarchyFlexokiLight,
+    .omarchyGruvbox,
+    .omarchyHackerman,
+    .omarchyKanagawa,
+    .omarchyLastHorizon,
+    .omarchyLumon,
+    .omarchyLupine,
+    .omarchyMatteBlack,
+    .omarchyMiasma,
+    .omarchyNord,
+    .omarchyOsakaJade,
+    .omarchyRetro82,
+    .omarchyRistretto,
+    .omarchyRosePine,
+    .omarchySolitude,
+    .omarchyVantablack,
+    .omarchyWhite,
+  ]
+
   public static func families(in group: ThemeGroup) -> [ThemeFamily] {
-    allCases.filter { $0.group == group }
+    switch group {
+    case .drawn: return drawnFamilies
+    case .desktops: return desktopsFamilies
+    case .applications: return applicationsFamilies
+    case .omarchy: return omarchyFamilies
+    }
   }
 
   public var group: ThemeGroup {

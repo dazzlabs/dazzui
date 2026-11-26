@@ -1081,10 +1081,10 @@ private struct SidebarColumn: View {
   let node: Node
   @Environment(\.sidebar) private var sidebar
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let variant = node.string("variant") ?? "sidebar"
     let collapsible = node.string("collapsible") ?? "offcanvas"
     let framed = variant != "sidebar"
@@ -1140,10 +1140,10 @@ private struct SidebarInsetNode: View {
   let node: Node
   @Environment(\.sidebar) private var sidebar
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let content = VStack(alignment: .leading, spacing: 0) {
       ForEach(Array(node.children.enumerated()), id: \.offset) { _, child in
         NodeView(child)

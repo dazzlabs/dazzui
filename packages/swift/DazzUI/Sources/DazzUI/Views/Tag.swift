@@ -173,11 +173,7 @@ public struct Tag: View {
 
   private func recipe(_ part: ControlPart, state: ControlState) -> Color? {
     guard let recipeVariant else { return nil }
-    return theme.vars.resolve(
-      theme.vars.descriptor(recipeVariant, part),
-      tint: tint,
-      state: state
-    )
+    return theme.vars.controlColor(recipeVariant, part, tint: tint, state: state)
   }
 
   private func surface(state: ControlState) -> Color {
@@ -196,11 +192,7 @@ public struct Tag: View {
     // would look untouched, and an edge alone is a pixel to spot in a row of
     // forty.
     if selected == true {
-      return theme.vars.resolve(
-        theme.vars.descriptor(.outlined, .border),
-        tint: tint,
-        state: .normal
-      )
+      return theme.vars.controlColor(.outlined, .border, tint: tint, state: .normal)
     }
     return drawn == .outlined ? recipe(.border, state: state) ?? .clear : .clear
   }

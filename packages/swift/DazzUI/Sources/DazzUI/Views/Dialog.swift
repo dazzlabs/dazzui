@@ -29,7 +29,6 @@ public struct Dialog<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     width: CGFloat? = nil,
@@ -53,7 +52,7 @@ public struct Dialog<Content: View>: View {
     .frame(width: width ?? vars.dialogWidth, height: height)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.frameWindowRadius, style: .circular))
-    .border(border, width: hairline, cornerRadius: vars.frameWindowRadius)
+    .border(border, width: vars.strokeHairline, cornerRadius: vars.frameWindowRadius)
     .tokenShadow(vars.shadowLg)
     .accessibilityAddTraits(.isModal)
 
@@ -98,7 +97,6 @@ public struct DialogHeader<Leading: View, Accessory: View>: View {
   @ViewBuilder public var accessory: () -> Accessory
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     title: String,
@@ -151,7 +149,7 @@ public struct DialogHeader<Leading: View, Accessory: View>: View {
     .padding(.vertical, leading != nil ? vars.spacing4 : vars.spacing3)
     .padding(.horizontal, vars.spacing5)
     .frame(minHeight: vars.spacing11)
-    .rule(vars.colorBorder, edge: .bottom, width: hairline)
+    .rule(vars.colorBorder, edge: .bottom, width: vars.strokeHairline)
   }
 
   @ViewBuilder
@@ -262,7 +260,6 @@ public struct DialogFooter<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(@ViewBuilder content: @escaping () -> Content) {
     self.content = content
@@ -279,7 +276,7 @@ public struct DialogFooter<Content: View>: View {
     .padding(.vertical, vars.spacing3)
     .padding(.horizontal, vars.spacing5)
     .background(vars.colorSurfaceChrome)
-    .rule(vars.colorBorder, edge: .top, width: hairline)
+    .rule(vars.colorBorder, edge: .top, width: vars.strokeHairline)
   }
 }
 

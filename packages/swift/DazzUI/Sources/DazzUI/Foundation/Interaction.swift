@@ -60,8 +60,74 @@ public struct Pressable<Content: View>: View {
         )
       )
       .disabled(!interactive)
-      .onHover { hovered = $0 }
-      .help(help ?? "")
+      .onHover { inside in
+        let next = inside && interactive
+        if hovered != next { hovered = next }
+      }
+      .modifier(OptionalHelpModifier(help: help))
+  }
+}
+
+internal struct OptionalHelpModifier: ViewModifier {
+  let help: String?
+
+  func body(content: Content) -> some View {
+    if let help, !help.isEmpty {
+      content.help(help)
+    } else {
+      content
+    }
+  }
+}
+
+/// Places a single child at a fraction of the offered width from the leading
+/// edge, avoiding `GeometryReader`'s extra layout pass while animating width
+/// changes smoothly through `Animatable`.
+internal struct ProportionalBarLayout: Layout, Animatable {
+  var fraction: Double
+
+  var animatableData: Double {
+    get { fraction }
+    set { fraction = newValue }
+  }
+
+  private var clampedFraction: CGFloat {
+    guard fraction.isFinite else { return 0 }
+    return CGFloat(min(1, max(0, fraction)))
+  }
+
+  func sizeThatFits(
+    proposal: ProposedViewSize,
+    subviews: Subviews,
+    cache: inout ()
+  ) -> CGSize {
+    let clamped = clampedFraction
+    let childWidth: CGFloat? = proposal.width.map { offered in
+      offered.isFinite ? offered * clamped : offered
+    }
+    let childSize =
+      subviews.first?.sizeThatFits(ProposedViewSize(width: childWidth, height: proposal.height))
+      ?? .zero
+    return CGSize(
+      width: proposal.width ?? childSize.width,
+      height: proposal.height ?? childSize.height
+    )
+  }
+
+  func placeSubviews(
+    in bounds: CGRect,
+    proposal: ProposedViewSize,
+    subviews: Subviews,
+    cache: inout ()
+  ) {
+    guard let child = subviews.first else { return }
+    let clamped = clampedFraction
+    let width = bounds.width.isFinite ? bounds.width * clamped : 0
+    child.place(
+      at: bounds.origin,
+      anchor: .topLeading,
+      proposal: ProposedViewSize(width: width, height: bounds.height)
+    )
   }
 }
 
@@ -73,11 +139,16 @@ private struct PressableButtonStyle<Content: View>: ButtonStyle {
   let cornerRadius: CGFloat
   @ViewBuilder let content: (PressableState) -> Content
 
+  @ViewBuilder
   func makeBody(configuration: Configuration) -> some View {
-    content(
+    let view = content(
       PressableState(hovered: hovered, pressed: configuration.isPressed, enabled: enabled)
     )
-    .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .circular))
+    if cornerRadius > 0 {
+      view.contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .circular))
+    } else {
+      view.contentShape(Rectangle())
+    }
   }
 }
 
@@ -96,7 +167,10 @@ public struct HoverRegion<Content: View>: View {
 
   public var body: some View {
     content(hovered && enabled)
-      .onHover { hovered = $0 }
+      .onHover { inside in
+        let next = inside && enabled
+        if hovered != next { hovered = next }
+      }
   }
 }
 

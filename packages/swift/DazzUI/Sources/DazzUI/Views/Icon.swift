@@ -31,11 +31,30 @@ public struct Icon: View {
     self.size = size
   }
 
+  public var body: some View {
+    if let size {
+      image
+        .resizable()
+        .renderingMode(.template)
+        .scaledToFit()
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    } else {
+      InheritedSizedIcon(image: image)
+    }
+  }
+}
+
+/// Only subscribes to `@Environment(\.theme)` and `@Environment(\.dazzIconSize)`
+/// when `Icon` does not specify an explicit `size`.
+private struct InheritedSizedIcon: View {
+  let image: Image
+
   @Environment(\.theme) private var theme
   @Environment(\.dazzIconSize) private var inheritedSize
 
-  public var body: some View {
-    let edge = size ?? inheritedSize ?? theme.vars.iconMedium
+  var body: some View {
+    let edge = inheritedSize ?? theme.vars.iconMedium
     image
       .resizable()
       .renderingMode(.template)

@@ -79,10 +79,8 @@ public struct Meter: View {
       // corner, the hard-clipped fill. The fill has no transition on purpose:
       // a progress bar interpolates because the thing behind it is running; a
       // meter that eased into place would be animating a fact.
-      GeometryReader { geometry in
+      ProportionalBarLayout(fraction: fraction) {
         vars.ramp(tint)[600]
-          .frame(width: geometry.size.width * fraction)
-          .frame(maxWidth: .infinity, alignment: .leading)
       }
       .frame(height: thickness)
       .background(vars.colorSurfaceSunken)

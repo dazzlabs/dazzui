@@ -98,13 +98,25 @@ struct Sized: Layout {
 struct ShrinkToFit: Layout {
   var spacing: CGFloat
 
-  private func width(_ proposal: ProposedViewSize, _ subviews: Subviews) -> CGFloat {
-    let wanted = subviews.map { $0.sizeThatFits(.unspecified).width }.max() ?? 0
+  struct Cache {
+    var maxWantedWidth: CGFloat
+  }
+
+  func makeCache(subviews: Subviews) -> Cache {
+    Cache(maxWantedWidth: subviews.map { $0.sizeThatFits(.unspecified).width }.max() ?? 0)
+  }
+
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache.maxWantedWidth = subviews.map { $0.sizeThatFits(.unspecified).width }.max() ?? 0
+  }
+
+  private func width(_ proposal: ProposedViewSize, _ cache: Cache) -> CGFloat {
+    let wanted = cache.maxWantedWidth
     return proposal.width.map { min(wanted, $0) } ?? wanted
   }
 
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let width = width(proposal, subviews)
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+    let width = width(proposal, cache)
     var height: CGFloat = 0
     for subview in subviews {
       height += subview.sizeThatFits(ProposedViewSize(width: width, height: nil)).height
@@ -113,7 +125,7 @@ struct ShrinkToFit: Layout {
     return CGSize(width: width, height: height)
   }
 
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
     var y = bounds.minY
     for subview in subviews {
       let offer = ProposedViewSize(width: bounds.width, height: nil)
@@ -130,11 +142,22 @@ struct Flow: Layout {
   var spacing: CGFloat
   var alignment: VerticalAlignment
 
-  private func lines(_ width: CGFloat?, _ subviews: Subviews) -> [[(Int, CGSize)]] {
+  struct Cache {
+    var sizes: [CGSize]
+  }
+
+  func makeCache(subviews: Subviews) -> Cache {
+    Cache(sizes: subviews.map { $0.sizeThatFits(.unspecified) })
+  }
+
+  func updateCache(_ cache: inout Cache, subviews: Subviews) {
+    cache.sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+  }
+
+  private func lines(_ width: CGFloat?, _ sizes: [CGSize]) -> [[(Int, CGSize)]] {
     var lines: [[(Int, CGSize)]] = [[]]
     var x: CGFloat = 0
-    for (index, subview) in subviews.enumerated() {
-      let size = subview.sizeThatFits(.unspecified)
+    for (index, size) in sizes.enumerated() {
       if let width, x > 0, x + size.width > width {
         lines.append([])
         x = 0
@@ -145,8 +168,8 @@ struct Flow: Layout {
     return lines
   }
 
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let lines = lines(proposal.width, subviews)
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+    let lines = lines(proposal.width, cache.sizes)
     var width: CGFloat = 0
     var height: CGFloat = 0
     for line in lines {
@@ -164,9 +187,9 @@ struct Flow: Layout {
     return CGSize(width: width, height: height)
   }
 
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
     var y = bounds.minY
-    for line in lines(bounds.width, subviews) {
+    for line in lines(bounds.width, cache.sizes) {
       let height = line.map(\.1.height).max() ?? 0
       var x = bounds.minX
       for (index, size) in line {
@@ -287,10 +310,10 @@ func stageFrame(_ node: Node) -> AnyView {
 private struct StageFrame: View {
   let node: Node
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
+    let hairline = vars.strokeHairline
     let shape = RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular)
     node.kids
       .frame(maxWidth: .infinity, maxHeight: .infinity)

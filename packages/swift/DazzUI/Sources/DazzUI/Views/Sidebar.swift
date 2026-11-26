@@ -99,14 +99,8 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   @State private var ownWidth: CGFloat?
-  @State private var dragOrigin: CGFloat?
-  @State private var dragging = false
-  @State private var collapsedByThisDrag = false
-  @State private var hoveringResizer = false
-  @FocusState private var resizerFocused: Bool
 
   public init(
     resizable: Bool = false,
@@ -194,27 +188,28 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
       .frame(width: targetWidth, alignment: .leading)
       .clipped()
       .overlay(alignment: .trailing) {
-        if resizable && !collapsed { resizer(vars: vars) }
+        if resizable && !collapsed {
+          SidebarResizer(
+            vars: vars,
+            tint: tint,
+            minWidth: minWidth,
+            maxWidth: maxWidth,
+            naturalWidth: naturalWidth,
+            resolvedWidth: resolvedWidth,
+            resizeLabel: resizeLabel,
+            onCollapse: onCollapse,
+            commit: commit
+          )
+        }
       }
       .allowsHitTesting(!isOffcanvasHidden)
       .accessibilityHidden(isOffcanvasHidden)
-      .onChange(of: collapsed) { away in
-        guard away else { return }
-        if hoveringResizer {
-          #if os(macOS)
-          NSCursor.pop()
-          #endif
-          hoveringResizer = false
-        }
-        dragOrigin = nil
-        dragging = false
-        collapsedByThisDrag = false
-      }
   }
 
   /// The column itself, at the open width (or icon rail width when icon-collapsed).
   private func column(vars: ThemeVariables, innerWidth: CGFloat) -> some View {
-    VStack(spacing: 0) {
+    let hairline = vars.strokeHairline
+    return VStack(spacing: 0) {
       if let header {
         HStack(spacing: 0) {
           header()
@@ -275,22 +270,57 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
     defaultWidth ?? theme.vars.frameSidebarWidth
   }
 
-  private func clamp(_ value: CGFloat) -> CGFloat {
-    min(maxWidth, max(minWidth, value)).rounded()
-  }
-
   private func commit(_ next: CGFloat) {
+    guard next != resolvedWidth else { return }
     if let width {
       width.wrappedValue = next
     } else {
       ownWidth = next
     }
   }
+}
 
-  /// The grab area straddles the separator and reaches a few points into the
-  /// pane beside it, because a one-pixel target is not a target. Nothing is
-  /// drawn there — the separator itself is what lights up.
-  private func resizer(vars: ThemeVariables) -> some View {
+private final class SidebarDragState {
+  var origin: CGFloat?
+  var collapsedByThisDrag = false
+}
+
+/// Isolated resizer handle so hover, focus, and drag state updates never
+/// re-evaluate the sidebar's `header`, `content`, or `footer` subtrees.
+private struct SidebarResizer: View {
+  let vars: ThemeVariables
+  let tint: Tint
+  let minWidth: CGFloat
+  let maxWidth: CGFloat
+  let naturalWidth: CGFloat
+  let resolvedWidth: CGFloat
+  let resizeLabel: String
+  let onCollapse: (() -> Void)?
+  let commit: (CGFloat) -> Void
+
+  @State private var dragState = SidebarDragState()
+  @State private var dragging = false
+  @State private var hovering = false
+  @FocusState private var focused: Bool
+
+  private var lineOpacity: Double {
+    if dragging { return 1 }
+    return hovering || focused ? resizerHintOpacity : 0
+  }
+
+  private func clamp(_ value: CGFloat) -> CGFloat {
+    min(maxWidth, max(minWidth, value)).rounded()
+  }
+
+  /// Discrete jumps — a double-click home, an arrow-key step, an accessibility
+  /// nudge — settle over the motion token, reflowing the column the way a short
+  /// smooth drag would. A drag keeps applying its width on the spot so the
+  /// divider never trails the pointer.
+  private func settle(_ change: () -> Void) {
+    withAnimation(vars.motion, change)
+  }
+
+  var body: some View {
     withResizerFocus(
       Color.clear
         .frame(width: vars.spacing2)
@@ -311,16 +341,28 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
         }
         .gesture(drag)
         .onHover { inside in
-          hoveringResizer = inside
+          guard hovering != inside else { return }
+          hovering = inside
           #if os(macOS)
-          // The cursor belongs to whatever the pointer is over, so it is
-          // pinned for as long as the pointer is over the handle.
-          if inside {
-            NSCursor.resizeLeftRight.push()
-          } else {
-            NSCursor.pop()
-          }
+            // The cursor belongs to whatever the pointer is over, so it is
+            // pinned for as long as the pointer is over the handle.
+            if inside {
+              NSCursor.resizeLeftRight.push()
+            } else {
+              NSCursor.pop()
+            }
           #endif
+        }
+        .onDisappear {
+          #if os(macOS)
+            if hovering {
+              NSCursor.pop()
+              hovering = false
+            }
+          #endif
+          dragState.origin = nil
+          dragState.collapsedByThisDrag = false
+          dragging = false
         }
     )
     .accessibilityElement()
@@ -337,22 +379,6 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
     }
   }
 
-  /// Discrete jumps — a double-click home, an arrow-key step, an accessibility
-  /// nudge — settle over the motion token, reflowing the column the way a short
-  /// smooth drag would. A drag keeps applying its width on the spot so the
-  /// divider never trails the pointer.
-  private func settle(_ change: () -> Void) {
-    withAnimation(theme.vars.motion, change)
-  }
-
-  private var lineOpacity: Double {
-    // Nothing to grab where the column was: a handle left lit at the window's
-    // edge would promise an edge that is not there.
-    if collapsed { return 0 }
-    if dragging { return 1 }
-    return hoveringResizer || resizerFocused ? resizerHintOpacity : 0
-  }
-
   private var drag: some Gesture {
     // Measured in the window, not in the handle: the handle rides the edge
     // it moves, so a translation taken in its own space would lose every
@@ -360,9 +386,9 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
     // between two widths under the pointer.
     DragGesture(minimumDistance: 1, coordinateSpace: .global)
       .onChanged { value in
-        guard !collapsedByThisDrag else { return }
-        let from = dragOrigin ?? resolvedWidth
-        dragOrigin = from
+        guard !dragState.collapsedByThisDrag else { return }
+        let from = dragState.origin ?? resolvedWidth
+        dragState.origin = from
 
         let raw = from + value.translation.width
         if let onCollapse, raw < minWidth - collapseSlop {
@@ -370,18 +396,18 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
           // from, so re-opening the sidebar does not inherit a half-dragged
           // number.
           commit(clamp(from))
-          collapsedByThisDrag = true
-          dragging = false
+          dragState.collapsedByThisDrag = true
+          if dragging { dragging = false }
           onCollapse()
           return
         }
-        dragging = true
+        if !dragging { dragging = true }
         commit(clamp(raw))
       }
       .onEnded { _ in
-        dragOrigin = nil
-        dragging = false
-        collapsedByThisDrag = false
+        dragState.origin = nil
+        dragState.collapsedByThisDrag = false
+        if dragging { dragging = false }
       }
   }
 
@@ -391,36 +417,36 @@ public struct Sidebar<Header: View, Content: View, Footer: View>: View {
   @ViewBuilder
   private func withResizerFocus<V: View>(_ view: V) -> some View {
     #if os(macOS)
-    if #available(macOS 14.0, *) {
-      // A control, not a field: it takes focus only when the reader tabs to
-      // it with keyboard navigation on, never as the window's first
-      // responder — a divider that lit up on every window the moment it
-      // opened read as already being dragged. The separator already marks
-      // keyboard focus, so the system ring, which would outline the whole
-      // grab area with a blue line on each side, stays off.
-      withResizerMoveCommands(view.focusable(resizable, interactions: .activate))
-        .focusEffectDisabled()
-    } else {
-      withResizerMoveCommands(view.focusable(resizable))
-    }
+      if #available(macOS 14.0, *) {
+        // A control, not a field: it takes focus only when the reader tabs to
+        // it with keyboard navigation on, never as the window's first
+        // responder — a divider that lit up on every window the moment it
+        // opened read as already being dragged. The separator already marks
+        // keyboard focus, so the system ring, which would outline the whole
+        // grab area with a blue line on each side, stays off.
+        withResizerMoveCommands(view.focusable(true, interactions: .activate))
+          .focusEffectDisabled()
+      } else {
+        withResizerMoveCommands(view.focusable(true))
+      }
     #else
-    view
+      view
     #endif
   }
 
   #if os(macOS)
-  private func withResizerMoveCommands<V: View>(_ view: V) -> some View {
-    view
-      .focused($resizerFocused)
-      .onMoveCommand { direction in
-        let step = NSEvent.modifierFlags.contains(.shift) ? coarseKeyStep : keyStep
-        switch direction {
-        case .left: settle { commit(clamp(resolvedWidth - step)) }
-        case .right: settle { commit(clamp(resolvedWidth + step)) }
-        default: break
+    private func withResizerMoveCommands<V: View>(_ view: V) -> some View {
+      view
+        .focused($focused)
+        .onMoveCommand { direction in
+          let step = NSEvent.modifierFlags.contains(.shift) ? coarseKeyStep : keyStep
+          switch direction {
+          case .left: settle { commit(clamp(resolvedWidth - step)) }
+          case .right: settle { commit(clamp(resolvedWidth + step)) }
+          default: break
+          }
         }
-      }
-  }
+    }
   #endif
 }
 
@@ -632,7 +658,6 @@ public struct SidebarCard<Label: View, Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   public init(
     @ViewBuilder label: @escaping () -> Label,
@@ -664,7 +689,7 @@ public struct SidebarCard<Label: View, Content: View>: View {
       .padding(vars.spacing3)
       .background(vars.colorSurface)
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
-      .border(vars.colorBorder, width: hairline, cornerRadius: vars.radiusLarge)
+      .border(vars.colorBorder, width: vars.strokeHairline, cornerRadius: vars.radiusLarge)
     }
   }
 }

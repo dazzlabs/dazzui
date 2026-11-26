@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(CoreFoundation)
+  import CoreFoundation
+#endif
 
 /// A story, as codegen compiled it out of the React example: what the list
 /// shows, the one scene that stands for the component on the overview, and
@@ -82,9 +85,49 @@ enum Value: Equatable, Decodable {
 
   static func parse(_ json: String) -> Value {
     do {
-      return try JSONDecoder().decode(Value.self, from: Data(json.utf8))
+      let raw = try JSONSerialization.jsonObject(
+        with: Data(json.utf8),
+        options: .fragmentsAllowed
+      )
+      return fromJSON(raw)
     } catch {
       fatalError("A generated story is not JSON: \(error)")
+    }
+  }
+
+  private static func fromJSON(_ raw: Any) -> Value {
+    switch raw {
+    case is NSNull:
+      return .null
+    case let string as String:
+      return .string(string)
+    case let array as [Any]:
+      return .array(array.map(fromJSON))
+    case let dict as [String: Any]:
+      var result: [String: Value] = [:]
+      result.reserveCapacity(dict.count)
+      for (key, value) in dict {
+        result[key] = fromJSON(value)
+      }
+      return .object(result)
+    #if canImport(CoreFoundation)
+      case let number as NSNumber:
+        if CFGetTypeID(number) == CFBooleanGetTypeID() {
+          return .bool(number.boolValue)
+        }
+        return .number(number.doubleValue)
+    #else
+      case let bool as Bool:
+        return .bool(bool)
+      case let number as NSNumber:
+        return .number(number.doubleValue)
+      case let number as Double:
+        return .number(number)
+      case let number as Int:
+        return .number(Double(number))
+    #endif
+    default:
+      return .null
     }
   }
 

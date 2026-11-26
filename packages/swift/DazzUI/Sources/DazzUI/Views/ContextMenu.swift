@@ -50,7 +50,12 @@ public struct ContextMenu<Content: View>: View {
       if presentation.usesNativeMenus {
         content()
           .onSecondaryClick { point in at = point; open = true }
-          .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
+          .nativeMenu(
+            isPresented: $open,
+            hasEntries: !items.isEmpty,
+            entries: { items.map(NativeMenuEntry.item) },
+            point: at
+          )
       } else {
         content().contextMenu {
           MenuSheet { MenuRows(items: items, tint: tint) { open = false } }
@@ -75,7 +80,12 @@ public struct ContextMenu<Content: View>: View {
             .offset(x: at.x, y: at.y)
           }
         }
-        .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
+        .nativeMenu(
+          isPresented: $open,
+          hasEntries: !items.isEmpty,
+          entries: { items.map(NativeMenuEntry.item) },
+          point: at
+        )
         .background {
           if open && !presentation.usesNativeMenus {
             SwiftUI.Button("") { open = false }

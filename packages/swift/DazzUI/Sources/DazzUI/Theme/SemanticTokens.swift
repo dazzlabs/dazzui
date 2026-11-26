@@ -40,6 +40,39 @@ public extension Color {
   /// compositing — useful for baking a translucent wash onto a theme surface
   /// so surfaces look identical over raised panels and windows alike.
   func blended(over background: Color, alpha: CGFloat? = nil) -> Color {
+    #if os(macOS) || canImport(UIKit)
+      let key = ColorMathCacheKey(
+        op: .blend,
+        a: self,
+        b: background,
+        param: alpha.map { UInt64($0.bitPattern) } ?? UInt64.max
+      )
+      return ColorMathCache.shared.resolve(key) {
+        self.computeBlended(over: background, alpha: alpha)
+      }
+    #else
+      return computeBlended(over: background, alpha: alpha)
+    #endif
+  }
+
+  /// Channel-wise sRGB linear interpolation from `self` to `other`, alpha included.
+  func lerp(to other: Color, t: CGFloat) -> Color {
+    #if os(macOS) || canImport(UIKit)
+      let key = ColorMathCacheKey(
+        op: .lerp,
+        a: self,
+        b: other,
+        param: UInt64(t.bitPattern)
+      )
+      return ColorMathCache.shared.resolve(key) {
+        self.computeLerp(to: other, t: t)
+      }
+    #else
+      return computeLerp(to: other, t: t)
+    #endif
+  }
+
+  private func computeBlended(over background: Color, alpha: CGFloat?) -> Color {
     let fRaw = srgbComponents
     let fAlpha = min(1, max(0, alpha ?? fRaw.a))
     guard fAlpha > 0 else { return background }
@@ -64,8 +97,7 @@ public extension Color {
     )
   }
 
-  /// Channel-wise sRGB linear interpolation from `self` to `other`, alpha included.
-  func lerp(to other: Color, t: CGFloat) -> Color {
+  private func computeLerp(to other: Color, t: CGFloat) -> Color {
     let clamped = min(1, max(0, t))
     let a = srgbComponents
     let b = other.srgbComponents
@@ -85,6 +117,65 @@ public extension Color {
     #endif
   }
 }
+
+#if os(macOS) || canImport(UIKit)
+  private struct ColorMathCacheKey: Hashable, Sendable {
+    enum Op: UInt8, Hashable, Sendable {
+      case blend
+      case lerp
+    }
+
+    let op: Op
+    let a: Color
+    let b: Color
+    let param: UInt64
+  }
+
+  internal final class ColorMathCache: @unchecked Sendable {
+    static let shared = ColorMathCache()
+    private static let limit = 1024
+
+    private let lock = NSLock()
+    private var entries: [ColorMathCacheKey: Color] = [:]
+    private var computeCount = 0
+
+    fileprivate func resolve(_ key: ColorMathCacheKey, compute: () -> Color) -> Color {
+      lock.lock()
+      if let hit = entries[key] {
+        lock.unlock()
+        return hit
+      }
+      lock.unlock()
+
+      let computed = compute()
+
+      lock.lock()
+      defer { lock.unlock() }
+      if let raced = entries[key] {
+        return raced
+      }
+      if entries.count >= Self.limit {
+        entries.removeAll(keepingCapacity: true)
+      }
+      entries[key] = computed
+      computeCount += 1
+      return computed
+    }
+
+    internal var totalComputations: Int {
+      lock.lock()
+      defer { lock.unlock() }
+      return computeCount
+    }
+
+    internal func resetForTesting() {
+      lock.lock()
+      entries.removeAll()
+      computeCount = 0
+      lock.unlock()
+    }
+  }
+#endif
 
 // MARK: - Derived semantic colors
 
@@ -187,12 +278,12 @@ public extension ThemeVariables {
 
   /// Emphasized selection highlight for active list rows and selected blocks.
   var selection: Color {
-    resolve(descriptor(.tinted, .surface), tint: .primary, state: .normal)
+    controlColor(.tinted, .surface, tint: .primary, state: .normal)
   }
 
   /// Unemphasized selection fill when the enclosing window or pane is inactive.
   var selectionUnemphasized: Color {
-    resolve(descriptor(.recessed, .surface), tint: .neutral, state: .normal)
+    controlColor(.recessed, .surface, tint: .neutral, state: .normal)
   }
 }
 

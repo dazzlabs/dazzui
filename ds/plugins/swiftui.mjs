@@ -252,8 +252,22 @@ ${drawn.map(entry => `    .${swiftName(entry.family)},`).join('\n')}
   /// The imported families (desktops, applications, and Omarchy).
   public static let imported: [ThemeFamily] = allCases.filter { !$0.isDrawn }
 
+${groups
+  .map(
+    group =>
+      `  private static let ${swiftName(group.id)}Families: [ThemeFamily] = [\n` +
+      families
+        .filter(entry => entry.group === group.id)
+        .map(entry => `    .${swiftName(entry.family)},`)
+        .join('\n') +
+      `\n  ]`
+  )
+  .join('\n\n')}
+
   public static func families(in group: ThemeGroup) -> [ThemeFamily] {
-    allCases.filter { $0.group == group }
+    switch group {
+${groups.map(group => `    case .${swiftName(group.id)}: return ${swiftName(group.id)}Families`).join('\n')}
+    }
   }
 
   public var group: ThemeGroup {
@@ -321,25 +335,218 @@ function generateThemeVariablesFile(
   const params = stored.map(
     member => `    ${member.name}: ${member.type} = ${member.value}`
   )
-  const assignments = stored.map(
-    member => `    self.${member.name} = ${member.name}`
+  const storageParams = stored.map(
+    member => `      ${member.name}: ${member.type}`
+  )
+  const storageForward = stored.map(
+    member => `      ${member.name}: ${member.name}`
+  )
+  const storageAssignments = stored.map(
+    member => `      self.${member.name} = ${member.name}`
+  )
+  const storageFields = stored.map(
+    member => `    var ${member.name}: ${member.type}`
+  )
+  const storageCopyArgs = stored.map(
+    member => `        ${member.name}: ${member.name}`
+  )
+  const properties = stored.map(
+    member =>
+      `${member.doc}  public var ${member.name}: ${member.type} {\n` +
+      `    get { storage.${member.name} }\n` +
+      `    set {\n` +
+      `      ensureUnique()\n` +
+      `      storage.${member.name} = newValue\n` +
+      `    }\n` +
+      `  }`
   )
 
-  return `import SwiftUI
+  const cacheSection = systemSizing
+    ? `
+    private struct CacheState: Sendable {
+      var controlColors: [ControlColors]?
+      var controlMetrics: ControlMetricsTable?
+    }
+
+    #if canImport(os)
+      private let cache = OSAllocatedUnfairLock(initialState: CacheState())
+
+      func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+        if let hit = cache.withLock({ $0.controlColors?[index] }) {
+          return hit
+        }
+        let built = build()
+        return cache.withLock { state in
+          if let raced = state.controlColors { return raced[index] }
+          state.controlColors = built
+          return built[index]
+        }
+      }
+
+      func cachedControlMetrics(
+        for size: ControlSize,
+        _ build: () -> ControlMetricsTable
+      ) -> ControlMetrics {
+        if let hit = cache.withLock({ $0.controlMetrics?[size] }) {
+          return hit
+        }
+        let built = build()
+        return cache.withLock { state in
+          if let raced = state.controlMetrics { return raced[size] }
+          state.controlMetrics = built
+          return built[size]
+        }
+      }
+
+      func invalidateCache() {
+        cache.withLock { state in
+          state.controlColors = nil
+          state.controlMetrics = nil
+        }
+      }
+    #else
+      private let cacheLock = NSLock()
+      private var cacheState = CacheState()
+
+      func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+        cacheLock.lock()
+        if let hit = cacheState.controlColors?[index] {
+          cacheLock.unlock()
+          return hit
+        }
+        cacheLock.unlock()
+        let built = build()
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if let raced = cacheState.controlColors { return raced[index] }
+        cacheState.controlColors = built
+        return built[index]
+      }
+
+      func cachedControlMetrics(
+        for size: ControlSize,
+        _ build: () -> ControlMetricsTable
+      ) -> ControlMetrics {
+        cacheLock.lock()
+        if let hit = cacheState.controlMetrics?[size] {
+          cacheLock.unlock()
+          return hit
+        }
+        cacheLock.unlock()
+        let built = build()
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        if let raced = cacheState.controlMetrics { return raced[size] }
+        cacheState.controlMetrics = built
+        return built[size]
+      }
+
+      func invalidateCache() {
+        cacheLock.lock()
+        cacheState.controlColors = nil
+        cacheState.controlMetrics = nil
+        cacheLock.unlock()
+      }
+    #endif`
+    : ''
+
+  const storageEquality = systemSizing
+    ? ''
+    : `\n    func equals(_ other: Storage) -> Bool {\n` +
+      stored
+        .map(member => `      ${member.name} == other.${member.name}`)
+        .join(' &&\n') +
+      `\n    }`
+
+  const structEquatable = systemSizing
+    ? ''
+    : `\n  public static func == (lhs: ThemeVariables, rhs: ThemeVariables) -> Bool {\n` +
+      `    lhs.storage === rhs.storage || lhs.storage.equals(rhs.storage)\n` +
+      `  }\n`
+
+  const ensureUniqueBody = systemSizing
+    ? `    if !isKnownUniquelyReferenced(&storage) {
+      storage = storage.copy()
+    } else {
+      storage.invalidateCache()
+    }`
+    : `    if !isKnownUniquelyReferenced(&storage) {
+      storage = storage.copy()
+    }`
+
+  const systemSizingProperty = systemSizing
+    ? `  internal var systemSizing: SystemSizingMetrics? {
+    get { storage.systemSizing }
+    set {
+      ensureUnique()
+      storage.systemSizing = newValue
+    }
+  }
+
+  internal func cachedControlColor(at index: Int, _ build: () -> [ControlColors]) -> ControlColors {
+    storage.cachedControlColor(at: index, build)
+  }
+
+  internal func cachedControlMetrics(
+    for size: ControlSize,
+    _ build: () -> ControlMetricsTable
+  ) -> ControlMetrics {
+    storage.cachedControlMetrics(for: size, build)
+  }
+
+  internal var storageIdentity: ObjectIdentifier {
+    ObjectIdentifier(storage)
+  }
+`
+    : ''
+
+  const imports = systemSizing
+    ? `import Foundation\nimport SwiftUI\n#if canImport(os)\n  import os\n#endif`
+    : `import SwiftUI`
+
+  const structConformances = systemSizing ? 'Sendable' : 'Sendable, Equatable'
+
+  return `${imports}
 
 /// The complete token set for one theme.
 ///
 /// ${HEADER.split('\n')[1].replace('// ', '')}
-public struct ThemeVariables: Sendable {
-${systemSizing ? '  internal var systemSizing: SystemSizingMetrics?\n' : ''}  public init(
-${params.join(',\n')}
-  ) {
-${assignments.join('\n')}
+public struct ThemeVariables: ${structConformances} {
+  /// Reference-counted backing storage so passing and reading \`ThemeVariables\`
+  /// through SwiftUI view bodies copies one 8-byte pointer instead of the
+  /// entire token table, while preserving value semantics via copy-on-write.
+  private final class Storage: @unchecked Sendable {
+${systemSizing ? '    var systemSizing: SystemSizingMetrics?\n' : ''}${storageFields.join('\n')}${cacheSection}
+
+    init(
+${storageParams.join(',\n')}
+    ) {
+${storageAssignments.join('\n')}
+    }
+
+    func copy() -> Storage {
+      let duplicate = Storage(
+${storageCopyArgs.join(',\n')}
+      )
+${systemSizing ? '      duplicate.systemSizing = systemSizing\n' : ''}      return duplicate
+    }${storageEquality}
   }
 
-${stored
-  .map(member => `${member.doc}  public var ${member.name}: ${member.type}`)
-  .join('\n')}
+  private var storage: Storage
+
+  private mutating func ensureUnique() {
+${ensureUniqueBody}
+  }
+${structEquatable}
+${systemSizingProperty}  public init(
+${params.join(',\n')}
+  ) {
+    self.storage = Storage(
+${storageForward.join(',\n')}
+    )
+  }
+
+${properties.join('\n')}
 
 ${computed
   .map(

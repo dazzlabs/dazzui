@@ -91,11 +91,7 @@ public struct Badge<Label: View>: View {
 
   private func resting(_ part: ControlPart) -> Color? {
     guard let recipeVariant else { return nil }
-    return theme.vars.resolve(
-      theme.vars.descriptor(recipeVariant, part),
-      tint: tint,
-      state: .normal
-    )
+    return theme.vars.controlColor(recipeVariant, part, tint: tint, state: .normal)
   }
 
   private var surface: Color {

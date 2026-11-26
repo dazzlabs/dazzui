@@ -104,9 +104,12 @@ struct NodeView: View {
 /// Whether a value is only known while the scene runs.
 func isLive(_ value: Value) -> Bool {
   guard case .object(let object) = value else { return false }
-  return ["$state", "$eq", "$not", "$if", "$concat", "$arg"].contains {
-    object[$0] != nil
-  }
+  return object["$state"] != nil
+    || object["$eq"] != nil
+    || object["$not"] != nil
+    || object["$if"] != nil
+    || object["$concat"] != nil
+    || object["$arg"] != nil
 }
 
 /// The glyph an `$icon` names.
@@ -127,22 +130,33 @@ struct Node {
     /// A prop's value now: a slot read, a test worked out, an argument taken.
     @MainActor
     func resolve(_ value: Value, _ args: [Value] = []) -> Value {
-      guard case .object(let object) = value, isLive(value) else { return value }
-      if let slot = object["$state"]?.string { return scene.slots[slot] ?? .null }
-      if let index = object["$arg"]?.number {
-        let at = Int(index)
-        return at < args.count ? args[at] : .null
+      guard case .object(let object) = value else { return value }
+      if let stateVal = object["$state"] {
+        guard let slot = stateVal.string else { return .null }
+        return scene.slots[slot] ?? .null
       }
-      if let pair = object["$eq"]?.array, pair.count == 2 {
+      if let argVal = object["$arg"] {
+        guard let index = argVal.number else { return .null }
+        let at = Int(index)
+        return at >= 0 && at < args.count ? args[at] : .null
+      }
+      if let eqVal = object["$eq"] {
+        guard let pair = eqVal.array, pair.count == 2 else { return value }
         return .bool(resolve(pair[0], args) == resolve(pair[1], args))
       }
-      if let test = object["$not"] { return .bool(!resolve(test, args).truthy) }
-      if let branches = object["$if"]?.array, branches.count == 3 {
+      if let test = object["$not"] {
+        return .bool(!resolve(test, args).truthy)
+      }
+      if let ifVal = object["$if"] {
+        guard let branches = ifVal.array, branches.count == 3 else { return value }
         return resolve(branches[0], args).truthy
           ? resolve(branches[1], args) : resolve(branches[2], args)
       }
-      let parts = object["$concat"]?.array ?? []
-      return .string(parts.map { resolve($0, args).text }.joined())
+      if let concatVal = object["$concat"] {
+        let parts = concatVal.array ?? []
+        return .string(parts.map { resolve($0, args).text }.joined())
+      }
+      return value
     }
 
     /// Makes the writes an event declares: slots set, toasts raised.

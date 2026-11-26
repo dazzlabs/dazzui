@@ -48,7 +48,7 @@ public struct SectionLabel<Label: View>: View {
     // A tint outranks the faint tone, the way `[data-tint]` outranks
     // `[data-tone='faint']` further down the stylesheet.
     if let tint {
-      return vars.resolve(vars.descriptor(.plain, .content), tint: tint, state: .normal)
+      return vars.controlColor(.plain, .content, tint: tint, state: .normal)
     }
     return faint ? vars.colorContentFaint : vars.colorContentSubtle
   }

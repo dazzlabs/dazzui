@@ -17,17 +17,66 @@ import SwiftUI
 /// action is ink navy whose hover lifts. A step only ever means the role the
 /// recipe reaching for it gives it.
 public struct ColorSwatch: Sendable, Equatable {
-  public let shades: [Int: Color]
+  private final class Storage: Sendable {
+    let shades: [Int: Color]
+    let s50: Color?
+    let s100: Color?
+    let s200: Color?
+    let s300: Color?
+    let s400: Color?
+    let s500: Color?
+    let s600: Color?
+    let s700: Color?
+    let s800: Color?
+    let s900: Color?
+    let s950: Color?
+
+    init(_ shades: [Int: Color]) {
+      self.shades = shades
+      self.s50 = shades[50]
+      self.s100 = shades[100]
+      self.s200 = shades[200]
+      self.s300 = shades[300]
+      self.s400 = shades[400]
+      self.s500 = shades[500]
+      self.s600 = shades[600]
+      self.s700 = shades[700]
+      self.s800 = shades[800]
+      self.s900 = shades[900]
+      self.s950 = shades[950]
+    }
+  }
+
+  private let storage: Storage
+
+  public var shades: [Int: Color] { storage.shades }
 
   public init(_ shades: [Int: Color]) {
-    self.shades = shades
+    self.storage = Storage(shades)
   }
 
   /// The step at `shade`. A ramp is generated with every step present, so a
   /// missing one is a generator bug rather than a case to design around —
   /// it resolves to clear instead of trapping.
   public subscript(shade: Int) -> Color {
-    shades[shade] ?? .clear
+    switch shade {
+    case 50: return storage.s50 ?? .clear
+    case 100: return storage.s100 ?? .clear
+    case 200: return storage.s200 ?? .clear
+    case 300: return storage.s300 ?? .clear
+    case 400: return storage.s400 ?? .clear
+    case 500: return storage.s500 ?? .clear
+    case 600: return storage.s600 ?? .clear
+    case 700: return storage.s700 ?? .clear
+    case 800: return storage.s800 ?? .clear
+    case 900: return storage.s900 ?? .clear
+    case 950: return storage.s950 ?? .clear
+    default: return storage.shades[shade] ?? .clear
+    }
+  }
+
+  public static func == (lhs: ColorSwatch, rhs: ColorSwatch) -> Bool {
+    lhs.storage === rhs.storage || lhs.storage.shades == rhs.storage.shades
   }
 }
 
@@ -104,12 +153,28 @@ public struct TypeStyle: Sendable, Equatable {
   public let size: CGFloat
   public let weight: Font.Weight
   public let lineHeight: CGFloat
+  /// The font this face resolves to, precomputed once at initialisation so
+  /// `.font(style.font)` avoids repeating family inspection and `Font`
+  /// construction on every SwiftUI body evaluation.
+  ///
+  /// Every face in the graph leads its stack with `-apple-system` (or
+  /// `ui-monospace` for code), which on this platform is a request for the
+  /// system face rather than a family that can be looked up by name — so the
+  /// stack resolves to `.system` and only a face naming a real family falls
+  /// through to `.custom`.
+  public let font: Font
 
   public init(family: [String], size: CGFloat, weight: Font.Weight, lineHeight: CGFloat) {
     self.family = family
     self.size = size
     self.weight = weight
     self.lineHeight = lineHeight
+    self.font = Self.makeFont(family: family, size: size, weight: weight, overrideWeight: nil)
+  }
+
+  public static func == (lhs: TypeStyle, rhs: TypeStyle) -> Bool {
+    lhs.size == rhs.size && lhs.weight == rhs.weight && lhs.lineHeight == rhs.lineHeight
+      && lhs.family == rhs.family
   }
 
   internal func scaled(by scale: CGFloat) -> TypeStyle {
@@ -120,33 +185,13 @@ public struct TypeStyle: Sendable, Equatable {
     TypeStyle(family: family, size: size, weight: weight, lineHeight: lineHeight)
   }
 
-  /// The font this face resolves to.
-  ///
-  /// Every face in the graph leads its stack with `-apple-system` (or
-  /// `ui-monospace` for code), which on this platform is a request for the
-  /// system face rather than a family that can be looked up by name — so the
-  /// stack resolves to `.system` and only a face naming a real family falls
-  /// through to `.custom`.
-  public var font: Font {
-    resolvedFont(weight: nil)
-  }
-
   /// Resolves the font with an optional weight override and optional tabular digits.
   public func resolvedFont(weight overrideWeight: Font.Weight? = nil, monospacedDigit: Bool = false) -> Font {
-    let effectiveWeight = overrideWeight ?? weight
     let base: Font
-    if let first = family.first {
-      if first.hasPrefix("-apple-system") {
-        base = .system(size: size, weight: effectiveWeight)
-      } else if first == "ui-monospace" || first == "monospace" {
-        base = .system(size: size, weight: effectiveWeight, design: .monospaced)
-      } else if let overrideWeight {
-        base = .custom(first, size: size).weight(overrideWeight)
-      } else {
-        base = .custom(first, size: size)
-      }
+    if overrideWeight == nil {
+      base = font
     } else {
-      base = .system(size: size, weight: effectiveWeight)
+      base = Self.makeFont(family: family, size: size, weight: weight, overrideWeight: overrideWeight)
     }
     #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
       return monospacedDigit ? base.monospacedDigit() : base
@@ -155,16 +200,49 @@ public struct TypeStyle: Sendable, Equatable {
     #endif
   }
 
+  private static func makeFont(
+    family: [String],
+    size: CGFloat,
+    weight: Font.Weight,
+    overrideWeight: Font.Weight?
+  ) -> Font {
+    let effectiveWeight = overrideWeight ?? weight
+    if let first = family.first {
+      if first.hasPrefix("-apple-system") {
+        return .system(size: size, weight: effectiveWeight)
+      } else if first == "ui-monospace" || first == "monospace" {
+        return .system(size: size, weight: effectiveWeight, design: .monospaced)
+      } else if let overrideWeight {
+        return .custom(first, size: size).weight(overrideWeight)
+      } else {
+        return .custom(first, size: size)
+      }
+    } else {
+      return .system(size: size, weight: effectiveWeight)
+    }
+  }
+
   /// How tall the platform sets one line of this face: its ascender, its
   /// descender and its own leading — what a `Text` is before any spacing.
   ///
   /// Cached by `(family, size)` behind a lock so SwiftUI redraws do not query
   /// CoreText/AppKit font metrics on every `Text` evaluation.
   public var naturalLineHeight: CGFloat {
+    cachedMetrics.naturalLineHeight
+  }
+
+  /// Where CSS sets the baseline in this face's line box: the face's ascent
+  /// below half of what the box has over its ascent and descent.
+  internal var cssBaseline: CGFloat {
+    let metrics = cachedMetrics
+    return (lineHeight - metrics.ascent - metrics.descent) / 2 + metrics.ascent
+  }
+
+  private var cachedMetrics: CachedTypeMetrics {
     let familyKey = family.first ?? "-apple-system"
     let sizeKey = Int((size * 100).rounded())
     let key = TypeMetricsCacheKey(family: familyKey, size: sizeKey)
-    return TypeMetricsCache.shared.naturalLineHeight(for: key) {
+    return TypeMetricsCache.shared.metrics(for: key) {
       #if os(macOS)
         let face: NSFont
         if familyKey.hasPrefix("-apple-system") {
@@ -176,7 +254,10 @@ public struct TypeStyle: Sendable, Equatable {
         }
         // A `Text` sets its line on whole points above and below the baseline:
         // a 13pt system face is 12.6 up and 2.7 down, and a line of it is 16.
-        return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+        let ascent = face.ascender
+        let descent = -face.descender
+        let natural = ascent.rounded(.up) + descent.rounded(.up) + face.leading
+        return CachedTypeMetrics(naturalLineHeight: natural, ascent: ascent, descent: descent)
       #elseif canImport(UIKit)
         let face: UIFont
         if familyKey.hasPrefix("-apple-system") {
@@ -186,9 +267,12 @@ public struct TypeStyle: Sendable, Equatable {
         } else {
           face = UIFont(name: familyKey, size: size) ?? UIFont.systemFont(ofSize: size)
         }
-        return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+        let ascent = face.ascender
+        let descent = -face.descender
+        let natural = ascent.rounded(.up) + descent.rounded(.up) + face.leading
+        return CachedTypeMetrics(naturalLineHeight: natural, ascent: ascent, descent: descent)
       #else
-        return size
+        return CachedTypeMetrics(naturalLineHeight: size, ascent: size * 0.8, descent: size * 0.2)
       #endif
     }
   }
@@ -212,17 +296,23 @@ internal struct TypeMetricsCacheKey: Hashable, Sendable {
   let size: Int
 }
 
+internal struct CachedTypeMetrics: Sendable {
+  let naturalLineHeight: CGFloat
+  let ascent: CGFloat
+  let descent: CGFloat
+}
+
 internal final class TypeMetricsCache: @unchecked Sendable {
   static let shared = TypeMetricsCache()
   private static let limit = 512
 
   private let lock = NSLock()
-  private var naturalHeights: [TypeMetricsCacheKey: CGFloat] = [:]
+  private var entries: [TypeMetricsCacheKey: CachedTypeMetrics] = [:]
   private var computeCount = 0
 
-  func naturalLineHeight(for key: TypeMetricsCacheKey, compute: () -> CGFloat) -> CGFloat {
+  func metrics(for key: TypeMetricsCacheKey, compute: () -> CachedTypeMetrics) -> CachedTypeMetrics {
     lock.lock()
-    if let hit = naturalHeights[key] {
+    if let hit = entries[key] {
       lock.unlock()
       return hit
     }
@@ -232,13 +322,13 @@ internal final class TypeMetricsCache: @unchecked Sendable {
 
     lock.lock()
     defer { lock.unlock() }
-    if let raced = naturalHeights[key] {
+    if let raced = entries[key] {
       return raced
     }
-    if naturalHeights.count >= Self.limit {
-      naturalHeights.removeAll(keepingCapacity: true)
+    if entries.count >= Self.limit {
+      entries.removeAll(keepingCapacity: true)
     }
-    naturalHeights[key] = measured
+    entries[key] = measured
     computeCount += 1
     return measured
   }
@@ -246,7 +336,7 @@ internal final class TypeMetricsCache: @unchecked Sendable {
   internal var cachedEntryCount: Int {
     lock.lock()
     defer { lock.unlock() }
-    return naturalHeights.count
+    return entries.count
   }
 
   internal var totalComputations: Int {
@@ -257,7 +347,7 @@ internal final class TypeMetricsCache: @unchecked Sendable {
 
   internal func resetForTesting() {
     lock.lock()
-    naturalHeights.removeAll()
+    entries.removeAll()
     computeCount = 0
     lock.unlock()
   }
@@ -380,18 +470,50 @@ internal extension Color {
 public extension View {
   /// Draws a token shadow.
   ///
-  /// One `.shadow` per layer, and every layer given counts: a list that
-  /// *shrinks* between states takes modifiers away, and a view whose
-  /// structure changes is replaced rather than updated. A replaced view
-  /// cannot crossfade the colours drawn inside it — it is snapshotted and
-  /// faded, which is what macOS 15 draws as a button's fill being wiped away
-  /// from one edge. A control that has no shadow in this state therefore
-  /// keeps its layer and draws ``TokenShadow/none`` in it.
+  /// One `.shadow` per layer without erasing the view to `AnyView` for the
+  /// common 0–3 layer cases. Every layer given counts: a list that *shrinks*
+  /// between states takes modifiers away, and a view whose structure changes is
+  /// replaced rather than updated. A replaced view cannot crossfade the colours
+  /// drawn inside it — it is snapshotted and faded, which is what macOS 15
+  /// draws as a button's fill being wiped away from one edge. A control that
+  /// has no shadow in this state therefore keeps its layer and draws
+  /// ``TokenShadow/none`` in it.
   func tokenShadow(_ shadows: [TokenShadow]) -> some View {
-    shadows.reduce(AnyView(self)) { view, shadow in
-      AnyView(
-        view.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
-      )
+    modifier(TokenShadowModifier(shadows: shadows))
+  }
+}
+
+private struct TokenShadowModifier: ViewModifier {
+  let shadows: [TokenShadow]
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    switch shadows.count {
+    case 0:
+      content
+    case 1:
+      let s0 = shadows[0]
+      content.shadow(color: s0.color, radius: s0.radius, x: s0.x, y: s0.y)
+    case 2:
+      let s0 = shadows[0]
+      let s1 = shadows[1]
+      content
+        .shadow(color: s0.color, radius: s0.radius, x: s0.x, y: s0.y)
+        .shadow(color: s1.color, radius: s1.radius, x: s1.x, y: s1.y)
+    case 3:
+      let s0 = shadows[0]
+      let s1 = shadows[1]
+      let s2 = shadows[2]
+      content
+        .shadow(color: s0.color, radius: s0.radius, x: s0.x, y: s0.y)
+        .shadow(color: s1.color, radius: s1.radius, x: s1.x, y: s1.y)
+        .shadow(color: s2.color, radius: s2.radius, x: s2.x, y: s2.y)
+    default:
+      shadows.reduce(AnyView(content)) { view, shadow in
+        AnyView(
+          view.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
+        )
+      }
     }
   }
 }

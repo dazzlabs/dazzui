@@ -141,7 +141,7 @@ public struct Checkbox<Label: View>: View {
   /// hover or press colour of its own, so it stays out of the shared state
   /// machine and reads the `-normal` recipes directly.
   private func recipe(_ part: ControlPart) -> Color {
-    theme.vars.resolve(theme.vars.descriptor(.filled, part), tint: tint, state: .normal)
+    theme.vars.controlColor(.filled, part, tint: tint, state: .normal)
   }
 
   /// The box corner is the component's own token: any shared step doubles as a
