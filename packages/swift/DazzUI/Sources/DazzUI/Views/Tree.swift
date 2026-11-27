@@ -1,5 +1,8 @@
 import FluentIcons
 import SwiftUI
+#if os(Windows)
+  @_spi(WindowsRendering) import SwiftUIRuntime
+#endif
 
 /// Two densities, both under control height: a tree is a column of names rather
 /// than a column of controls, and a row at control height would fit six fewer
@@ -62,11 +65,76 @@ public struct TreeNode: Identifiable {
 }
 
 /// One visible row: a node, and how deep it sits.
-private struct TreeRow: Identifiable {
-  let id: String
+struct TreeRow: Identifiable {
   let node: TreeNode
   let level: Int
   let open: Bool
+
+  var id: String { node.id }
+}
+
+/// A collapsed tree can use the caller's array directly. ForEach keeps the
+/// same row identity when a branch opens and nested rows join the collection.
+final class TreeRows: RandomAccessCollection {
+  private let roots: [TreeNode]
+  private let expanded: [String]
+  private let flattened: [TreeRow]?
+
+  init(_ items: [TreeNode], expanded: [String]) {
+    self.roots = items
+    self.expanded = expanded
+    guard !expanded.isEmpty else {
+      flattened = nil
+      return
+    }
+
+    let expandedSet = Set(expanded)
+    var rows: [TreeRow] = []
+    rows.reserveCapacity(items.count)
+    func walk(_ nodes: [TreeNode], level: Int) {
+      for node in nodes {
+        let open = node.isBranch && expandedSet.contains(node.id)
+        rows.append(TreeRow(node: node, level: level, open: open))
+        if open, let children = node.children {
+          walk(children, level: level + 1)
+        }
+      }
+    }
+    walk(items, level: 1)
+    flattened = rows
+  }
+
+  fileprivate func matches(_ items: [TreeNode], expanded: [String]) -> Bool {
+    guard roots.count == items.count else { return false }
+    // Holding the old roots makes a change to any node, including a nested
+    // rich label with the same ID, copy the outer Array's storage on write.
+    let sameRoots = roots.withUnsafeBufferPointer { original in
+      items.withUnsafeBufferPointer { original.baseAddress == $0.baseAddress }
+    }
+    return sameRoots && self.expanded == expanded
+  }
+
+  var startIndex: Int { 0 }
+  var endIndex: Int { flattened?.count ?? roots.count }
+
+  subscript(index: Int) -> TreeRow {
+    if let flattened { return flattened[index] }
+    return TreeRow(node: roots[index], level: 1, open: false)
+  }
+}
+
+/// Viewport and hover changes can reevaluate Tree.body without changing its
+/// data. Keep the visible ordering across such updates, while rows still get
+/// the current selection, theme, and handlers from the tree.
+final class TreeRowsCache {
+  private var last: TreeRows?
+
+  func rows(for items: [TreeNode], expanded: [String]) -> TreeRows {
+    if let last, last.matches(items, expanded: expanded) { return last }
+    let rows = TreeRows(items, expanded: expanded)
+    last = rows
+    return rows
+  }
 }
 
 /// A hierarchy the reader walks.
@@ -96,8 +164,8 @@ public struct Tree: View {
   public var onToggle: ((String) -> Void)?
   public var onExpandedChange: (([String]) -> Void)?
 
-  @Environment(\.theme) private var theme
   @State private var ownExpanded: [String]
+  @State private var rowCache = TreeRowsCache()
 
   public init(
     items: [TreeNode],
@@ -123,21 +191,34 @@ public struct Tree: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      ForEach(rows) { row in
-        Row(
-          node: row.node,
-          level: row.level,
-          open: row.open,
-          selected: selected == row.id,
-          size: size,
-          tint: tint,
-          onSelect: { onSelect?(row.id) },
-          onToggle: { toggle(row.id) }
-        )
+    LazyVStack(alignment: .leading, spacing: 0) {
+      ForEach(rowCache.rows(for: items, expanded: expanded ?? ownExpanded)) { row in
+        #if os(macOS)
+        // One child per ID lets the native lazy stack skip a distant range
+        // without enumerating the row's conditional content.
+        VStack(alignment: .leading, spacing: 0) { makeRow(row) }
+        #else
+        makeRow(row)
+        #endif
       }
     }
+    #if os(Windows)
+    ._fixedLazyRows()
+    #endif
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private func makeRow(_ row: TreeRow) -> Row {
+    Row(
+      node: row.node,
+      level: row.level,
+      open: row.open,
+      selected: selected == row.id,
+      size: size,
+      tint: tint,
+      onSelect: { onSelect?(row.id) },
+      onToggle: { toggle(row.id) }
+    )
   }
 
   private func toggle(_ id: String) {
@@ -147,24 +228,6 @@ public struct Tree: View {
     if expanded == nil { ownExpanded = next }
     onToggle?(id)
     onExpandedChange?(next)
-  }
-
-  /// The visible rows, in the order the eye reads them.
-  private var rows: [TreeRow] {
-    let expandedSet = Set(expanded ?? ownExpanded)
-    var out: [TreeRow] = []
-    out.reserveCapacity(items.count)
-    func walk(_ nodes: [TreeNode], _ level: Int) {
-      for node in nodes {
-        let open = node.isBranch && expandedSet.contains(node.id)
-        out.append(TreeRow(id: node.id, node: node, level: level, open: open))
-        if open, let children = node.children {
-          walk(children, level + 1)
-        }
-      }
-    }
-    walk(items, 1)
-    return out
   }
 }
 
@@ -221,17 +284,29 @@ private struct Row: View {
         }
       }
       .font(face)
+      #if !os(Windows)
       .foregroundStyle(content(state))
+      #endif
       // One step per level, plus the row's own leading inset. The twisty column
       // is inside the indent, which is what keeps the glyphs of one level in a
       // straight line.
       .padding(.leading, vars.spacing1 + CGFloat(level - 1) * vars.spacing4)
       .padding(.trailing, vars.spacing2)
       .frame(height: height)
+      #if os(Windows)
+      ._hoverColors(
+        foreground: content(state), hoveredForeground: content(state.onHover),
+        background: surface(state), hoveredBackground: surface(state.onHover),
+        animation: vars.motion)
+      #else
       .background(surface(state))
+      #endif
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
       .animation(vars.motion, value: state.controlState)
     }
+    #if os(Windows)
+    .contentHandlesHover()
+    #endif
     .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
   }
 
@@ -307,3 +382,9 @@ private struct Twisty: View {
     .frame(width: vars.spacing4, height: vars.spacing4)
   }
 }
+
+#if os(Windows)
+  private extension PressableState {
+    var onHover: Self { Self(hovered: true, pressed: pressed, enabled: enabled) }
+  }
+#endif

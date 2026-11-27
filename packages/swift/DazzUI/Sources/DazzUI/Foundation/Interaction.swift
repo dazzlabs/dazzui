@@ -31,6 +31,16 @@ public struct Pressable<Content: View>: View {
   public var help: String?
   @ViewBuilder public var content: (PressableState) -> Content
 
+  #if os(Windows)
+    private var tracksHover = true
+
+    internal func contentHandlesHover() -> Self {
+      var copy = self
+      copy.tracksHover = false
+      return copy
+    }
+  #endif
+
   @State private var hovered = false
 
   public init(
@@ -61,6 +71,9 @@ public struct Pressable<Content: View>: View {
       )
       .disabled(!interactive)
       .onHover { inside in
+        #if os(Windows)
+          guard tracksHover else { return }
+        #endif
         let next = inside && interactive
         if hovered != next { hovered = next }
       }

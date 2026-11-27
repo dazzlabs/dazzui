@@ -84,13 +84,18 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
   @ViewBuilder public var trailing: () -> Trailing
 
   @Environment(\.theme) private var theme
+  @Environment(\.font) private var font
+  @Environment(\.locale) private var locale
+  @Environment(\.displayScale) private var displayScale
+  @Environment(\.layoutDirection) private var layoutDirection
+  #if !os(Windows) && !os(Linux) && !os(WASI) && canImport(Darwin)
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.legibilityWeight) private var legibilityWeight
+    @Environment(\.textCase) private var textCase
+  #endif
   /// What the ruler and the row measured: each tab whole and as its icon,
   /// what trails, and the room the row was given.
   @State private var measured = TabsMeasure()
-
-  /// What the more-button takes of the row; reserved once anything has to go
-  /// behind it.
-  private static var moreWidth: CGFloat { 28 }
 
   public init(
     items: [TabItem<Value>],
@@ -110,8 +115,27 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
 
   public var body: some View {
     let vars = theme.vars
-    let fit = solve()
     let active = items.firstIndex { $0.value == value }
+    let ruler = TabsRulerPlan(items: items, active: active, canClose: onClose != nil)
+    var signature = TabsRulerSignature(
+      probes: ruler.probes, label: vars.labelMedium, caption: vars.captionSmall,
+      selectedWeight: vars.labelStrong.weight, padding: vars.spacing25, gap: vars.spacing15,
+      closePadding: vars.spacing1, controlWidth: vars.metrics(.tiny).size,
+      font: font, locale: locale, displayScale: displayScale, direction: layoutDirection)
+    #if !os(Windows) && !os(Linux) && !os(WASI) && canImport(Darwin)
+      signature.dynamicTypeSize = dynamicTypeSize
+      signature.legibilityWeight = legibilityWeight
+      signature.textCase = textCase
+    #endif
+    let hasWidths = measured.signature == signature
+    // Short tab bars can keep the ruler mounted. Long document lists show
+    // the selection while the first measurement settles.
+    let large = items.count > 32
+    let fit = hasWidths
+      ? TabsFit.resolve(ruler.slots, active: active, widths: measured.widths,
+                        moreWidth: vars.metrics(.tiny).size)
+      : TabsFit(compact: large, shown: large ? 1 : items.count, basis: 0, floor: 0)
+    let probes = large && hasWidths ? ruler.liveProbes : ruler.probes
 
     // The tab that is showing is never the one behind the more-button: it
     // takes the last place in the row.
@@ -166,109 +190,62 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
           .background(TabsMeasureReport(key: .trailing))
       }
     }
+    // Measure the offered width inside the intrinsic cap. A row of discrete
+    // buttons usually leaves some spare space; using its drawn width would
+    // feed that smaller value back into the next fit.
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background {
+      GeometryReader { proxy in
+        let width = proxy.size.width
+        // Keep the reported width stable while the same tabs fit. A new
+        // selection, ruler or trailing control checks the actual width again.
+        let reported = hasWidths && TabsFit.resolve(
+          ruler.slots, active: active, widths: measured.widths,
+          moreWidth: vars.metrics(.tiny).size, room: width) == fit
+          ? measured.widths[.room] ?? width : width
+        Color.clear.preference(key: TabsMeasureKey.self, value: [.room: reported])
+      }
+    }
     // What the row would take whole: it is that wide when there is room and
     // gives way, down to the tab that is showing, when there is not.
     .frame(
       minWidth: fit.floor > 0 ? fit.floor : nil,
       idealWidth: fit.basis > 0 ? fit.basis : nil,
-      maxWidth: fit.basis > 0 ? fit.basis : nil,
+      maxWidth: fit.basis > 0 ? fit.basis : (large ? .infinity : nil),
       alignment: .leading
     )
-    .frame(minHeight: vars.controlSmallSize)
-    .background(TabsMeasureReport(key: .room))
+    .frame(minHeight: vars.controlSmallSize, alignment: .leading)
     .clipped()
-    // The ruler: every tab whole, then every tab as its icon, out of sight,
-    // so what fits is arithmetic on widths that do not depend on what is
-    // currently drawn — measuring the visible row would chase itself.
-    .background(alignment: .topLeading) { ruler.frame(width: 0, alignment: .leading).clipped() }
+    // Intrinsic widths come from real labels laid out independently of the
+    // visible row. Equal label geometry needs only one measurement.
+    .background(alignment: .topLeading) {
+      measure(probes).frame(width: 0, alignment: .leading).clipped()
+    }
     .onPreferenceChange(TabsMeasureKey.self) { reading in
-      if reading != measured.widths { measured.widths = reading }
+      let updated = measured.applying(reading, signature: signature, probes: probes)
+      if updated != measured { measured = updated }
     }
   }
 
-  private var ruler: some View {
-    let rulerItems = items.map { item in
-      // A dot that pulses out of sight is work for nothing.
-      var still = item
-      still.busy = false
-      return still
-    }
-    return VStack(alignment: .leading, spacing: 0) {
-      HStack(spacing: 0) {
-        ForEach(Array(rulerItems.enumerated()), id: \.offset) { index, item in
-          // The tab that is showing is measured as it is drawn, in the
-          // heavier weight, so the row it is reserved does not clip it.
-          TabsTab(
-            item: item,
-            selected: item.value == value,
-            compact: false,
-            select: {},
-            close: onClose.map { _ in {} },
-            isRuler: true
-          )
-            .fixedSize()
-            .background(TabsMeasureReport(key: .whole(index)))
-        }
-      }
-      HStack(spacing: 0) {
-        ForEach(Array(rulerItems.enumerated()), id: \.offset) { index, item in
-          TabsTab(
-            item: item,
-            selected: false,
-            compact: true,
-            select: {},
-            close: onClose.map { _ in {} },
-            isRuler: true
-          )
-            .fixedSize()
-            .background(TabsMeasureReport(key: .compact(index)))
-        }
+  private func measure(_ probes: [TabsRulerPlan.Probe]) -> some View {
+    HStack(spacing: 0) {
+      ForEach(probes) { probe in
+        TabsTab(
+          item: items[probe.index],
+          selected: probe.selected,
+          compact: probe.compact,
+          select: {},
+          close: onClose.map { _ in {} },
+          isRuler: true
+        )
+        .fixedSize()
+        .background(TabsMeasureReport(key: probe.id))
       }
     }
     .fixedSize()
     .opacity(0)
     .allowsHitTesting(false)
     .accessibilityHidden(true)
-  }
-
-  /// `tabs.tsx`'s arithmetic, on what was measured.
-  private func solve() -> TabsFit {
-    let widths = measured.widths
-    let whole = items.indices.compactMap { widths[.whole($0)] }
-    let small = items.indices.compactMap { widths[.compact($0)] }
-    // Everything whole until every tab has been measured — on the first
-    // pass, and while a changed set of tabs has not reported yet.
-    guard !items.isEmpty, whole.count == items.count, small.count == items.count,
-          let room = widths[.room] else {
-      return TabsFit(compact: false, shown: items.count, basis: 0, floor: 0)
-    }
-    let trailingWidth = widths[.trailing] ?? 0
-    let basis = whole.reduce(0, +) + trailingWidth
-    let space = room - trailingWidth
-    let active = items.firstIndex { $0.value == value }
-    // The least the row is ever given: the tab that is showing, whole, the
-    // way to the rest and what trails.
-    let floor = min(
-      basis,
-      (whole.indices.contains(active ?? 0) ? whole[active ?? 0] : 0)
-        + (items.count > 1 ? Self.moreWidth : 0) + trailingWidth
-    )
-    func sum(_ widths: [CGFloat], _ count: Int) -> CGFloat {
-      widths.prefix(count).reduce(0, +)
-    }
-    // Half a point of slack, so a row that fits to the rounding is not
-    // folded by it.
-    guard sum(whole, items.count) > space + 0.5 else {
-      return TabsFit(compact: false, shown: items.count, basis: basis, floor: floor)
-    }
-    // The tab that is showing keeps its name; the others are their icons.
-    let mixed = small.indices.map { $0 == active && whole.indices.contains($0) ? whole[$0] : small[$0] }
-    var shown = items.count
-    while shown > 1,
-          sum(mixed, shown) + (shown < items.count ? Self.moreWidth : 0) > space + 0.5 {
-      shown -= 1
-    }
-    return TabsFit(compact: true, shown: shown, basis: basis, floor: floor)
   }
 }
 
@@ -292,23 +269,160 @@ public extension Tabs where Trailing == EmptyView {
 
 /// How the row is drawn: whether the tabs not showing are their icons, and
 /// how many are in the row rather than behind the more-button.
-private struct TabsFit {
+struct TabsFit: Equatable {
   var compact: Bool
   var shown: Int
   /// The row's width whole, and the least it is ever given.
   var basis: CGFloat
   var floor: CGFloat
+
+  static func resolve(_ slots: [TabsRulerPlan.Slots], active: Int?, widths: [TabsMeasureSlot: CGFloat],
+                      moreWidth: CGFloat, room: CGFloat? = nil) -> Self {
+    let count = slots.count
+    let unmeasured = Self(compact: false, shown: count, basis: 0, floor: 0)
+    guard count > 0, let room = room ?? widths[.room],
+          let activeWidth = widths[slots[active ?? 0].whole] else { return unmeasured }
+
+    let trailing = widths[.trailing] ?? 0
+    // Half a point of slack for subpixel measurements at the fit boundary.
+    let available = room - trailing + 0.5
+    let activeIndex = active ?? -1
+    var wholeWidth: CGFloat = 0
+    var prefix: CGFloat = 0
+    var shown = 1
+    for (index, pair) in slots.enumerated() {
+      guard let whole = widths[pair.whole], let small = widths[pair.compact] else {
+        return unmeasured
+      }
+      wholeWidth += whole
+      let width = index == activeIndex ? whole : small
+      // If the active tab would fall behind the menu it takes the last
+      // visible place, at its full width. Each candidate reuses the prefix.
+      let last = activeIndex > index ? activeWidth : width
+      let more = index + 1 < count ? moreWidth : 0
+      if prefix + last + more <= available { shown = index + 1 }
+      prefix += width
+    }
+    let basis = wholeWidth + trailing
+    let floor = min(basis, activeWidth + (count > 1 ? moreWidth : 0) + trailing)
+    let compact = wholeWidth > available
+    return Self(compact: compact, shown: compact ? shown : count, basis: basis, floor: floor)
+  }
 }
 
-private enum TabsMeasureSlot: Hashable {
+enum TabsMeasureSlot: Hashable {
   case whole(Int)
   case compact(Int)
   case trailing
   case room
 }
 
-private struct TabsMeasure {
+/// Only inputs which affect the intrinsic width participate. A compact icon
+/// has a fixed footprint; its label, detail and glyph identity don't affect it.
+struct TabsRulerPlan {
+  struct Slots {
+    let whole: TabsMeasureSlot
+    let compact: TabsMeasureSlot
+  }
+
+  struct Probe: Identifiable, Equatable {
+    let id: TabsMeasureSlot
+    let index: Int
+    let selected: Bool
+    let compact: Bool
+    fileprivate let shape: Shape
+  }
+
+  fileprivate struct Shape: Hashable {
+    let label: String?
+    let detail: String?
+    let count: Int?
+    let icon: Bool
+    let dot: Bool
+    let strong: Bool
+    let close: Bool
+  }
+
+  let slots: [Slots]
+  let probes: [Probe]
+  // Keep a real regular, selected and compact label participating in layout.
+  // This also detects inherited typesetting changes outside the theme.
+  let liveProbes: [Probe]
+
+  init<Value>(items: [TabItem<Value>], active: Int?, canClose: Bool) {
+    var measured: [Shape: TabsMeasureSlot] = [:]
+    var probes: [Probe] = []
+    var slots: [Slots] = []
+    slots.reserveCapacity(items.count)
+    func probe(_ index: Int, compact: Bool) -> TabsMeasureSlot {
+      let item = items[index]
+      let showsText = !compact || item.icon == nil
+      let selected = !compact && index == active
+      let shape = Shape(label: showsText ? item.label : nil, detail: showsText ? item.detail : nil,
+                        count: item.count, icon: item.icon != nil, dot: item.status != nil,
+                        strong: selected && showsText, close: !compact && canClose && item.closable)
+      if let previous = measured[shape] { return previous }
+      let id: TabsMeasureSlot = compact ? .compact(index) : .whole(index)
+      measured[shape] = id
+      probes.append(Probe(id: id, index: index, selected: selected, compact: compact, shape: shape))
+      return id
+    }
+    for index in items.indices {
+      slots.append(Slots(whole: probe(index, compact: false), compact: probe(index, compact: true)))
+    }
+    self.slots = slots
+    self.probes = probes
+    self.liveProbes = [
+      probes.first { !$0.compact && !$0.selected },
+      probes.first { $0.selected },
+      probes.first { $0.compact },
+      probes.first { $0.shape.count != nil },
+    ].compactMap { $0 }.reduce(into: []) { result, probe in
+      if !result.contains(where: { $0.id == probe.id }) { result.append(probe) }
+    }
+  }
+}
+
+private struct TabsRulerSignature: Equatable {
+  let probes: [TabsRulerPlan.Probe]
+  let label: TypeStyle
+  let caption: TypeStyle
+  let selectedWeight: Font.Weight
+  let padding: CGFloat
+  let gap: CGFloat
+  let closePadding: CGFloat
+  let controlWidth: CGFloat
+  let font: Font?
+  let locale: Locale
+  let displayScale: CGFloat
+  let direction: LayoutDirection
+  #if !os(Windows) && !os(Linux) && !os(WASI) && canImport(Darwin)
+    var dynamicTypeSize: DynamicTypeSize = .large
+    var legibilityWeight: LegibilityWeight?
+    var textCase: Text.Case?
+  #endif
+}
+
+private struct TabsMeasure: Equatable {
+  var signature: TabsRulerSignature?
   var widths: [TabsMeasureSlot: CGFloat] = [:]
+
+  func applying(_ reading: [TabsMeasureSlot: CGFloat], signature: TabsRulerSignature,
+                probes: [TabsRulerPlan.Probe]) -> Self {
+    var next = self
+    next.widths[.room] = reading[.room]
+    next.widths[.trailing] = reading[.trailing]
+    guard probes.allSatisfy({ reading[$0.id]?.isFinite == true }) else { return next }
+    if probes.count == signature.probes.count {
+      next.signature = signature
+      next.widths = reading
+    } else if probes.contains(where: { reading[$0.id] != widths[$0.id] }) {
+      // The text system changed the width of a live label. Reattach the full
+      // ruler before using the other saved widths.
+      next.signature = nil
+    }
+    return next
+  }
 }
 
 private struct TabsMeasureKey: PreferenceKey {
@@ -345,6 +459,8 @@ private struct TabsListLabel: ViewModifier {
   }
 }
 
+private let tabGlyphSize: CGFloat = 14
+
 /// One tab: the button, and its close beside it.
 private struct TabsTab<Value: Hashable>: View {
   let item: TabItem<Value>
@@ -372,7 +488,11 @@ private struct TabsTab<Value: Hashable>: View {
           }
       }
       if let icon = item.icon {
-        Icon(icon, size: 14)
+        if isRuler {
+          Color.clear.frame(width: tabGlyphSize, height: tabGlyphSize)
+        } else {
+          Icon(icon, size: tabGlyphSize)
+        }
       }
       if !(compact && item.icon != nil) {
         Text(item.label).lineLimit(1).truncationMode(.tail)
